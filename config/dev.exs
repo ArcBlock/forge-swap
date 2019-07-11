@@ -1,7 +1,7 @@
 use Mix.Config
 
 # Configure your database
-config :forge_swap, ForgeSwap.Repo,
+config :forge_swap, ForgeSwap.PostgresRepo,
   username: "postgres",
   password: "postgres",
   database: "forge_swap_dev",

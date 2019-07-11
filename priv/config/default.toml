@@ -1,0 +1,4 @@
+[database]
+# The database type, now only supports postgres
+type = "postgres"
+connection = "localhost"

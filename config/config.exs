@@ -7,8 +7,10 @@
 # General application configuration
 use Mix.Config
 
+config :forge_swap, ForgeSwap.PostgresRepo, priv: "priv/repo"
+
 config :forge_swap,
-  ecto_repos: [ForgeSwap.Repo]
+  ecto_repos: [ForgeSwap.PostgresRepo]
 
 # Configures the endpoint
 config :forge_swap, ForgeSwapWeb.Endpoint,
