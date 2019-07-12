@@ -19,6 +19,13 @@ defmodule ForgeSwapWeb.Router do
     get "/", PageController, :index
   end
 
+  scope "/api", ForgeSwapWeb do
+    pipe_through(:api)
+
+    post("/swap/", SwapController, :create)
+    post("/swap/:id/start", SwapController, :start)
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", ForgeSwapWeb do
   #   pipe_through :api

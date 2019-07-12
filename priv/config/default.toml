@@ -1,4 +1,34 @@
+[swap]
+# The default hours to lock swap which is set up by the application to users.
+offer_locktime = 24
+# The default hours to lock swap which is set up by users to the application.
+demand_locktime = 48
+# The url host and port used by swap service to generate the qr_code. 
+# You should make sure the wallet can reach swap service through
+# this host and port.
+host = "localhost"
+port = 8807
+
 [database]
 # The database type, now only supports postgres
 type = "postgres"
 connection = "localhost"
+
+# Config the chains that swap service shall connect to.
+[chains]
+
+  # For asset chain.
+  [chains.asset]
+  # The host and port to connect to the forge web
+  host = "127.0.0.1"
+  port = 8310
+  # The average time(seconds) to generate a block. You should figure out this value from the chain.
+  block_time = 3
+
+  # For application chain.
+  [chains.application]
+  # The host and port to connect to the forge web
+  host = "127.0.0.1"
+  port = 8410
+  # The average time(seconds) to generate a block. You should figure out this value from the chain.
+  block_time = 3

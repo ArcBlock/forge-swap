@@ -22,16 +22,26 @@ defmodule ForgeSwap.Schema.Swap do
   end
 
   def insert_changeset(params) do
-    params = Map.put(params, :status, :no_started)
+    params = Map.put(params, :status, "not_started")
 
     %ForgeSwap.Schema.Swap{}
     |> cast(params, [
+      :user_did,
+      :status,
       :offer_assets,
       :offer_token,
       :offer_chain,
       :offer_locktime,
       :demand_assets,
       :demand_token,
+      :demand_chain,
+      :demand_locktime
+    ])
+    |> validate_required([
+      :user_did,
+      :status,
+      :offer_chain,
+      :offer_locktime,
       :demand_chain,
       :demand_locktime
     ])

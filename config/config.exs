@@ -14,6 +14,7 @@ config :forge_swap,
 
 # Configures the endpoint
 config :forge_swap, ForgeSwapWeb.Endpoint,
+  http: [port: 8807],
   url: [host: "localhost"],
   secret_key_base: "3Y/BeGqMVMRhVdPB/TRnD57+xmHjjVHKd+V0dgojUOtjiWev6TOlJTT1tftJY1ZS",
   render_errors: [view: ForgeSwapWeb.ErrorView, accepts: ~w(html json)],
