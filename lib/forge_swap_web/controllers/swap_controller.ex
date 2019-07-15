@@ -48,11 +48,13 @@ defmodule ForgeSwapWeb.SwapController do
     change_set = Swap.insert_changeset(params)
 
     case apply(Repo, :insert, [change_set]) do
-      {:ok, swap} -> json(conn, %{id: swap.id, qr_code: Util.gen_start_swap_qr_code(swap.id)})
+      {:ok, swap} -> json(conn, %{id: swap.id})
       {:error, change} -> json(conn, %{error: "#{inspect(change.errors)}"})
     end
   end
 
-  def start(_conn, _params) do
-  end
+  def get(conn, %{"id" => id}),
+    do: render(conn, "get.html", qr_code: Util.gen_start_swap_qr_code(id))
+
+  def get(conn, _params), do: json(conn, %{error: "Please specifiy a swap Id."})
 end

@@ -17,6 +17,8 @@ defmodule ForgeSwapWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    post "/pay", PageController, :pay
+    get "/swap/:id", SwapController, :get
   end
 
   scope "/api", ForgeSwapWeb do
