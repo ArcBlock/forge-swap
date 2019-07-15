@@ -1,11 +1,8 @@
 defmodule ForgeSwapWeb.SwapController do
   use ForgeSwapWeb, :controller
 
-  alias ForgeSwap.Utils.Util
-  alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Schema.Swap
-  alias ForgeSwap.Repo
 
   def index(conn, _params) do
     render(conn, "index.html")
@@ -53,8 +50,6 @@ defmodule ForgeSwapWeb.SwapController do
     end
   end
 
-  def get(conn, %{"id" => id}),
-    do: render(conn, "get.html", qr_code: Util.gen_start_swap_qr_code(id))
-
-  def get(conn, _params), do: json(conn, %{error: "Please specifiy a swap Id."})
+  def show(conn, %{"id" => id}), do: live_render(conn, ForgeSwapWeb.SwapLive, session: %{id: id})
+  def show(conn, _params), do: json(conn, %{error: "Please specifiy a swap Id."})
 end

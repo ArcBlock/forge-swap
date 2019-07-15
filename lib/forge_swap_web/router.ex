@@ -5,6 +5,7 @@ defmodule ForgeSwapWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
+    plug Phoenix.LiveView.Flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -18,7 +19,7 @@ defmodule ForgeSwapWeb.Router do
 
     get "/", PageController, :index
     post "/pay", PageController, :pay
-    get "/swap/:id", SwapController, :get
+    get "/swap/:id", SwapController, :show
   end
 
   scope "/api", ForgeSwapWeb do

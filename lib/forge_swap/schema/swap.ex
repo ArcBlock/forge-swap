@@ -5,6 +5,9 @@ defmodule ForgeSwap.Schema.Swap do
   use Ecto.Schema
 
   import Ecto.Changeset
+  import Ecto.Query
+
+  alias ForgeSwap.{Repo, Schema.Swap}
 
   schema("swap") do
     field(:user_did, :string)
@@ -51,5 +54,12 @@ defmodule ForgeSwap.Schema.Swap do
     data
     |> cast(params, [:status, :offer_swap, :deman_swap])
     |> validate_required([:status])
+  end
+
+  def get(id) do
+    query = from(s in Swap, where: s.id == ^id)
+
+    Repo
+    |> apply(:one, [query])
   end
 end

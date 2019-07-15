@@ -1,6 +1,8 @@
 defmodule ForgeSwapWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :forge_swap
 
+  socket "/live", Phoenix.LiveView.Socket
+
   socket "/socket", ForgeSwapWeb.UserSocket,
     websocket: true,
     longpoll: false

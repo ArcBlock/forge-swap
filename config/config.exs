@@ -18,7 +18,10 @@ config :forge_swap, ForgeSwapWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "3Y/BeGqMVMRhVdPB/TRnD57+xmHjjVHKd+V0dgojUOtjiWev6TOlJTT1tftJY1ZS",
   render_errors: [view: ForgeSwapWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: ForgeSwap.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: ForgeSwap.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [
+    signing_salt: "t6q57iRUDN0mVe5SMkJ/qOSWOySI7GK1"
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
