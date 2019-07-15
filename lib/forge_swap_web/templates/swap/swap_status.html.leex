@@ -1,10 +1,64 @@
 <div>
-  <div class>
+  <div id="not_started" style="display: <%= @display_not_started %>">
     <div>
-      QRCode: <%= @qr_code %>
+      Please start the payment process by scanning this QR code from your ArcBlock Wallet.
+    </div>
+    <div class="qrcode-wrapper">
+      <svg class="qrcode">
+        <%= raw(@qr_code) %>
+      </svg>
+    </div>
+  </div>
+
+  <div id="user_deposited" style="display: <%= @display_user_deposited %>">
+    <div>
+      We are setting up swap for you, please wait.
     </div>
     <div>
-      Status: <%= @status %>
+      <img src="<%= Routes.static_path(ForgeSwapWeb.Endpoint, "/images/loading.gif") %>" />
+    </div>
+  </div>
+
+  <div id="both_deposited" style="display: <%= @display_both_deposited %>">
+    <div>
+      We have sent the swap we set up for you.
+    </div>
+    <div>
+      If have troubles to auto-confirm the swap, you can finish swapping by scanning following QR code.
+    </div>
+    <div class="qrcode-wrapper">
+      <svg class="qrcode">
+        <%= raw(@qr_code) %>
+      </svg>
+    </div>
+  </div>
+
+  <div id="user_retrieved" style="display: <%= @display_user_retrieved %>">
+    <div>
+      Succeeded!
     </div>
   </div>
 </div>
+
+<%# <script>
+  function showView(status) {
+    list = ["not_started", "user_deposited", "both_deposited", "user_retrieved"]
+    list.forEach(function (id) {
+      if (id == status) {
+        console.log('11111');
+        $('#' + id).show();
+      } else {
+        console.log('22222');
+        $('#' + id).hide();
+      }
+    });
+  }
+
+  initStatus = document.getElementById("status");
+  console.log(initStatus.value);
+  showView(initStatus.value);
+
+  $('#status').on('change', function() {
+    showView($(this).val())
+  })
+</script> %>

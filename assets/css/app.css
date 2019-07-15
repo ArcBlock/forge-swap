@@ -2,3 +2,20 @@
 
 @import "./phoenix.css";
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
+
+.qrcode {
+  width: 350px !important;
+  height: 350px !important;
+}
+
+.qrcode-wrapper {
+  margin: 2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.qrcode-small {
+  width: 150px !important;
+  height: 150px !important;
+}

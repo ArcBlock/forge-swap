@@ -33,6 +33,7 @@ defmodule ForgeSwap.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # Phoenix and Ecto
       {:phoenix, "~> 1.4.9"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
@@ -41,10 +42,13 @@ defmodule ForgeSwap.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
+
+      # Utils
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.4"},
+      {:eqrcode, "~> 0.1.6"},
       {:toml, "~> 0.5"}
     ]
   end
