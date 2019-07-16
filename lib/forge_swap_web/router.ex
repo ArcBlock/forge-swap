@@ -27,6 +27,7 @@ defmodule ForgeSwapWeb.Router do
 
     post("/swap/", SwapController, :create)
     post("/swap/:id/start", SwapController, :start)
+    post("/swap/:id/submit", SwapController, :submit)
   end
 
   # Other scopes may use custom stacks.

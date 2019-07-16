@@ -4,10 +4,20 @@ defmodule ForgeSwapWeb.SwapController do
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Schema.Swap
 
+  alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
+
+  # plug(VerifySig when action in [:show, :start, :submit])
+  # plug(ExtractUserInfo when action in [:show, :start, :submit])
+  plug(ReadSwap when action in [:show, :start, :submit])
+  # plug(VerifyUser when action in [:show, :start, :submit])
+
   def index(conn, _params) do
     render(conn, "index.html")
   end
 
+  @doc """
+  Creates a swap for between the application and a wallet.
+  """
   def create(conn, params) do
     config = ConfigUtil.read_config()
     user_did = params["userDid"]
@@ -50,6 +60,25 @@ defmodule ForgeSwapWeb.SwapController do
     end
   end
 
-  def show(conn, %{"id" => id}), do: live_render(conn, ForgeSwapWeb.SwapLive, session: %{id: id})
-  def show(conn, _params), do: json(conn, %{error: "Please specifiy a swap Id."})
+  @doc """
+  Shows the status of a swap. The displayed live view page will get updated 
+  automatically when the swap status is changed.
+  """
+  def show(conn, _) do
+    swap = conn.assigns.swap
+    live_render(conn, ForgeSwapWeb.SwapLive, session: %{id: swap.id, status: swap.status})
+  end
+
+  @doc """
+  Starts the swapping by wallet.
+  """
+  def start(conn, params) do
+  end
+
+  @doc """
+  Submits the swap set up by wallet to the application. The app will
+  set up the swap as return.
+  """
+  def submit(conn, params) do
+  end
 end

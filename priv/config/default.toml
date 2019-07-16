@@ -14,6 +14,16 @@ port = 8807
 type = "postgres"
 connection = "localhost"
 
+# This section contains the keys for DID authentication.
+[auth]
+did = ""
+pk = ""
+# The private key of the public key, base 16 encoded.
+sk = ""
+# You can also read the secret key from environment variables like this:
+# sk = "SYSTEM:DID_AUTH_SK"
+
+
 # Config the chains that swap service shall connect to.
 [chains]
 

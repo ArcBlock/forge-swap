@@ -49,7 +49,11 @@ defmodule ForgeSwap.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.4"},
       {:eqrcode, "~> 0.1.6"},
-      {:toml, "~> 0.5"}
+      {:toml, "~> 0.5"},
+      {:multibase, ">= 0.0.0"},
+
+      # ArcBlock
+      {:abt_did_elixir, "~> 0.3"}
     ]
   end
 

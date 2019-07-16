@@ -31,6 +31,25 @@ defmodule ForgeSwap.Utils.Config do
         path -> read_toml(path)
       end
 
-    Map.merge(default, change)
+    default |> Map.merge(change) |> parse()
   end
+
+  # Traverse the config map and replace values by system environment variables.
+  defp parse(config) when is_map(config) do
+    config
+    |> Map.to_list()
+    |> Enum.into(%{}, fn {key, val} -> {key, parse(val)} end)
+  end
+
+  defp parse("SYSTEM:" <> env) do
+    case System.get_env(env) do
+      val when val in [nil, ""] ->
+        raise "Could not read system environment variable #{inspect(env)}."
+
+      val ->
+        val
+    end
+  end
+
+  defp parse(val), do: val
 end

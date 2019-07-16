@@ -3,6 +3,19 @@ defmodule ForgeSwap.Utils.Util do
 
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
+  def str_to_bin(str) do
+    case Base.decode16(str, case: :mixed) do
+      {:ok, bin} ->
+        bin
+
+      _ ->
+        case Multibase.decode(str) do
+          {:ok, bin} -> bin
+          _ -> Base.url_decode64!(str, padding: false)
+        end
+    end
+  end
+
   def str_to_int(nil), do: nil
   def str_to_int(""), do: nil
 
@@ -20,7 +33,7 @@ defmodule ForgeSwap.Utils.Util do
 
   def gen_qr_code(url) when is_binary(url), do: url |> EQRCode.encode() |> EQRCode.svg()
 
-  def gen_qr_code(%{status: status, id: id}) do
+  def gen_qr_code(id, status) do
     config = ConfigUtil.read_config()
     host = config["swap"]["host"]
     port = config["swap"]["port"]

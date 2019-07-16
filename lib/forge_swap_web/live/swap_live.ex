@@ -8,30 +8,29 @@ defmodule ForgeSwapWeb.SwapLive do
     ForgeSwapWeb.SwapView.render("swap_status.html", assigns)
   end
 
-  def mount(%{id: id}, socket) do
+  def mount(%{id: id, status: status}, socket) do
     if connected?(socket) do
       :timer.send_interval(1000, self(), :tick)
     end
 
-    swap = Swap.get(id)
-
     assigns =
-      swap.status
+      status
       |> determine_display()
-      |> Map.put(:id, swap.id)
-      |> Map.put(:qr_code, Util.gen_qr_code(swap))
+      |> Map.put(:id, id)
+      |> Map.put(:qr_code, Util.gen_qr_code(id, status))
       |> Map.to_list()
 
     {:ok, assign(socket, assigns)}
   end
 
   def handle_info(:tick, socket) do
-    swap = Swap.get(socket.assigns.id)
+    id = socket.assigns.id
+    swap = Swap.get(id)
 
     assigns =
       swap.status
       |> determine_display()
-      |> Map.put(:qr_code, Util.gen_qr_code(swap))
+      |> Map.put(:qr_code, Util.gen_qr_code(id, swap.status))
       |> Map.to_list()
 
     {:noreply, assign(socket, assigns)}
