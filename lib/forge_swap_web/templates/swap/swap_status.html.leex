@@ -1,7 +1,7 @@
 <div>
   <div id="not_started" style="display: <%= @display_not_started %>">
     <div>
-      Please start the payment process by scanning this QR code from your ArcBlock Wallet.
+      <h2> Please start the payment process by scanning this QR code from your ArcBlock Wallet. </h2>
     </div>
     <div class="qrcode-wrapper">
       <svg class="qrcode">
@@ -12,7 +12,7 @@
 
   <div id="user_deposited" style="display: <%= @display_user_deposited %>">
     <div>
-      We are setting up swap for you, please wait.
+      <h2> We are setting up swap for you, please wait.</h2> 
     </div>
     <div>
       <img src="<%= Routes.static_path(ForgeSwapWeb.Endpoint, "/images/loading.gif") %>" />
@@ -21,7 +21,7 @@
 
   <div id="both_deposited" style="display: <%= @display_both_deposited %>">
     <div>
-      We have sent the swap we set up for you.
+      <h2> We have sent the swap we set up for you. </h2> 
     </div>
     <div>
       If have troubles to auto-confirm the swap, you can finish swapping by scanning following QR code.
@@ -35,7 +35,7 @@
 
   <div id="user_retrieved" style="display: <%= @display_user_retrieved %>">
     <div>
-      Succeeded!
+      <h2> Succeeded!</h2> 
     </div>
   </div>
 </div>

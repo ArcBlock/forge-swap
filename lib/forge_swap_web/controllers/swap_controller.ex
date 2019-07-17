@@ -1,15 +1,16 @@
 defmodule ForgeSwapWeb.SwapController do
   use ForgeSwapWeb, :controller
 
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
+  alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
+  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
 
-  # plug(VerifySig when action in [:show, :start, :submit])
-  # plug(ExtractUserInfo when action in [:show, :start, :submit])
+  plug(VerifySig when action in [:start, :submit])
+  plug(ExtractUserInfo when action in [:start, :submit])
   plug(ReadSwap when action in [:show, :start, :submit])
-  # plug(VerifyUser when action in [:show, :start, :submit])
+  plug(VerifyUser when action in [:start, :submit])
 
   def index(conn, _params) do
     render(conn, "index.html")
@@ -55,7 +56,7 @@ defmodule ForgeSwapWeb.SwapController do
     change_set = Swap.insert_changeset(params)
 
     case apply(Repo, :insert, [change_set]) do
-      {:ok, swap} -> json(conn, %{id: swap.id})
+      {:ok, swap} -> json(conn, %{response: %{id: swap.id}})
       {:error, change} -> json(conn, %{error: "#{inspect(change.errors)}"})
     end
   end
@@ -72,13 +73,13 @@ defmodule ForgeSwapWeb.SwapController do
   @doc """
   Starts the swapping by wallet.
   """
-  def start(conn, params) do
+  def start(_conn, _params) do
   end
 
   @doc """
   Submits the swap set up by wallet to the application. The app will
   set up the swap as return.
   """
-  def submit(conn, params) do
+  def submit(_conn, _params) do
   end
 end
