@@ -49,12 +49,4 @@ defmodule ForgeSwap.Utils.Util do
     do: gen_qr_code("#{host}:#{port}/swap/#{swap_id}/retrieve")
 
   defp gen_qr_code(_, _, _, _), do: ""
-
-  # Generates the callback url that a user can submit the address of swap set up for application.
-  def get_submit_swap_callback(swap_id) do
-    config = ConfigUtil.read_config()
-    host = config["service"]["host"]
-    port = config["service"]["port"]
-    "#{host}:#{port}/swap/#{swap_id}/submit"
-  end
 end

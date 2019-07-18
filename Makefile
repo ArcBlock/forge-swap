@@ -5,9 +5,6 @@ VERSION=$(strip $(shell cat version))
 TARGETS=centos ubuntu darwin
 APP_NAME=forge_swap
 
-tt:
-	@echo $(BUILD_DIR)
-
 dep:
 	@echo "Install dependencies required for this repo..."
 	@mix deps.get
@@ -34,16 +31,16 @@ rebuild:
 	@mix compile
 
 format:
-	@mix compile; mix format;
+	@cd src; mix compile; mix format;
 
 run:
 	@echo "Running the software..."
-	@iex -S mix phx.server
+	@cd src; iex -S mix phx.server
 
 test:
 	@echo "Running test suites..."
 	@MIX_ENV=test make build
-	@MIX_ENV=test mix test
+	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
 
 dialyzer:
 	mix dialyzer

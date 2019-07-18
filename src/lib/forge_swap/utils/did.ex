@@ -24,15 +24,20 @@ defmodule ForgeSwap.Utils.Did do
   def did_to_address("did:abt:" <> address), do: address
   def did_to_address(address), do: address
 
-  def sign_response(extra) do
-    auth = ConfigUtil.read_config()["auth"]
-    address = auth["did"]
-    pk = Base.decode16!(auth["pk"], case: :mixed)
-    sk = Base.decode16!(auth["sk"], case: :mixed)
+  def sign_response!(extra, asset_owner) do
+    case ConfigUtil.read_config()["asset_owner"][asset_owner] do
+      nil ->
+        raise "Could not find asset owner #{asset_owner} in config files."
 
-    %{
-      appPk: Multibase.encode!(pk, :base58_btc),
-      authInfo: AbtDid.Signer.gen_and_sign(address, sk, extra)
-    }
+      owner ->
+        address = owner["did"]
+        pk = Base.decode16!(owner["pk"], case: :mixed)
+        sk = Base.decode16!(owner["sk"], case: :mixed)
+
+        %{
+          appPk: Multibase.encode!(pk, :base58_btc),
+          authInfo: AbtDid.Signer.gen_and_sign(address, sk, extra)
+        }
+    end
   end
 end

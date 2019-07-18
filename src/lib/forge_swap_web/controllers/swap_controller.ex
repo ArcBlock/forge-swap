@@ -3,7 +3,6 @@ defmodule ForgeSwapWeb.SwapController do
 
   alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
-  alias ForgeSwap.Utils.Util
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
 
@@ -89,23 +88,27 @@ defmodule ForgeSwapWeb.SwapController do
 
   defp do_start(conn, swap) do
     claims = require_user_set_up(swap)
-    url = Util.get_submit_swap_callback(swap.id)
-    extra = prepare_response(claims, url, swap.offer_chain)
-    response = DidUtil.sign_response(extra)
+    callback = Routes.swap_url(conn, :submit, swap.id)
+    extra = prepare_response(claims, callback, swap.offer_chain)
+    response = DidUtil.sign_response!(extra, swap.asset_owner)
     json(conn, response)
   end
 
   defp require_user_set_up(swap) do
+    chain = ConfigUtil.read_config()["chains"][swap.demand_chain]
+    chain_url = "#{chain["host"]}:#{chain["port"]}/api"
+
     %{
       type: "did",
       did_type: "swap",
       meta: %{
         description: "Please set up an atomic swap on the ABT asset chain.",
         offer_assets: swap.offer_assets,
-        offer_token: swap.offer_token,
+        offer_token: Decimal.to_integer(swap.offer_token),
         demand_assets: swap.demand_assets,
-        demand_token: swap.demand_token,
-        demand_locktime: swap.demand_locktime
+        demand_token: Decimal.to_integer(swap.demand_token),
+        demand_locktime: swap.demand_locktime,
+        demand_chain: chain_url
       }
     }
   end

@@ -9,7 +9,9 @@ defmodule ForgeSwap.Application do
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def start(_type, _args) do
-    repo = get_repo(ConfigUtil.read_config())
+    config = ConfigUtil.read_config()
+    update_endpoint_config(config)
+    repo = get_repo(config)
 
     # List all child processes to be supervised
     children = [
@@ -43,5 +45,24 @@ defmodule ForgeSwap.Application do
       _ ->
         raise "Not supported database type: #{config["database"]["type"]}"
     end
+  end
+
+  defp update_endpoint_config(config) do
+    schema = config["service"]["schema"]
+    host = config["service"]["host"]
+    port = config["service"]["port"]
+    endpoint = Application.get_env(:forge_swap, ForgeSwapWeb.Endpoint)
+    endpoint = Keyword.put(endpoint, :url, host: host, port: port)
+
+    endpoint =
+      case schema do
+        "https" ->
+          Keyword.update(endpoint, :https, [port: port], fn v -> Keyword.put(v, :port, port) end)
+
+        "http" ->
+          Keyword.update(endpoint, :http, [port: port], fn v -> Keyword.put(v, :port, port) end)
+      end
+
+    Application.put_env(:forge_swap, ForgeSwapWeb.Endpoint, endpoint)
   end
 end

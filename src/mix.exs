@@ -1,16 +1,31 @@
 defmodule ForgeSwap.MixProject do
   use Mix.Project
 
+  @top "../"
+  @version @top |> Path.join("version") |> File.read!() |> String.trim()
+  @elixir_version @top |> Path.join(".elixir_version") |> File.read!() |> String.trim()
+
+  def get_version, do: @version
+  def get_elixir_version, do: @elixir_version
+
   def project do
     [
       app: :forge_swap,
-      version: "0.1.0",
-      elixir: "~> 1.5",
+      version: @version,
+      elixir: @elixir_version,
       elixirc_paths: elixirc_paths(Mix.env()),
+      deps_path: Path.join(@top, "deps"),
+      build_path: Path.join(@top, "_build"),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        forge_swap: [
+          include_executables_for: [:unix],
+          applications: [runtime_tools: :permanent]
+        ]
+      ]
     ]
   end
 

@@ -14,6 +14,11 @@ defmodule ForgeSwap.Repo do
     :ets.insert(:forge_swap, {:repo, module})
   end
 
+  def get_module() do
+    [{:repo, module}] = :ets.lookup(:forge_swap, :repo)
+    module
+  end
+
   def unquote(:"$handle_undefined_function")(func, args) do
     case :ets.lookup(:forge_swap, :repo) do
       [{:repo, module}] -> apply(module, func, args)

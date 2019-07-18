@@ -2,24 +2,23 @@ defmodule ForgeSwapWeb.Router do
   use ForgeSwapWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug Phoenix.LiveView.Flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(Phoenix.LiveView.Flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", ForgeSwapWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :index
-    post "/pay", PageController, :pay
-    get "/swap/:id", SwapController, :show
+    get("/", PageController, :index)
+    get("/swap/:id", SwapController, :show)
   end
 
   scope "/api", ForgeSwapWeb do

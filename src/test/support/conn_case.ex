@@ -27,10 +27,10 @@ defmodule ForgeSwapWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ForgeSwap.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ForgeSwap.Repo.get_module())
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(ForgeSwap.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(ForgeSwap.Repo.get_module(), {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
