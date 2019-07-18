@@ -39,8 +39,8 @@ defmodule ForgeSwapWeb.SwapLive do
   defp determine_display(status) do
     display = %{
       display_not_started: "none",
-      display_user_deposited: "none",
-      display_both_deposited: "none",
+      display_user_set_up: "none",
+      display_both_set_up: "none",
       display_user_retrieved: "none"
     }
 

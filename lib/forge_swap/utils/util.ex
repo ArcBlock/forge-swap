@@ -35,23 +35,26 @@ defmodule ForgeSwap.Utils.Util do
 
   def gen_qr_code(id, status) do
     config = ConfigUtil.read_config()
-    host = config["swap"]["host"]
-    port = config["swap"]["port"]
+    host = config["service"]["host"]
+    port = config["service"]["port"]
     gen_qr_code(status, id, host, port)
   end
 
   # Generates the QR code by scanning which a user can start the swap process.
   defp gen_qr_code("not_started", swap_id, host, port),
-    do: gen_qr_code("http://#{host}:#{port}/swap/#{swap_id}/start")
+    do: gen_qr_code("#{host}:#{port}/swap/#{swap_id}/start")
 
   # Generates the QR code by scanning which a user can continue to retrieve the swap set up by application.
-  defp gen_qr_code("both_deposited", swap_id, host, port),
-    do: gen_qr_code("http://#{host}:#{port}/swap/#{swap_id}/retrieve")
+  defp gen_qr_code("both_set_up", swap_id, host, port),
+    do: gen_qr_code("#{host}:#{port}/swap/#{swap_id}/retrieve")
 
   defp gen_qr_code(_, _, _, _), do: ""
 
-  # Generates the QR cdoe by scanning which a user can submit the address of swap set up by her.
-  # def gen_submit_swap_qr_code("not_started", swap_id, host, port) do
-  #   "http://#{host}:#{port}/swap/#{swap_id}/submit"
-  # end
+  # Generates the callback url that a user can submit the address of swap set up for application.
+  def get_submit_swap_callback(swap_id) do
+    config = ConfigUtil.read_config()
+    host = config["service"]["host"]
+    port = config["service"]["port"]
+    "#{host}:#{port}/swap/#{swap_id}/submit"
+  end
 end

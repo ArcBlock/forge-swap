@@ -50,7 +50,7 @@ defmodule ForgeSwap.Utils.Chain do
         raise "Not able to find configuration for chain: #{inspect(chain_name)}. Please make sure you configured it in the 'Chains' section."
 
       %{"host" => host, "port" => port} ->
-        url = "http://#{host}:#{port}/api"
+        url = "#{host}:#{port}/api"
         %{"getChainInfo" => %{"info" => info}} = Util.gql_call(url, @get_chain_info)
         info
 

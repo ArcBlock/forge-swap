@@ -24,7 +24,7 @@ defmodule ForgeSwap.Utils.Did do
   def did_to_address("did:abt:" <> address), do: address
   def did_to_address(address), do: address
 
-  def gen_response(extra) do
+  def sign_response(extra) do
     auth = ConfigUtil.read_config()["auth"]
     address = auth["did"]
     pk = Base.decode16!(auth["pk"], case: :mixed)
