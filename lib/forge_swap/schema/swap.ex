@@ -11,6 +11,7 @@ defmodule ForgeSwap.Schema.Swap do
 
   schema("swap") do
     field(:user_did, :string)
+    field(:asset_owner, :string)
     field(:status, :string)
     field(:offer_assets, {:array, :string})
     field(:offer_token, :decimal)
@@ -25,11 +26,10 @@ defmodule ForgeSwap.Schema.Swap do
   end
 
   def insert_changeset(params) do
-    params = Map.put(params, :status, "not_started")
-
     %ForgeSwap.Schema.Swap{}
     |> cast(params, [
       :user_did,
+      :asset_owner,
       :status,
       :offer_assets,
       :offer_token,
@@ -42,6 +42,7 @@ defmodule ForgeSwap.Schema.Swap do
     ])
     |> validate_required([
       :user_did,
+      :asset_owner,
       :status,
       :offer_chain,
       :offer_locktime,

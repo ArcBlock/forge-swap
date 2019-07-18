@@ -4,6 +4,7 @@ defmodule ForgeSwap.Repo.Migrations.InitDb do
   def change do
     create table(:swap) do
       add :user_did, :string, null: false
+      add :asset_owner, :string, null: false
       add :status, :string, null: false
       add :offer_assets, {:array, :string}
       add :offer_token, :decimal
