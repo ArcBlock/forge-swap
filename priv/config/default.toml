@@ -1,27 +1,47 @@
-[swap]
-# The default hours to lock swap which is set up by the application to users.
-offer_locktime = 24
-# The default hours to lock swap which is set up by users to the application.
-demand_locktime = 48
+# The information of the application which delegates the swap to Forge Swap Service.
+[application]
+name = "Event Chain"
+description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
+
+# This section contains configurations for Forge Swap service itself.
+[service]
 # The url host and port used by swap service to generate the qr_code. 
 # You should make sure the wallet can reach swap service through
 # this host and port.
 host = "localhost"
 port = 8807
 
+# This section contains the configs to send swap transactions to chains.
+[swap]
+# The default hours to lock swap which is set up by the application to users.
+offer_locktime = 24
+# The default hours to lock swap which is set up by users to the application.
+demand_locktime = 48
+
+# Configs the off-chain database to store swap information.
 [database]
 # The database type, now only supports postgres
 type = "postgres"
 connection = "localhost"
 
-# This section contains the keys for DID authentication.
-[auth]
-did = ""
-pk = ""
-# The private key of the public key, base 16 encoded.
-sk = ""
-# You can also read the secret key from environment variables like this:
-# sk = "SYSTEM:DID_AUTH_SK"
+# This section contains the keys of assets owners for doing swapping.
+# Each owner has a moniker, the application can specify which owner to use when
+# creating a swap. For example, you can create an owner whose moniker is 'concert'
+# to manage all concert-related assets.
+# 
+# [asset_owner]
+#   [asset_owner.concert]
+#     did = "SYSTEM:ASSET_OWNER_CONCERT_DID"
+#     pk = "SYSTEM:ASSET_OWNER_CONCERT_PK"
+#     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
+[asset_owner]
+  [asset_owner.default]
+    did = ""
+    pk = ""
+    # The private key of the public key, base 16 encoded.
+    sk = ""
+    # You can also read the secret key from environment variables like this:
+    # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
 
 
 # Config the chains that swap service shall connect to.
@@ -30,7 +50,7 @@ sk = ""
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "127.0.0.1"
+  host = "http://127.0.0.1"
   port = 8310
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_time = 3
@@ -38,7 +58,7 @@ sk = ""
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "127.0.0.1"
+  host = "http://127.0.0.1"
   port = 8410
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_time = 3
