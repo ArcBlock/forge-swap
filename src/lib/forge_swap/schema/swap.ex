@@ -53,7 +53,7 @@ defmodule ForgeSwap.Schema.Swap do
 
   def update_changeset(data, params) do
     data
-    |> cast(params, [:status, :offer_swap, :deman_swap])
+    |> cast(params, [:status, :offer_swap, :demand_swap])
     |> validate_required([:status])
   end
 

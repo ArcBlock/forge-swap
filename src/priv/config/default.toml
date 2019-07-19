@@ -38,7 +38,7 @@ connection = "localhost"
 #     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
 [asset_owners]
   [asset_owners.default]
-    did = ""
+    address = ""
     pk = ""
     # The private key of the public key, base 16 encoded.
     sk = ""

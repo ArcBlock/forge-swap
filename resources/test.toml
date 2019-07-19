@@ -31,7 +31,7 @@ connection = "localhost"
 #     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
 [asset_owners]
   [asset_owners.default]
-    did = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
+    address = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
     pk = "75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
     # The private key of the public key, base 16 encoded.
     # You can also read the secret key from environment variables like this:
@@ -48,7 +48,7 @@ connection = "localhost"
   host = "http://127.0.0.1"
   port = 8310
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_time = 3
+  block_gap = 3
 
   # For application chain.
   [chains.application]
@@ -56,4 +56,4 @@ connection = "localhost"
   host = "http://127.0.0.1"
   port = 8410
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_time = 3
+  block_gap = 3

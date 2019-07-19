@@ -1,6 +1,7 @@
 defmodule ForgeSwap.Utils.Chain do
   require Logger
 
+  alias ForgeAbi.Transaction
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   @query_get_chain_info """
@@ -10,6 +11,24 @@ defmodule ForgeSwap.Utils.Chain do
         network
         blockHeight
         supportedTxs
+      }
+    }
+  }
+  """
+
+  @query_get_forge_state """
+  {
+    {
+      getForgeState {
+        state {
+          token {
+            decimal
+            description
+            name
+            symbol
+            unit
+          }
+        }
       }
     }
   }
@@ -29,6 +48,15 @@ defmodule ForgeSwap.Utils.Chain do
           sender
           value
         }
+      }
+    }
+    """
+
+  defp mutation_send_tx(tx),
+    do: """
+    mutation MyMutation {
+      sendTx(commit: true, tx: "#{tx}") {
+        hash
       }
     }
     """
@@ -67,10 +95,26 @@ defmodule ForgeSwap.Utils.Chain do
     info
   end
 
+  def get_forge_state(chain_name) do
+    %{"getForgeState" => %{"state" => state}} = do_query(@query_get_forge_state, chain_name)
+    state
+  end
+
   def get_swap_sate(address, chain_name) do
     query = query_get_swap_sate(address)
     %{"getSwapState" => %{"state" => state}} = do_query(query, chain_name)
     state
+  end
+
+  def send_tx(tx, chain_name) do
+    %{"sendTx" => %{"hash" => hash}} =
+      tx
+      |> Transaction.encode()
+      |> Base.url_encode64(padding: false)
+      |> mutation_send_tx()
+      |> do_query(chain_name)
+
+    hash
   end
 
   defp do_query(query, chain_name) do

@@ -15,13 +15,20 @@ defmodule ForgeSwap.Utils.Config do
 
   defp do_enrich_chain_config({chain_name, chain_config}) do
     info = ChainUtil.get_chain_info(chain_name)
+    # state = ChainUtil.get_forge_state(chain_name)
 
     if "fg:t:setup_swap" not in info["supportedTxs"] or
          "fg:t:retrieve_swap" not in info["supportedTxs"] or
          "fg:t:revoke_swap" not in info["supportedTxs"] do
       raise "The chain #{chain_name} does not support atomic swap."
     else
-      {chain_name, Map.put(chain_config, "chain_id", info["network"])}
+      config =
+        chain_config
+        |> Map.put("chain_id", info["network"])
+
+      # |> Map.put("token", state["token"])
+
+      {chain_name, config}
     end
   end
 
@@ -58,7 +65,10 @@ defmodule ForgeSwap.Utils.Config do
   defp parse(config) when is_map(config) do
     config
     |> Map.to_list()
-    |> Enum.into(%{}, fn {key, val} -> {key, parse(val)} end)
+    |> Enum.into(%{}, fn
+      {"asset_owners", asset_owners} -> {"asset_owners", parse_wallets(asset_owners)}
+      {key, val} -> {key, parse(val)}
+    end)
   end
 
   defp parse("SYSTEM:" <> env) do
@@ -72,6 +82,19 @@ defmodule ForgeSwap.Utils.Config do
   end
 
   defp parse(val), do: val
+
+  defp parse_wallets(owners) do
+    owners
+    |> Map.to_list()
+    |> Enum.into(%{}, fn {moniker, owner} ->
+      {moniker,
+       ForgeAbi.WalletInfo.new(
+         address: owner["address"],
+         pk: Base.decode16!(owner["pk"], case: :mixed),
+         sk: Base.decode16!(owner["sk"], case: :mixed)
+       )}
+    end)
+  end
 
   defp read_toml(path) do
     path

@@ -30,13 +30,9 @@ defmodule ForgeSwap.Utils.Did do
         raise "Could not find asset owner #{asset_owner} in config files."
 
       owner ->
-        address = owner["did"]
-        pk = Base.decode16!(owner["pk"], case: :mixed)
-        sk = Base.decode16!(owner["sk"], case: :mixed)
-
         %{
-          appPk: Multibase.encode!(pk, :base58_btc),
-          authInfo: AbtDid.Signer.gen_and_sign(address, sk, extra)
+          appPk: Multibase.encode!(owner.pk, :base58_btc),
+          authInfo: AbtDid.Signer.gen_and_sign(owner.address, owner.sk, extra)
         }
     end
   end

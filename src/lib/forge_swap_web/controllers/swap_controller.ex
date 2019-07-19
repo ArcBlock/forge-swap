@@ -6,6 +6,7 @@ defmodule ForgeSwapWeb.SwapController do
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
+  alias ForgeSwap.Utils.Tx, as: TxUtil
 
   alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
 
@@ -133,18 +134,21 @@ defmodule ForgeSwapWeb.SwapController do
     end
   end
 
-  defp do_submit(conn, swap, %{"did" => address}) do
-    state = ChainUtil.get_swap_sate(address, swap.demand_chain)
+  defp do_submit(conn, swap, %{"did" => swap_address}) do
+    state = ChainUtil.get_swap_sate(swap_address, swap.demand_chain)
 
     cond do
       state == nil ->
-        json(conn, %{error: "Could not find the swap state #{address}"})
+        json(conn, %{error: "Could not find the swap state #{swap_address}"})
 
       verify_swap(swap, state) == false ->
-        json(conn, %{error: "Invalid swap state, address: #{address}"})
+        json(conn, %{error: "Invalid swap state, address: #{swap_address}"})
 
       true ->
-        set_up_swap(conn, swap, state)
+        swap = user_set_up(swap, swap_address)
+        hash = set_up_swap(swap, state)
+        both_set_up(hash, swap)
+        json(conn, %{response: %{hash: hash}})
     end
   end
 
@@ -160,7 +164,7 @@ defmodule ForgeSwapWeb.SwapController do
       state["assets"] -- swap.demand_assets != [] ->
         false
 
-      String.to_integer(state["token"]) != Decimal.to_integer(swap["token"]) ->
+      String.to_integer(state["token"]) != Decimal.to_integer(swap.demand_token) ->
         false
 
       state["locktime"] < expected_locktime ->
@@ -171,7 +175,23 @@ defmodule ForgeSwapWeb.SwapController do
     end
   end
 
-  defp set_up_swap(conn, swap, state) do
+  def set_up_swap(swap, state) do
+    config = ConfigUtil.read_config()
+    owner = config["asset_owners"][swap.asset_owner]
+    tx = TxUtil.set_up_swap(owner, swap.user_did, swap, state.hashlock)
+    ChainUtil.send_tx(tx, swap.offer_chain)
+  end
+
+  defp user_set_up(swap, swap_address) do
+    change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: swap_address})
+    apply(Repo, :update, [change])
+    Swap.get(swap.id)
+  end
+
+  defp both_set_up(hash, swap) do
+    address = ForgeSdk.Util.to_swap_address(hash)
+    swap_state = ChainUtil.get_swap_sate(address, swap.offer_chain)
+    Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: swap_state.address})
   end
 
   defp prepare_response(claims, url, offer_chain) do
