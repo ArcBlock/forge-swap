@@ -3,6 +3,7 @@ defmodule ForgeSwapWeb.SwapController do
 
   alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
+  alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
 
@@ -87,7 +88,7 @@ defmodule ForgeSwapWeb.SwapController do
   end
 
   defp do_start(conn, swap) do
-    claims = require_user_set_up(swap)
+    claims = [require_user_set_up(swap)]
     callback = Routes.swap_url(conn, :submit, swap.id)
     extra = prepare_response(claims, callback, swap.offer_chain)
     response = DidUtil.sign_response!(extra, swap.asset_owner)
@@ -100,15 +101,15 @@ defmodule ForgeSwapWeb.SwapController do
 
     %{
       type: "did",
-      did_type: "swap",
+      didType: "swap",
       meta: %{
         description: "Please set up an atomic swap on the ABT asset chain.",
-        offer_assets: swap.offer_assets,
-        offer_token: Decimal.to_integer(swap.offer_token),
-        demand_assets: swap.demand_assets,
-        demand_token: Decimal.to_integer(swap.demand_token),
-        demand_locktime: swap.demand_locktime,
-        demand_chain: chain_url
+        offerAssets: swap.offer_assets,
+        offerToken: Decimal.to_integer(swap.offer_token),
+        demandAssets: swap.demand_assets,
+        demandToken: Decimal.to_integer(swap.demand_token),
+        demandLocktime: swap.demand_locktime,
+        demandChain: chain_url
       }
     }
   end
@@ -117,7 +118,60 @@ defmodule ForgeSwapWeb.SwapController do
   Submits the swap set up by wallet to the application. The app will
   set up the swap as return.
   """
-  def submit(_conn, _params) do
+  def submit(conn, _params) do
+    swap = conn.assigns.swap
+
+    claim =
+      Enum.find(conn.assigns.claims, fn
+        %{"type" => "did", "did_type" => "swap", "did" => did} when did != "" -> true
+        _ -> false
+      end)
+
+    case claim do
+      nil -> json(conn, %{error: "Please set up an atomic swap first."})
+      _ -> do_submit(conn, swap, claim)
+    end
+  end
+
+  defp do_submit(conn, swap, %{"did" => address}) do
+    state = ChainUtil.get_swap_sate(address, swap.demand_chain)
+
+    cond do
+      state == nil ->
+        json(conn, %{error: "Could not find the swap state #{address}"})
+
+      verify_swap(swap, state) == false ->
+        json(conn, %{error: "Invalid swap state, address: #{address}"})
+
+      true ->
+        set_up_swap(conn, swap, state)
+    end
+  end
+
+  defp verify_swap(swap, state) do
+    config = ConfigUtil.read_config()
+    asset_owner = config["asset_owners"][swap.asset_owner]
+    expected_locktime = ChainUtil.time_to_locktime(swap.demand_locktime, swap.demand_chain)
+
+    cond do
+      state["receiver"] != asset_owner["did"] ->
+        false
+
+      state["assets"] -- swap.demand_assets != [] ->
+        false
+
+      String.to_integer(state["token"]) != Decimal.to_integer(swap["token"]) ->
+        false
+
+      state["locktime"] < expected_locktime ->
+        false
+
+      true ->
+        true
+    end
+  end
+
+  defp set_up_swap(conn, swap, state) do
   end
 
   defp prepare_response(claims, url, offer_chain) do

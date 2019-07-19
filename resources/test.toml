@@ -29,8 +29,8 @@ connection = "localhost"
 #     did = "SYSTEM:ASSET_OWNER_CONCERT_DID"
 #     pk = "SYSTEM:ASSET_OWNER_CONCERT_PK"
 #     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
-[asset_owner]
-  [asset_owner.default]
+[asset_owners]
+  [asset_owners.default]
     did = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
     pk = "75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
     # The private key of the public key, base 16 encoded.

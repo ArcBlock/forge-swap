@@ -74,18 +74,20 @@ defmodule ForgeSwapWeb.SwapControllerTest do
     assert not is_nil(auth_body["iat"])
     assert not is_nil(auth_body["nbf"])
 
-    assert auth_body["requestedClaims"] == %{
-             "did_type" => "swap",
-             "meta" => %{
-               "demand_assets" => [],
-               "demand_chain" => "http://127.0.0.1:8310/api",
-               "demand_locktime" => 48,
-               "demand_token" => 1_000_000_000_000,
-               "description" => "Please set up an atomic swap on the ABT asset chain.",
-               "offer_assets" => ["z123", "z456"],
-               "offer_token" => 0
-             },
-             "type" => "did"
-           }
+    assert auth_body["requestedClaims"] == [
+             %{
+               "didType" => "swap",
+               "meta" => %{
+                 "demandAssets" => [],
+                 "demandChain" => "http://127.0.0.1:8310/api",
+                 "demandLocktime" => 48,
+                 "demandToken" => 1_000_000_000_000,
+                 "description" => "Please set up an atomic swap on the ABT asset chain.",
+                 "offerAssets" => ["z123", "z456"],
+                 "offerToken" => 0
+               },
+               "type" => "did"
+             }
+           ]
   end
 end

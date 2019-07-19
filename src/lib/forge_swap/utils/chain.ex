@@ -2,7 +2,7 @@ defmodule ForgeSwap.Utils.Chain do
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Util
 
-  @get_chain_info """
+  @query_get_chain_info """
   {
     getChainInfo {
       info {
@@ -12,6 +12,24 @@ defmodule ForgeSwap.Utils.Chain do
     }
   }
   """
+
+  defp query_get_swap_sate(address),
+    do: """
+    {
+      getSwapState(address: "#{address}") {
+        state {
+          assets
+          hash
+          hashkey
+          hashlock
+          locktime
+          receiver
+          sender
+          value
+        }
+      }
+    }
+    """
 
   @doc """
   Convert time to locktime. Parameter `chain_name` is what you configured in 
@@ -43,6 +61,17 @@ defmodule ForgeSwap.Utils.Chain do
   The `chain_name` is what you configured in the `chains` section if the config file.
   """
   def get_chain_info(chain_name) do
+    %{"getChainInfo" => %{"info" => info}} = do_query(@query_get_chain_info, chain_name)
+    info
+  end
+
+  def get_swap_sate(address, chain_name) do
+    query = query_get_swap_sate(address)
+    %{"getSwapState" => %{"state" => state}} = do_query(query, chain_name)
+    state
+  end
+
+  defp do_query(query, chain_name) do
     config = ConfigUtil.read_config()
 
     case config["chains"][chain_name] do
@@ -51,8 +80,7 @@ defmodule ForgeSwap.Utils.Chain do
 
       %{"host" => host, "port" => port} ->
         url = "#{host}:#{port}/api"
-        %{"getChainInfo" => %{"info" => info}} = Util.gql_call(url, @get_chain_info)
-        info
+        Util.gql_call(url, query)
 
       _ ->
         raise "The configuration must contain the host and port to connect to forge web."

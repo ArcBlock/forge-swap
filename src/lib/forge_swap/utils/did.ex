@@ -25,7 +25,7 @@ defmodule ForgeSwap.Utils.Did do
   def did_to_address(address), do: address
 
   def sign_response!(extra, asset_owner) do
-    case ConfigUtil.read_config()["asset_owner"][asset_owner] do
+    case ConfigUtil.read_config()["asset_owners"][asset_owner] do
       nil ->
         raise "Could not find asset owner #{asset_owner} in config files."
 
