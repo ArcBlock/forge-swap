@@ -23,14 +23,6 @@ defmodule ForgeSwap.Utils.Util do
     str |> String.trim() |> String.to_integer()
   end
 
-  def gql_call(url, query) do
-    Logger.debug(fn -> "Making GraphQL call, url: #{inspect(url)}, query: #{inspect(query)}" end)
-
-    %{body: body} = HTTPoison.post!(url, query, [{"Content-type", "application/graphql"}])
-    %{"data" => data} = Jason.decode!(body)
-    data
-  end
-
   def gen_qr_code(url) when is_binary(url), do: url |> EQRCode.encode() |> EQRCode.svg()
 
   def gen_qr_code(id, status) do

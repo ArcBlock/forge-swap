@@ -1,6 +1,7 @@
 defmodule ForgeSwap.Utils.Chain do
+  require Logger
+
   alias ForgeSwap.Utils.Config, as: ConfigUtil
-  alias ForgeSwap.Utils.Util
 
   @query_get_chain_info """
   {
@@ -8,6 +9,7 @@ defmodule ForgeSwap.Utils.Chain do
       info {
         network
         blockHeight
+        supportedTxs
       }
     }
   }
@@ -47,8 +49,8 @@ defmodule ForgeSwap.Utils.Chain do
       nil ->
         raise "Not able to find configuration for chain: #{inspect(chain_name)}. Please make sure you configured it in the 'Chains' section."
 
-      %{"block_time" => block_time} ->
-        block_numbers = trunc(time * 60 * 60 / block_time) + 1
+      %{"block_gap" => block_gap} ->
+        block_numbers = trunc(time * 60 * 60 / block_gap) + 1
         current_height = get_chain_info(chain_name)["blockHeight"] |> String.to_integer()
         current_height + block_numbers
 
@@ -80,10 +82,18 @@ defmodule ForgeSwap.Utils.Chain do
 
       %{"host" => host, "port" => port} ->
         url = "#{host}:#{port}/api"
-        Util.gql_call(url, query)
+        gql_call(url, query)
 
       _ ->
         raise "The configuration must contain the host and port to connect to forge web."
     end
+  end
+
+  defp gql_call(url, query) do
+    Logger.debug(fn -> "Making GraphQL call, url: #{inspect(url)}, query: #{inspect(query)}" end)
+
+    %{body: body} = HTTPoison.post!(url, query, [{"Content-type", "application/graphql"}])
+    %{"data" => data} = Jason.decode!(body)
+    data
   end
 end

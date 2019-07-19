@@ -10,6 +10,7 @@ defmodule ForgeSwap.Application do
 
   def start(_type, _args) do
     config = ConfigUtil.read_config()
+    ConfigUtil.enrich_chain_config()
     update_endpoint_config(config)
     repo = get_repo(config)
 

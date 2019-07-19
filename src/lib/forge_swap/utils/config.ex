@@ -1,4 +1,30 @@
 defmodule ForgeSwap.Utils.Config do
+  alias ForgeSwap.Utils.Chain, as: ChainUtil
+
+  def enrich_chain_config() do
+    config = read_config()
+
+    chains =
+      config["chains"]
+      |> Enum.map(&do_enrich_chain_config(&1))
+      |> Enum.into(%{}, fn {k, v} -> {k, v} end)
+
+    config = Map.put(config, "chains", chains)
+    :ets.insert(:forge_swap, {:config, config})
+  end
+
+  defp do_enrich_chain_config({chain_name, chain_config}) do
+    info = ChainUtil.get_chain_info(chain_name)
+
+    if "fg:t:setup_swap" not in info["supportedTxs"] or
+         "fg:t:retrieve_swap" not in info["supportedTxs"] or
+         "fg:t:revoke_swap" not in info["supportedTxs"] do
+      raise "The chain #{chain_name} does not support atomic swap."
+    else
+      {chain_name, Map.put(chain_config, "chain_id", info["network"])}
+    end
+  end
+
   def read_config() do
     if :ets.whereis(:forge_swap) == :undefined do
       :ets.new(:forge_swap, [:named_table])
@@ -13,12 +39,6 @@ defmodule ForgeSwap.Utils.Config do
         :ets.insert(:forge_swap, {:config, config})
         config
     end
-  end
-
-  def read_toml(path) do
-    path
-    |> File.read!()
-    |> Toml.decode!()
   end
 
   defp do_read_config() do
@@ -52,4 +72,10 @@ defmodule ForgeSwap.Utils.Config do
   end
 
   defp parse(val), do: val
+
+  defp read_toml(path) do
+    path
+    |> File.read!()
+    |> Toml.decode!()
+  end
 end

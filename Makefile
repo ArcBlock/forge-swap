@@ -7,7 +7,7 @@ APP_NAME=forge_swap
 
 dep:
 	@echo "Install dependencies required for this repo..."
-	@mix deps.get
+	@cd src; mix deps.get
 
 $(TARGETS):
 	@echo "Building the $@ release"

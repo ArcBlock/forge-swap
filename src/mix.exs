@@ -57,6 +57,7 @@ defmodule ForgeSwap.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
+      {:cowlib, "~> 2.6", override: true},
 
       # Utils
       {:gettext, "~> 0.11"},
@@ -66,9 +67,11 @@ defmodule ForgeSwap.MixProject do
       {:eqrcode, "~> 0.1.6"},
       {:toml, "~> 0.5"},
       {:multibase, ">= 0.0.0"},
+      {:protobuf, "~> 0.6"},
 
       # ArcBlock
-      {:abt_did_elixir, "~> 0.3"}
+      {:abt_did_elixir, "~> 0.3"},
+      {:forge_abi, "~> 1.9"}
     ]
   end
 
