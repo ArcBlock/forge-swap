@@ -35,7 +35,7 @@ format:
 
 run:
 	@echo "Running the software..."
-	@cd src; iex -S mix phx.server
+	@cd src; FORGESWAP_CONFIG=../resources/test.toml iex -S mix phx.server
 
 test:
 	@echo "Running test suites..."

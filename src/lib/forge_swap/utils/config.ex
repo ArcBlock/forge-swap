@@ -1,19 +1,35 @@
 defmodule ForgeSwap.Utils.Config do
   alias ForgeSwap.Utils.Chain, as: ChainUtil
 
+  def enrich_chain_config(:test) do
+  end
+
+  # Add chain id to the chain config.
   def enrich_chain_config() do
     config = read_config()
+    env = Application.get_env(:forge_swap, :env)
 
     chains =
       config["chains"]
-      |> Enum.map(&do_enrich_chain_config(&1))
+      |> Enum.map(&do_enrich_chain_config(env, &1))
       |> Enum.into(%{}, fn {k, v} -> {k, v} end)
 
     config = Map.put(config, "chains", chains)
     :ets.insert(:forge_swap, {:config, config})
   end
 
-  defp do_enrich_chain_config({chain_name, chain_config}) do
+  defp do_enrich_chain_config(:test, {chain_name, chain_config}) do
+    chain_config =
+      case chain_name do
+        "asset" -> Map.put(chain_config, "chain_id", "asset_chain")
+        "application" -> Map.put(chain_config, "chain_id", "app_chain")
+        _ -> chain_config
+      end
+
+    {chain_name, chain_config}
+  end
+
+  defp do_enrich_chain_config(_, {chain_name, chain_config}) do
     info = ChainUtil.get_chain_info(chain_name)
     # state = ChainUtil.get_forge_state(chain_name)
 

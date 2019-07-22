@@ -68,6 +68,7 @@ defmodule ForgeSwap.MixProject do
       {:toml, "~> 0.5"},
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
+      {:mock, "~> 0.3.0", only: :test},
 
       # ArcBlock
       {:abt_did_elixir, "~> 0.3"},

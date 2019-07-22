@@ -1,5 +1,7 @@
 use Mix.Config
 
+config :forge_swap, :env, :dev
+
 # Configure your database
 config :forge_swap, ForgeSwap.PostgresRepo,
   username: "postgres",

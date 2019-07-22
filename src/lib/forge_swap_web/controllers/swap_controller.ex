@@ -124,12 +124,12 @@ defmodule ForgeSwapWeb.SwapController do
 
     claim =
       Enum.find(conn.assigns.claims, fn
-        %{"type" => "did", "did_type" => "swap", "did" => did} when did != "" -> true
+        %{"type" => "did", "didType" => "swap", "did" => did} when did != "" -> true
         _ -> false
       end)
 
     case claim do
-      nil -> json(conn, %{error: "Please set up an atomic swap first."})
+      nil -> json(conn, %{error: "Invalid request, could not find swap state address."})
       _ -> do_submit(conn, swap, claim)
     end
   end
@@ -145,9 +145,9 @@ defmodule ForgeSwapWeb.SwapController do
         json(conn, %{error: "Invalid swap state, address: #{swap_address}"})
 
       true ->
-        swap = user_set_up(swap, swap_address)
+        swap = user_set_up(swap, state)
         hash = set_up_swap(swap, state)
-        both_set_up(hash, swap)
+        both_set_up(swap, hash)
         json(conn, %{response: %{hash: hash}})
     end
   end
@@ -156,42 +156,46 @@ defmodule ForgeSwapWeb.SwapController do
     config = ConfigUtil.read_config()
     asset_owner = config["asset_owners"][swap.asset_owner]
     expected_locktime = ChainUtil.time_to_locktime(swap.demand_locktime, swap.demand_chain)
+    actual_token = String.to_integer(state["value"])
+    expected_token = Decimal.to_integer(swap.demand_token)
 
     cond do
-      state["receiver"] != asset_owner["did"] ->
-        false
-
-      state["assets"] -- swap.demand_assets != [] ->
-        false
-
-      String.to_integer(state["token"]) != Decimal.to_integer(swap.demand_token) ->
-        false
-
-      state["locktime"] < expected_locktime ->
-        false
-
-      true ->
-        true
+      # if it is not set up by user
+      state["sender"] !== swap.user_did -> false
+      # if it is set up for app
+      state["receiver"] !== asset_owner.address -> false
+      # if set up assets are not exactly same as demand assets
+      state["assets"] -- swap.demand_assets !== [] -> false
+      swap.demand_assets -- state["assets"] !== [] -> false
+      # if set up token is not exactly same as demand token
+      actual_token !== expected_token -> false
+      # if set up locktime is earlier than expected locktime
+      state["locktime"] < expected_locktime -> false
+      true -> true
     end
   end
 
   def set_up_swap(swap, state) do
     config = ConfigUtil.read_config()
     owner = config["asset_owners"][swap.asset_owner]
-    tx = TxUtil.set_up_swap(owner, swap.user_did, swap, state.hashlock)
+    tx = TxUtil.set_up_swap(owner, swap.user_did, swap, state["hashlock"])
     ChainUtil.send_tx(tx, swap.offer_chain)
   end
 
-  defp user_set_up(swap, swap_address) do
-    change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: swap_address})
-    apply(Repo, :update, [change])
+  defp user_set_up(swap, state) do
+    change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: state["address"]})
+    apply(Repo, :update!, [change])
     Swap.get(swap.id)
   end
 
-  defp both_set_up(hash, swap) do
+  defp both_set_up(swap, hash) do
     address = ForgeSdk.Util.to_swap_address(hash)
     swap_state = ChainUtil.get_swap_sate(address, swap.offer_chain)
-    Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: swap_state.address})
+
+    change =
+      Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: swap_state["address"]})
+
+    apply(Repo, :update!, [change])
   end
 
   defp prepare_response(claims, url, offer_chain) do

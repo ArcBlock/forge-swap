@@ -31,5 +31,7 @@ defmodule ForgeSwap.Repo do
           inspect(e)
         } "
       )
+
+      raise e
   end
 end
