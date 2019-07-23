@@ -15,8 +15,7 @@ defmodule ForgeSwapWeb.SwapController do
   plug(ReadSwap when action in [:show, :start, :submit])
   plug(VerifyUser when action in [:start, :submit])
 
-  def index(conn, _params) do
-    render(conn, "index.html")
+  def retrieve(_conn, _params) do
   end
 
   @doc """

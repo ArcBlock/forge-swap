@@ -17,7 +17,7 @@ defmodule ForgeSwapWeb.SwapLive do
       status
       |> determine_display()
       |> Map.put(:id, id)
-      |> Map.put(:qr_code, Util.gen_qr_code(id, status))
+      |> Map.put(:qr_code, Util.gen_qr_code(status, id))
       |> Map.to_list()
 
     {:ok, assign(socket, assigns)}
@@ -30,7 +30,7 @@ defmodule ForgeSwapWeb.SwapLive do
     assigns =
       swap.status
       |> determine_display()
-      |> Map.put(:qr_code, Util.gen_qr_code(id, swap.status))
+      |> Map.put(:qr_code, Util.gen_qr_code(swap.status, id))
       |> Map.to_list()
 
     {:noreply, assign(socket, assigns)}
