@@ -6,13 +6,14 @@ defmodule ForgeSwap.Swapper do
 
   require Logger
 
+  alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
 
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   def set_up_swap(swap, swap_state) do
@@ -27,7 +28,7 @@ defmodule ForgeSwap.Swapper do
 
   def handle_cast({:set_up_swap, swap, swap_state}, state) do
     state = state ++ [{swap, swap_state, ""}]
-    send(self(), :tick)
+    send(__MODULE__, :tick)
     {:noreply, state}
   end
 
@@ -47,6 +48,7 @@ defmodule ForgeSwap.Swapper do
 
   defp do_set_up_swap({swap, swap_state, ""}) do
     hash = send_set_up_swap_tx(swap, swap_state)
+    Logger.info("Set up swap for user, hash: #{inspect(hash)}")
     {swap, swap_state, hash}
   end
 
@@ -75,14 +77,15 @@ defmodule ForgeSwap.Swapper do
     change =
       Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: swap_state["address"]})
 
+    Logger.debug(fn -> "Updating swap status to both_set_up, swap id: #{swap.id}" end)
     apply(Repo, :update!, [change])
     nil
   rescue
     e ->
       Logger.warn(
-        "Failed to set swap status to both_set_up, will retry. Swap Id: #{swap.id}, Swap Address: #{
-          swap_state["address"]
-        }. Error: #{inspect(e)}."
+        "Failed to set swap status to both_set_up, will retry. Swap Id: #{swap.id}, Hash: #{hash}. Error: #{
+          inspect(e)
+        }."
       )
 
       {swap, swap_state, hash}

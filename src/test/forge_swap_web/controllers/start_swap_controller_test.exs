@@ -124,6 +124,20 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
       |> json_response(200)
 
     Process.sleep(10 * 1000)
-    Swap.get(id) |> IO.inspect()
+    swap = Swap.get(id)
+
+    assert swap.user_did == @user.address
+    assert swap.asset_owner == "default"
+    assert swap.status == "both_set_up"
+    assert swap.offer_assets == []
+    assert swap.offer_token == Decimal.new(@offer_token)
+    assert swap.offer_chain == "application"
+    assert String.length(swap.offer_swap) > 0
+    assert swap.offer_locktime == 24
+    assert swap.demand_assets == []
+    assert swap.demand_token == Decimal.new(@demand_token)
+    assert swap.demand_chain == "asset"
+    assert swap.demand_locktime == 48
+    assert swap.demand_swap == swap_address
   end
 end

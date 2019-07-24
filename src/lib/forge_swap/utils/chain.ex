@@ -39,6 +39,7 @@ defmodule ForgeSwap.Utils.Chain do
     {
       getSwapState(address: "#{address}") {
         state {
+          address
           assets
           hash
           hashkey

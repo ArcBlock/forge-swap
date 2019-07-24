@@ -18,6 +18,7 @@ defmodule ForgeSwap.Application do
     children = [
       # Start the Ecto repository
       repo,
+      ForgeSwap.Swapper,
       # Start the endpoint when the application starts
       ForgeSwapWeb.Endpoint
       # Starts a worker by calling: ForgeSwap.Worker.start_link(arg)

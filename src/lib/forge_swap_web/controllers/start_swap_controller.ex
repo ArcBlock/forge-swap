@@ -8,6 +8,8 @@ defmodule ForgeSwapWeb.StartSwapController do
   """
   use ForgeSwapWeb, :controller
 
+  require Logger
+
   alias ForgeSwap.{Repo, Schema.Swap, Swapper}
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
@@ -115,6 +117,10 @@ defmodule ForgeSwapWeb.StartSwapController do
   end
 
   defp user_set_up(swap, state) do
+    Logger.debug(fn ->
+      "Updating swap status to user_set_up, swap id: #{swap.id}, demand swap: #{state["address"]}"
+    end)
+
     change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: state["address"]})
     apply(Repo, :update!, [change])
     Swap.get(swap.id)

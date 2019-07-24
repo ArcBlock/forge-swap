@@ -11,7 +11,7 @@ defmodule ForgeSwap.Utils.Tx do
       SetupSwapTx.new(
         assets: swap.offer_assets,
         value: to_token(swap.offer_token),
-        hashlock: hashlock,
+        hashlock: Base.decode16!(hashlock),
         locktime: ChainUtil.time_to_locktime(swap.offer_locktime, swap.offer_chain),
         receiver: receiver
       )
