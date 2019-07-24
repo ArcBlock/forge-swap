@@ -34,7 +34,7 @@ defmodule ForgeSwap.Utils.Chain do
   }
   """
 
-  defp query_get_swap_sate(address),
+  defp query_get_swap_state(address),
     do: """
     {
       getSwapState(address: "#{address}") {
@@ -47,6 +47,17 @@ defmodule ForgeSwap.Utils.Chain do
           receiver
           sender
           value
+        }
+      }
+    }
+    """
+
+  defp query_get_tx(hash),
+    do: """
+    {
+      getTx(hash: "#{hash}") {
+        info {
+          code
         }
       }
     }
@@ -100,10 +111,16 @@ defmodule ForgeSwap.Utils.Chain do
     state
   end
 
-  def get_swap_sate(address, chain_name) do
-    query = query_get_swap_sate(address)
+  def get_swap_state(address, chain_name) do
+    query = query_get_swap_state(address)
     %{"getSwapState" => %{"state" => state}} = do_query(query, chain_name)
     state
+  end
+
+  def get_tx(hash, chain_name) do
+    query = query_get_tx(hash)
+    %{"getTx" => %{"info" => info}} = do_query(query, chain_name)
+    info
   end
 
   def send_tx(tx, chain_name) do

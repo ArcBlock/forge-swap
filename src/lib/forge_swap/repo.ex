@@ -24,14 +24,5 @@ defmodule ForgeSwap.Repo do
       [{:repo, module}] -> apply(module, func, args)
       _ -> nil
     end
-  rescue
-    e ->
-      Logger.warn(
-        "Repo failure: Function name: #{inspect(func)}. Arguments: #{inspect(args)}. Error: #{
-          inspect(e)
-        } "
-      )
-
-      raise e
   end
 end

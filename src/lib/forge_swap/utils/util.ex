@@ -28,11 +28,14 @@ defmodule ForgeSwap.Utils.Util do
 
   # Generates the QR code by scanning which a user can start the swap process.
   def gen_qr_code("not_started", swap_id),
-    do: gen_qr_code(Helpers.swap_url(Endpoint, :start, swap_id))
+    do: Endpoint |> Helpers.start_swap_url(:start, swap_id) |> padding() |> gen_qr_code()
 
   # Generates the QR code by scanning which a user can continue to retrieve the swap set up by application.
   def gen_qr_code("both_set_up", swap_id),
-    do: gen_qr_code(Helpers.swap_url(Endpoint, :retrieve, swap_id))
+    do: Endpoint |> Helpers.retrieve_swap_url(:retrieve, swap_id) |> padding() |> gen_qr_code()
 
   def gen_qr_code(_, _), do: ""
+
+  def padding(url),
+    do: "https://abtwallet.io/i/?action=requestAuth&url=#{URI.encode_www_form(url)}"
 end
