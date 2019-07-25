@@ -1,8 +1,7 @@
 defmodule ForgeSwap.Utils.Tx do
-  alias ForgeAbi.{RetrieveSwapTx, SetupSwapTx, Transaction}
+  alias ForgeAbi.{RetrieveSwapTx, RevokeSwapTx, SetupSwapTx, Transaction}
   alias ForgeAbi.Util.BigInt
   alias ForgeSdk.Wallet.Util, as: WalletUtil
-
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
@@ -51,6 +50,24 @@ defmodule ForgeSwap.Utils.Tx do
     owner
     |> gen_tx(chain_id, itx)
     |> ChainUtil.send_tx(swap.demand_chain)
+  end
+
+  def revoke_swap(swap) do
+    revoke_swap = RevokeSwapTx.new(address: swap.offer_swap)
+
+    itx =
+      Google.Protobuf.Any.new(
+        type_url: "fg:t:revoke_swap",
+        value: RetrieveSwapTx.encode(revoke_swap)
+      )
+
+    config = ConfigUtil.read_config()
+    owner = config["asset_owners"][swap.asset_owner]
+    chain_id = config["chains"][swap.offer_chain]["chain_id"]
+
+    owner
+    |> gen_tx(chain_id, itx)
+    |> ChainUtil.send_tx(swap.offer_chain)
   end
 
   defp to_token(offer_token) do

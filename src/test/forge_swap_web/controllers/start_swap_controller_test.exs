@@ -35,11 +35,50 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
   @demand_token 222_222_222_222_222
 
   test "Start and retrieve swap, all good", %{conn: conn} do
+    # Executes the common steps to set up swap.
+    {id, _, hashkey, callback} = both_set_up_swap(conn)
+
+    # Step 5: wallet poll the swap set up by application by calling the callback
+    %{"response" => %{"swapAddress" => swap_address}} =
+      conn
+      |> post(callback, Util.gen_signed_request(@user, %{}))
+      |> json_response(200)
+
+    assert String.length(swap_address) > 0
+
+    # Step 6: Wallet retrieve the swap
+    tx = RetrieveSwapTx.new(address: swap_address, hashkey: hashkey)
+    hash = ForgeSdk.retrieve_swap(tx, wallet: @user, send: :commit, conn: "app_chain")
+    assert is_binary(hash)
+
+    Process.sleep(10 * 1000)
+    swap = Swap.get(id)
+    assert swap.status == "both_retrieved"
+    assert String.length(swap.retrieve_hash) > 0
+  end
+
+  test "Start and revoke swap, all good", %{conn: conn} do
+    {id, swap_address, _, _} = both_set_up_swap(conn, 3, 6)
+
+    # Step 5, Wallet Revoke the swap.
+    tx = RevokeSwapTx.new(address: swap_address)
+    hash = ForgeSdk.revoke_swap(tx, wallet: @user, send: :commit, conn: "asset_chain")
+    assert is_binary(hash)
+
+    Process.sleep(10 * 1000)
+    swap = Swap.get(id)
+    assert swap.status == "both_revoked"
+    assert String.length(swap.revoke_hash) > 0
+  end
+
+  defp both_set_up_swap(conn, offer_locktime \\ 86400, demand_locktime \\ 172_800) do
     # Create a Swap 
     body = %{
       "userDid" => @user.address,
       "offerToken" => @offer_token,
-      "demandToken" => @demand_token
+      "demandToken" => @demand_token,
+      "offerLocktime" => offer_locktime,
+      "demandLocktime" => demand_locktime
     }
 
     %{"response" => %{"id" => id}} =
@@ -83,7 +122,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
                "type" => "swap",
                "demandAssets" => [],
                "demandChain" => "asset_chain",
-               "demandLocktime" => 48,
+               "demandLocktime" => demand_locktime,
                "demandToken" => @demand_token,
                "offerAssets" => [],
                "offerToken" => @offer_token,
@@ -104,7 +143,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
         value: BigInt.biguint(@demand_token),
         assets: [],
         receiver: @owner.address,
-        locktime: current_block + 100_000,
+        locktime: current_block + trunc(demand_locktime / 3) + 1,
         hashlock: hashlock
       )
 
@@ -130,23 +169,6 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
     assert swap.status == "both_set_up"
     assert swap.demand_swap == swap_address
 
-    # Step 5: wallet poll the swap set up by application by calling the callback
-    %{"response" => %{"swapAddress" => swap_address}} =
-      conn
-      |> post(callback, Util.gen_signed_request(@user, %{}))
-      |> json_response(200)
-
-    assert String.length(swap_address) > 0
-
-    # Step 6: Wallet retrieve the swap
-    tx = RetrieveSwapTx.new(address: swap_address, hashkey: hashkey)
-    hash = ForgeSdk.retrieve_swap(tx, wallet: @user, send: :commit, conn: "app_chain")
-    assert is_binary(hash)
-
-    # Step 7: 
-    Process.sleep(10 * 1000)
-    swap = Swap.get(id)
-    assert swap.status == "both_retrieved"
-    assert String.length(swap.retrieve_hash) > 0
+    {id, swap_address, hashkey, callback}
   end
 end

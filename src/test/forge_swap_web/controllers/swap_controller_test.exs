@@ -35,10 +35,10 @@ defmodule ForgeSwapWeb.SwapControllerTest do
     assert swap.offer_assets == ["z123", "z456"]
     assert swap.offer_token == Decimal.new(0)
     assert swap.offer_chain == "application"
-    assert swap.offer_locktime == 24
+    assert swap.offer_locktime == 86400
     assert swap.demand_assets == []
     assert swap.demand_token == Decimal.new(1_000_000_000_000)
     assert swap.demand_chain == "asset"
-    assert swap.demand_locktime == 48
+    assert swap.demand_locktime == 172_800
   end
 end

@@ -18,7 +18,7 @@ defmodule ForgeSwap.Swapper.Setupper do
   alias ForgeSwap.Schema.Swap
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
-  alias ForgeSwap.Swapper.Retriever
+  alias ForgeSwap.Swapper.{Retriever, Revoker}
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -54,7 +54,12 @@ defmodule ForgeSwap.Swapper.Setupper do
   end
 
   defp do_set_up_swap({swap, demand_state, ""}) do
-    offer_hash = send_set_up_swap_tx(swap, demand_state)
+    offer_hash = TxUtil.set_up_swap(swap, demand_state["hashlock"])
+
+    Logger.info(fn ->
+      "Server sent SetupSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(offer_hash)}"
+    end)
+
     {swap, demand_state, offer_hash}
   end
 
@@ -65,7 +70,9 @@ defmodule ForgeSwap.Swapper.Setupper do
 
       %{"code" => _} ->
         Logger.info(fn ->
-          "Server SetupSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{offer_hash}"
+          "Server SetupSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
+            inspect(offer_hash)
+          }"
         end)
 
         {swap, demand_state, ""}
@@ -75,40 +82,29 @@ defmodule ForgeSwap.Swapper.Setupper do
     end
   end
 
-  defp send_set_up_swap_tx(swap, demand_state) do
-    hash = TxUtil.set_up_swap(swap, demand_state["hashlock"])
-
-    Logger.info(fn ->
-      "Server sent SetupSwapTx, Swap Id: #{swap.id}, Hash: #{hash}"
-    end)
-
-    hash
-  end
-
   # Updates the swap in DB.
   # Sets the status = 'both_set_up', offer_swap = swap_state.address
   # If successfully updates the DB, return nil, othewise returns the original input.
   defp both_set_up(swap, demand_state, offer_hash) do
     offer_address = ForgeSdk.Util.to_swap_address(offer_hash)
-    offer_state = ChainUtil.get_swap_state(offer_address, swap.offer_chain)
 
     Logger.info(fn ->
       "Server set up a swap, Swap Id: #{swap.id}, Swap address: #{offer_address}"
     end)
 
-    change =
-      Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: offer_state["address"]})
+    change = Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: offer_address})
 
     apply(Repo, :update!, [change])
     swap = Swap.get(swap.id)
 
     Retriever.retrieve_swap(swap)
+    Revoker.revoke_swap(swap)
     nil
   rescue
     e ->
       Logger.warn(
         "Failed to set swap status to both_set_up, will retry. Swap Id: #{swap.id}, Hash: #{
-          offer_hash
+          inspect(offer_hash)
         }. Error: #{inspect(e)}."
       )
 

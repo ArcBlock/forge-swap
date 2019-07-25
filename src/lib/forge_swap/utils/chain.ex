@@ -90,7 +90,7 @@ defmodule ForgeSwap.Utils.Chain do
         raise "Not able to find configuration for chain: #{inspect(chain_name)}. Please make sure you configured it in the 'Chains' section."
 
       %{"block_gap" => block_gap} ->
-        block_numbers = trunc(time * 60 * 60 / block_gap) + 1
+        block_numbers = trunc(time / block_gap) + 1
         current_height = get_chain_info(chain_name)["blockHeight"] |> String.to_integer()
         current_height + block_numbers
 

@@ -15,10 +15,10 @@ port = 8807
 
 # This section contains the configs to send swap transactions to chains.
 [swap]
-# The default hours to lock swap which is set up by the application to users.
-offer_locktime = 24
-# The default hours to lock swap which is set up by users to the application.
-demand_locktime = 48
+# The default seconds to lock swap that is set up by the application for users.
+offer_locktime = 86400
+# The default seconds to lock swap that is set up by an user for the application.
+demand_locktime = 172800
 
 # Configs the off-chain database to store swap information.
 [database]

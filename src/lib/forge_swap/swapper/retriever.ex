@@ -1,12 +1,15 @@
 defmodule ForgeSwap.Swapper.Retriever do
   @moduledoc """
-
-  # This is the list of swaps that app should try to retrieve
+  This module is responsible for retrieving the swap set up by user for the application.
+  The gen server state is like:
   [
     # If hashkey is empty, then it means the user has not yet retrieve the swap.
-    {swap, ""},
-    # If the hashkey is not empty, then gen server should try to retrieve the swap.
-    {swap, hashkey}
+    {swap, "", ""},
+    # If the hashkey is not empty, but the retrieve hash is empty, then retriever should
+    # send a RetrieveSwapTx.
+    {swap, hashkey, ""},
+    # If the retrieve_hash is not empty, then retriever should check if transaction succeeded or not.
+    {swap, hashkey, retrieve_hash}
   ]
   """
 
@@ -24,6 +27,10 @@ defmodule ForgeSwap.Swapper.Retriever do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
+  def delete(swap) do
+    GenServer.cast(__MODULE__, {:delete, swap})
+  end
+
   def retrieve_swap(swap) do
     GenServer.cast(__MODULE__, {:retrieve_swap, swap})
   end
@@ -32,6 +39,11 @@ defmodule ForgeSwap.Swapper.Retriever do
 
   def init(:ok) do
     {:ok, []}
+  end
+
+  def handle_cast({:delete, swap}, gen_server_state) do
+    gen_server_state = Enum.reject(gen_server_state, fn {s, _, _} -> s.id == swap.id end)
+    {:noreply, gen_server_state}
   end
 
   def handle_cast({:retrieve_swap, swap}, gen_server_state) do
@@ -60,8 +72,6 @@ defmodule ForgeSwap.Swapper.Retriever do
     case offer_state do
       # Hashkey is not empty, user has retrieved the swap.
       %{"hashkey" => hashkey} when hashkey != "" -> user_retrieved(swap, hashkey)
-      # The value and assets have been gone, but hashkey is still empty, this means user has revoked swap.
-      %{"value" => 0, "assets" => [], "hashkey" => ""} -> user_revoked(swap)
       _ -> {swap, "", ""}
     end
   end
@@ -111,8 +121,12 @@ defmodule ForgeSwap.Swapper.Retriever do
 
     change = Swap.update_changeset(swap, %{status: "user_retrieved"})
     apply(Repo, :update!, [change])
-
     swap = Swap.get(swap.id)
+
+    # Since user has already retrieved the swap we set up for her, 
+    # then there is no need to check if we shall revoke the swap.
+    Revoker.delete(swap)
+
     {swap, hashkey, retrieve_hash}
   end
 
@@ -125,11 +139,6 @@ defmodule ForgeSwap.Swapper.Retriever do
       Swap.update_changeset(swap, %{status: "both_retrieved", retrieve_hash: retrieve_hash})
 
     apply(Repo, :update!, [change])
-    nil
-  end
-
-  defp user_revoked(swap) do
-    Revoker.revoke_swap(swap)
     nil
   end
 end
