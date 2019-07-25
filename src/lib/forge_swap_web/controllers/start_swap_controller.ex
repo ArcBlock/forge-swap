@@ -10,7 +10,7 @@ defmodule ForgeSwapWeb.StartSwapController do
 
   require Logger
 
-  alias ForgeSwap.{Repo, Schema.Swap, Swapper}
+  alias ForgeSwap.{Repo, Schema.Swap, Swapper.Setupper}
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
@@ -73,52 +73,52 @@ defmodule ForgeSwapWeb.StartSwapController do
     end
   end
 
-  defp do_start_re_swap(conn, swap, %{"address" => swap_address}) do
-    state = ChainUtil.get_swap_state(swap_address, swap.demand_chain)
+  defp do_start_re_swap(conn, swap, %{"address" => demand_address}) do
+    demand_state = ChainUtil.get_swap_state(demand_address, swap.demand_chain)
 
     cond do
-      state == nil ->
-        json(conn, %{error: "Could not find the swap state #{swap_address}"})
+      demand_state == nil ->
+        json(conn, %{error: "Could not find the demanded swap state #{demand_address}"})
 
-      verify_swap(swap, state) == false ->
-        json(conn, %{error: "Invalid swap state, address: #{swap_address}"})
+      verify_swap(swap, demand_state) == false ->
+        json(conn, %{error: "Invalid demanded swap state, address: #{demand_address}"})
 
       true ->
         # Change the swap status to user_set_up in db.
-        swap = user_set_up(swap, state)
+        swap = user_set_up(swap, demand_state)
         # Asynchronously set up a swap for user 
-        Swapper.set_up_swap(swap, state)
+        Setupper.set_up_swap(swap, demand_state)
         callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
         json(conn, %{response: %{callback: callback}})
     end
   end
 
-  defp verify_swap(swap, state) do
+  defp verify_swap(swap, demand_state) do
     config = ConfigUtil.read_config()
     asset_owner = config["asset_owners"][swap.asset_owner]
     expected_locktime = ChainUtil.time_to_locktime(swap.demand_locktime, swap.demand_chain)
-    actual_token = String.to_integer(state["value"])
+    actual_token = String.to_integer(demand_state["value"])
     expected_token = Decimal.to_integer(swap.demand_token)
 
     cond do
       # if it is not set up by user
-      state["sender"] !== swap.user_did -> false
+      demand_state["sender"] !== swap.user_did -> false
       # if it is set up for app
-      state["receiver"] !== asset_owner.address -> false
+      demand_state["receiver"] !== asset_owner.address -> false
       # if set up assets are not exactly same as demand assets
-      state["assets"] -- swap.demand_assets !== [] -> false
-      swap.demand_assets -- state["assets"] !== [] -> false
+      demand_state["assets"] -- swap.demand_assets !== [] -> false
+      swap.demand_assets -- demand_state["assets"] !== [] -> false
       # if set up token is not exactly same as demand token
       actual_token !== expected_token -> false
       # if set up locktime is earlier than expected locktime
-      state["locktime"] < expected_locktime -> false
+      demand_state["locktime"] < expected_locktime -> false
       true -> true
     end
   end
 
   defp user_set_up(swap, state) do
-    Logger.debug(fn ->
-      "Updating swap status to user_set_up, swap id: #{swap.id}, demand swap: #{state["address"]}"
+    Logger.info(fn ->
+      "User set up a swap, Swap Id: #{swap.id}, Swap address: #{state["address"]}"
     end)
 
     change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: state["address"]})

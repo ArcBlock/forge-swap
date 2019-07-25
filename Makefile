@@ -47,15 +47,16 @@ dialyzer:
 	mix dialyzer
 
 # Test under integration topology
-ti: set-up-patron
+ti: patron-start
 	@MIX_ENV=integration make build
-	@cd src; MIX_ENV=integration FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
+	@cd src; MIX_ENV=integration FORGESWAP_CONFIG=../resources/test.toml mix test --trace test/forge_swap_web/integration/integration_test.exs
+	@forge-patron stop
 
 # Run under Integration topology
-ri: set-up-patron
+ri: patron-start
 	@make run
 
-set-up-patron:
+patron-start:
 	@rm -rf ~/.forge_patron
 	@rm -rf $(TEST_PATH)
 	@forge-patron init

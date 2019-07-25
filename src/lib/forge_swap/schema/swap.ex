@@ -13,6 +13,8 @@ defmodule ForgeSwap.Schema.Swap do
     field(:user_did, :string)
     field(:asset_owner, :string)
     field(:status, :string)
+    field(:retrieve_hash, :string)
+    field(:revoke_hash, :string)
     field(:offer_assets, {:array, :string})
     field(:offer_token, :decimal)
     field(:offer_chain, :string)
@@ -53,7 +55,7 @@ defmodule ForgeSwap.Schema.Swap do
 
   def update_changeset(data, params) do
     data
-    |> cast(params, [:status, :offer_swap, :demand_swap])
+    |> cast(params, [:status, :offer_swap, :demand_swap, :retrieve_hash, :revoke_hash])
     |> validate_required([:status])
   end
 

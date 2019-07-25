@@ -6,6 +6,7 @@ defmodule ForgeSwap.Application do
   use Application
 
   alias ForgeSwap.{Repo, PostgresRepo}
+  alias ForgeSwap.Swapper.{Setupper, Retriever, Revoker}
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def start(_type, _args) do
@@ -18,7 +19,9 @@ defmodule ForgeSwap.Application do
     children = [
       # Start the Ecto repository
       repo,
-      ForgeSwap.Swapper,
+      Setupper,
+      Retriever,
+      Revoker,
       # Start the endpoint when the application starts
       ForgeSwapWeb.Endpoint
       # Starts a worker by calling: ForgeSwap.Worker.start_link(arg)
@@ -75,8 +78,7 @@ defmodule ForgeSwap.Application do
     ForgeSdk.connect("tcp://127.0.0.1:10120", name: "app_chain", default: false)
     wallet = ConfigUtil.read_config()["asset_owners"]["default"]
     itx = apply(ForgeAbi.DeclareTx, :new, [[moniker: "owner"]])
-    ForgeSdk.declare(itx, wallet: wallet, chain_name: "asset_chain") |> IO.inspect()
-    ForgeSdk.declare(itx, wallet: wallet, chain_name: "app_chain") |> IO.inspect()
+    ForgeSdk.declare(itx, wallet: wallet, conn: "asset_chain", send: :commit)
   end
 
   defp prepare_wallet(_), do: :ok

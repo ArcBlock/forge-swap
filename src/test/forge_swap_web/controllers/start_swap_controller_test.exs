@@ -2,7 +2,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
   use ForgeSwapWeb.ConnCase
 
   alias ForgeAbi.Util.BigInt
-  alias ForgeAbi.SetupSwapTx
+  alias ForgeAbi.{RetrieveSwapTx, RevokeSwapTx, SetupSwapTx}
   alias ForgeSwapWebTest.Util
   alias ForgeSwap.Schema.Swap
 
@@ -34,7 +34,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
   @offer_token 111_111_111_111_111
   @demand_token 222_222_222_222_222
 
-  test "Start swap, all good", %{conn: conn} do
+  test "Start and retrieve swap, all good", %{conn: conn} do
     # Create a Swap 
     body = %{
       "userDid" => @user.address,
@@ -108,7 +108,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
         hashlock: hashlock
       )
 
-    hash = ForgeSdk.setup_swap(tx, wallet: @user, send: :commit, chain_name: "asset_chain")
+    hash = ForgeSdk.setup_swap(tx, wallet: @user, send: :commit, conn: "asset_chain")
     assert is_binary(hash)
     swap_address = ForgeSdk.Util.to_swap_address(hash)
 
@@ -123,21 +123,30 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
       |> post(auth_body["url"], body)
       |> json_response(200)
 
+    Process.sleep(6 * 1000)
+
+    swap = Swap.get(id)
+    assert swap.user_did == @user.address
+    assert swap.status == "both_set_up"
+    assert swap.demand_swap == swap_address
+
+    # Step 5: wallet poll the swap set up by application by calling the callback
+    %{"response" => %{"swapAddress" => swap_address}} =
+      conn
+      |> post(callback, Util.gen_signed_request(@user, %{}))
+      |> json_response(200)
+
+    assert String.length(swap_address) > 0
+
+    # Step 6: Wallet retrieve the swap
+    tx = RetrieveSwapTx.new(address: swap_address, hashkey: hashkey)
+    hash = ForgeSdk.retrieve_swap(tx, wallet: @user, send: :commit, conn: "app_chain")
+    assert is_binary(hash)
+
+    # Step 7: 
     Process.sleep(10 * 1000)
     swap = Swap.get(id)
-
-    assert swap.user_did == @user.address
-    assert swap.asset_owner == "default"
-    assert swap.status == "both_set_up"
-    assert swap.offer_assets == []
-    assert swap.offer_token == Decimal.new(@offer_token)
-    assert swap.offer_chain == "application"
-    assert String.length(swap.offer_swap) > 0
-    assert swap.offer_locktime == 24
-    assert swap.demand_assets == []
-    assert swap.demand_token == Decimal.new(@demand_token)
-    assert swap.demand_chain == "asset"
-    assert swap.demand_locktime == 48
-    assert swap.demand_swap == swap_address
+    assert swap.status == "both_retrieved"
+    assert String.length(swap.retrieve_hash) > 0
   end
 end

@@ -1,19 +1,19 @@
 defmodule ForgeSwap.Utils.Tx do
-  alias ForgeAbi.{SetupSwapTx, Transaction}
+  alias ForgeAbi.{RetrieveSwapTx, SetupSwapTx, Transaction}
   alias ForgeAbi.Util.BigInt
   alias ForgeSdk.Wallet.Util, as: WalletUtil
 
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
 
-  def set_up_swap(sender, receiver, swap, hashlock) do
+  def set_up_swap(swap, hashlock) do
     setup_swap =
       SetupSwapTx.new(
         assets: swap.offer_assets,
         value: to_token(swap.offer_token),
         hashlock: Base.decode16!(hashlock),
         locktime: ChainUtil.time_to_locktime(swap.offer_locktime, swap.offer_chain),
-        receiver: receiver
+        receiver: swap.user_did
       )
 
     itx =
@@ -22,8 +22,35 @@ defmodule ForgeSwap.Utils.Tx do
         value: SetupSwapTx.encode(setup_swap)
       )
 
-    chain_id = ConfigUtil.read_config()["chains"][swap.offer_chain]["chain_id"]
-    gen_tx(sender, chain_id, itx)
+    config = ConfigUtil.read_config()
+    owner = config["asset_owners"][swap.asset_owner]
+    chain_id = config["chains"][swap.offer_chain]["chain_id"]
+
+    owner
+    |> gen_tx(chain_id, itx)
+    |> ChainUtil.send_tx(swap.offer_chain)
+  end
+
+  def retrieve_swap(swap, hashkey) do
+    retrieve_swap =
+      RetrieveSwapTx.new(
+        address: swap.demand_swap,
+        hashkey: Base.decode16!(hashkey)
+      )
+
+    itx =
+      Google.Protobuf.Any.new(
+        type_url: "fg:t:retrieve_swap",
+        value: RetrieveSwapTx.encode(retrieve_swap)
+      )
+
+    config = ConfigUtil.read_config()
+    owner = config["asset_owners"][swap.asset_owner]
+    chain_id = config["chains"][swap.demand_chain]["chain_id"]
+
+    owner
+    |> gen_tx(chain_id, itx)
+    |> ChainUtil.send_tx(swap.demand_chain)
   end
 
   defp to_token(offer_token) do
