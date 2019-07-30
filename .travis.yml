@@ -7,19 +7,18 @@ branches:
 
 before_install:
   - nvm install 10
-  - nvm use --silent 10
 install: 
   - mix local.hex --force
   - mix local.rebar --force
-  - "npm install -g @arcblock/forge-cli"
+  - "yarn global add @arcblock/forge-cli"
   - "wget https://releases.arcblock.io/forge-patron/$(curl -s https://releases.arcblock.io/forge-patron/latest.json | jq -r .latest)/forge-patron && chmod +x forge-patron"
   - sudo cp forge-patron /usr/local/bin
 
 before_script:
   - forge install 0.34.3 --silent
-  - forge --help
-script:
-  - make dep
-  - make rebuild
-  - make test-all
+  - "ls -al ~/.forge_cli"
+script: true
+  # - make dep
+  # - make rebuild
+  # - make test-all
 
