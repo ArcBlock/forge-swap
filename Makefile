@@ -27,11 +27,12 @@ build:
 	@make format
 
 rebuild:
-	@rm -rf assets/node_modules
-	@rm -rf priv/static
+	@rm -rf src/assets/node_modules
+	@rm -rf src/priv/static
 	@cd src/assets; npm install; npm run deploy
-	@mix phx.digest
-	@mix build
+	# cd assets && npm install && node node_modules/webpack/bin/webpack.js --mode development
+	@cd src; mix phx.digest
+	@make build
 
 format:
 	@cd src; mix compile; mix format;
