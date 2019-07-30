@@ -16,6 +16,7 @@ install:
 
 before_script:
   - forge install 0.34.3 --silent
+  - find /Users -name .forge_cli
   - "ls -al ~/.forge_cli"
 script: true
   # - make dep
