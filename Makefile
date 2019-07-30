@@ -5,6 +5,10 @@ VERSION=$(strip $(shell cat version))
 TARGETS=centos ubuntu darwin
 APP_NAME=forge_swap
 TEST_PATH=/tmp/.forge_swap_test/
+FORGE_VERSION=$(strip $(shell cat .forge_version))
+
+tt:
+	@echo $(FORGE_VERSION)
 
 dep:
 	@echo "Install dependencies required for this repo..."
@@ -19,17 +23,15 @@ $(TARGETS):
 
 build:
 	@echo "Building the software..."
-	@rm -rf priv/gen
 	@rm -rf _build/dev/lib/$(APP_NAME)
 	@make format
 
 rebuild:
 	@rm -rf assets/node_modules
 	@rm -rf priv/static
-	@cd assets; yarn
-	# @make upgrade
+	@cd assets; npm install; npm run deploy
 	@mix phx.digest
-	@mix compile
+	@mix build
 
 format:
 	@cd src; mix compile; mix format;
@@ -41,34 +43,31 @@ run:
 test:
 	@echo "Running test suites..."
 	@MIX_ENV=test make build
-	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
+	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace --exclude integration $(TF)
 
 dialyzer:
 	mix dialyzer
 
 # Test under integration topology
-ti: patron-start
-	@MIX_ENV=integration make build
-	@cd src; MIX_ENV=integration FORGESWAP_CONFIG=../resources/test.toml mix test --trace test/forge_swap_web/integration/integration_test.exs
-	@forge-patron stop
+test-all: init-forge start-patron
+	@echo "Waiting for patron to start"; sleep 10;
+	@MIX_ENV=test make build
+	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
 
 # Run under Integration topology
 ri: patron-start
 	@make run
 
-patron-start:
+init-forge:
+	@forge install $(FORGE_VERSION) --silent || true
+
+start-patron:
 	@rm -rf ~/.forge_patron
 	@rm -rf $(TEST_PATH)
 	@forge-patron init
 	@cp ./resources/patron/*.toml ~/.forge_patron
 	@cp ./resources/patron/*.yml ~/.forge_patron
-	@mkdir -p $(TEST_PATH)
-	@mkdir $(TEST_PATH)/forge; tar xzvf ./resources/patron/forge_darwin_amd64.tgz -C $(TEST_PATH)/forge
-	@mkdir $(TEST_PATH)/forge_web; tar xzvf ./resources/patron/forge_web_darwin_amd64.tgz -C $(TEST_PATH)/forge_web
-	@cp ./resources/patron/tendermint $(TEST_PATH)/tendermint
-	@forge-patron start
-	@echo "Waiting for patron to start"; sleep 10;
-
+	@forge-patron start -v $(FORGE_VERSION)
 
 # upgrade:
 # 	@cd assets; yarn install; yarn upgrade @arcblock/forge-web; cp node_modules/@arcblock/forge-web/build/index.html .; sed -i 's/\.\//\//g' index.html; npm run deploy;

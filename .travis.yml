@@ -1,0 +1,21 @@
+language: elixir
+elixir: 1.9.0
+otp_release: 22.0.4
+branches:
+  only:
+    - master
+
+before_install: true
+install: 
+  - mix local.hex --force
+  - mix local.rebar --force
+  - "npm install -g @arcblock/forge-cli"
+  - "wget https://releases.arcblock.io/forge-patron/$(curl -s https://releases.arcblock.io/forge-patron/latest.json | jq -r .latest)/forge-patron && chmod +x forge-patron"
+  - mv forge-patron /usr/local/bin
+
+before_script: true
+script:
+  - make dep
+  - make rebuild
+  - make test-all
+

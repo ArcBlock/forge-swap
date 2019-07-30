@@ -9,9 +9,9 @@ chains:
       sk: tk3pcIjpDRzeUGutXL7mjf52jNfA_kztlQnIgYnBStiY2X5pZlsLGwfiMgFA6a8qLhCEgMjGmEBjcFROew9TXw
       pk: mNl-aWZbCxsH4jIBQOmvKi4QhIDIxphAY3BUTnsPU18
       address: z1TpjUv5ZVVpY854GVk9W9Zfnb4HKqQzRSg
-    forge_bin: /tmp/.forge_swap_test/forge/bin/forge
-    forge_web_bin: /tmp/.forge_swap_test/forge_web/bin/forge_web
-    tm_bin: /tmp/.forge_swap_test/tendermint
+    forge_bin: '~/.forge_cli/release/forge/<%= version %>/bin/forge'
+    forge_web_bin: '~/.forge_cli/release/forge_web/<%= version %>/bin/forge_web'
+    tm_bin: '~/.forge_cli/release/forge/<%= version %>/lib/consensus-<%= version %>/priv/tendermint/tendermint --home <%= forge_path %>/tendermint'
     forge_root: /tmp/.forge_swap_test/asset_chain
   - chain_id: app_chain
     validators:
@@ -21,7 +21,7 @@ chains:
       sk: AbGCbsZRQuk4bJbtU4-1ZqJc41YDgvISZC2BDpC4pGdZS2ai83D8N-QM9p9_FBzsmMZD2o4HzmE6gLo6Lxqf2Q
       pk: WUtmovNw_DfkDPaffxQc7JjGQ9qOB85hOoC6Oi8an9k
       address: z1VFy8hB9ndynkWAAH9P1a2L5WaU7AvtKGy
-    forge_bin: /tmp/.forge_swap_test/forge/bin/forge
-    forge_web_bin: /tmp/.forge_swap_test/forge_web/bin/forge_web
-    tm_bin: /tmp/.forge_swap_test/tendermint
+    forge_bin: '~/.forge_cli/release/forge/<%= version %>/bin/forge'
+    forge_web_bin: '~/.forge_cli/release/forge_web/<%= version %>/bin/forge_web'
+    tm_bin: '~/.forge_cli/release/forge/<%= version %>/lib/consensus-<%= version %>/priv/tendermint/tendermint --home <%= forge_path %>/tendermint'
     forge_root: /tmp/.forge_swap_test/app_chain
