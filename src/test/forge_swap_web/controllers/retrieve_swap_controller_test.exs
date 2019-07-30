@@ -1,7 +1,6 @@
-defmodule ForgeSwapWeb.StartSwapControllerTest do
+defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
   use ForgeSwapWeb.ConnCase
 
-  alias ForgeAbi.Util.BigInt
   alias ForgeAbi.SetupSwapTx
   alias ForgeSwapWebTest.Util
   alias ForgeSwap.Schema.Swap
@@ -34,6 +33,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
         28, 230, 60, 197>>
   }
 
+  @tag :integration
   test "Retrieve swap, all good", %{conn: conn} do
     # Create a Swap 
     body = %{

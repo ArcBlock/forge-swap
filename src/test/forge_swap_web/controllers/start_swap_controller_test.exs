@@ -34,6 +34,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
   @offer_token 111_111_111_111_111
   @demand_token 222_222_222_222_222
 
+  @tag :integration
   test "Start and retrieve swap, all good", %{conn: conn} do
     # Executes the common steps to set up swap.
     {id, _, hashkey, callback} = both_set_up_swap(conn)
@@ -57,6 +58,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
     assert String.length(swap.retrieve_hash) > 0
   end
 
+  @tag :integration
   test "Start and revoke swap, all good", %{conn: conn} do
     {id, swap_address, _, _} = both_set_up_swap(conn, 3, 6)
 
