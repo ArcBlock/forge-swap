@@ -26,7 +26,7 @@ defmodule ForgeSwapWeb.SwapControllerTest do
       |> post(Routes.swap_path(conn, :create), body)
       |> json_response(200)
 
-    assert is_number(id)
+    assert is_binary(id)
     swap = Swap.get(id)
 
     assert swap.user_did == @user.address

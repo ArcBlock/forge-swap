@@ -9,6 +9,7 @@ defmodule ForgeSwap.Schema.Swap do
 
   alias ForgeSwap.{Repo, Schema.Swap}
 
+  @primary_key {:id, :binary_id, autogenerate: true}
   schema("swap") do
     field(:user_did, :string)
     field(:asset_owner, :string)
@@ -65,4 +66,11 @@ defmodule ForgeSwap.Schema.Swap do
     Repo
     |> apply(:one, [query])
   end
+
+  # def get_by_status(status) do
+  #   query = from(s in Swap, where: s.status == ^status)
+
+  #   Repo
+  #   |> apply(:all, [query])
+  # end
 end

@@ -1,3 +1,6 @@
+## 0.0.3 (July 30, 2019)
+  - Use UUID as swap primary key.
+
 ## 0.0.2 (July 30, 2019)
   - Add travis CI.
 
