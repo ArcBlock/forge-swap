@@ -18,6 +18,9 @@ install:
 before_script:
   - forge install
 
-script: true
+script:
   - make dep
   - make rebuild
+
+before_deploy:
+  - make release
