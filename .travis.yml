@@ -15,6 +15,7 @@ install:
 
 before_script:
   - forge install 0.34.3 --silent
+  - forge --help
 script:
   - make dep
   - make rebuild
