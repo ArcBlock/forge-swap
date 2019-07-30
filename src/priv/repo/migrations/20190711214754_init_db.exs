@@ -2,7 +2,8 @@ defmodule ForgeSwap.Repo.Migrations.InitDb do
   use Ecto.Migration
 
   def change do
-    create table(:swap) do
+    create table(:swap, primary_key: false) do
+      add(:id, :uuid, primary_key: true)
       add(:user_did, :string, null: false)
       add(:asset_owner, :string, null: false)
       add(:status, :string, null: false)
@@ -19,5 +20,7 @@ defmodule ForgeSwap.Repo.Migrations.InitDb do
       add(:demand_locktime, :integer, null: false)
       add(:demand_swap, :string)
     end
+
+    create(index(:swap, [:status]))
   end
 end
