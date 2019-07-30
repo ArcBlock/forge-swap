@@ -50,7 +50,7 @@ dialyzer:
 	mix dialyzer
 
 # Test under integration topology
-test-all: init-forge start-patron
+test-all: start-patron
 	@echo "Waiting for patron to start"; sleep 10;
 	@MIX_ENV=test make build
 	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
