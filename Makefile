@@ -61,8 +61,8 @@ ri: patron-start
 
 init-forge:
 	@echo "Installing forge chain"
-	@forge install $(FORGE_VERSION) --silent || true
-	@ls -al ~/.forge_cli/release
+	@forge install $(FORGE_VERSION) --silent
+	@ls -al ~/.forge_cli/
 
 start-patron:
 	@rm -rf ~/.forge_patron
