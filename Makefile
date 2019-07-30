@@ -29,7 +29,7 @@ build:
 rebuild:
 	@rm -rf assets/node_modules
 	@rm -rf priv/static
-	@cd assets; npm install; npm run deploy
+	@cd src/assets; npm install; npm run deploy
 	@mix phx.digest
 	@mix build
 
