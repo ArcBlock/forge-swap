@@ -15,7 +15,7 @@ install:
   - sudo cp forge-patron /usr/local/bin
 
 before_script:
-  - forge install 0.34.3 --silent
+  - forge install
   - find /home -name .forge_cli
   - "ls -al ~/.forge_cli"
 script: true
