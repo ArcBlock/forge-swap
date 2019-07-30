@@ -17,9 +17,10 @@ dep:
 $(TARGETS):
 	@echo "Building the $@ release"
 	@mkdir -p $(REL_DIR)
-	@cd assets; npm install; npm run deploy
-	@mix phx.digest
-	@rm -rf _build/staging/rel/$(APP_NAME); MIX_ENV=staging mix release; tar zcf $(REL_DIR)/$(APP_NAME)_$@_amd64.tgz -C _build/staging/rel/$(APP_NAME) .
+	@cd src/assets; npm install; npm run deploy
+	@cd src; mix phx.digest
+	@rm -rf _build/staging/rel/$(APP_NAME); 
+	@cd src; MIX_ENV=staging mix release; tar zcf $(REL_DIR)/$(APP_NAME)_$@_amd64.tgz -C _build/staging/rel/$(APP_NAME) .
 
 build:
 	@echo "Building the software..."

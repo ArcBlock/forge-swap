@@ -1,8 +1,12 @@
 RELEASE_VERSION=v$(VERSION)
+GIT_VERSION="$(strip $(shell git rev-parse --short HEAD))"
 GIT_BRANCH=$(strip $(shell git symbolic-ref --short HEAD))
 
 release:
-	@git tag $(RELEASE_VERSION) || true
+	@git config --local user.name "Peiling Ding"
+	@git config --local user.email "dingpl716@gmail.com"
+	@git tag -a $(RELEASE_VERSION) -m "Release $(RELEASE_VERSION). Revision is: $(GIT_VERSION)" | true
+	@git push origin $(RELEASE_VERSION) | true
 
 delete-release:
 	@echo "Delete a release on $(RELEASE_VERSION)"
