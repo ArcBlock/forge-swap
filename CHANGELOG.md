@@ -1,5 +1,5 @@
 ## 0.0.4 (July 30, 2019)
-  - Stablize the tests.
+  - Stabilize the tests.
   - Separate unit tests and integration tests.
   - Make tick gap configurable
   
