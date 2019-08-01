@@ -1,3 +1,8 @@
+## 0.0.4 (July 30, 2019)
+  - Stablize the tests.
+  - Separate unit tests and integration tests.
+  - Make tick gap configurable
+  
 ## 0.0.3 (July 30, 2019)
   - Use UUID as swap primary key.
 
