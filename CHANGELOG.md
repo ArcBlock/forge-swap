@@ -1,3 +1,6 @@
+## 0.0.6 (Aug 1, 2019)
+  - Fix release script
+  
 ## 0.0.5 (Aug 1, 2019)
   - Make database configurable
 
