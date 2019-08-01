@@ -87,7 +87,7 @@ defmodule ForgeSwapWeb.StartSwapController do
         # Change the swap status to user_set_up in db.
         swap = user_set_up(swap, demand_state)
         # Asynchronously set up a swap for user 
-        Setupper.set_up_swap(swap, demand_state)
+        Setupper.set_up_swap(swap, demand_state["hashlock"])
         callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
         json(conn, %{response: %{callback: callback}})
     end

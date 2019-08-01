@@ -72,8 +72,8 @@ defmodule ForgeSwap.Utils.Did do
         name: app_config["name"],
         description: app_config["description"]
       },
-      chanInfo: %{
-        host: "#{chain_config["host"]}:#{chain_config["port"]}/api"
+      chainInfo: %{
+        host: "#{chain_config["host"]}:#{chain_config["port"]}/api/"
       }
     }
   end

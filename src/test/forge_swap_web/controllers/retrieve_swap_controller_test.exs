@@ -1,7 +1,6 @@
 defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
   use ForgeSwapWeb.ConnCase
 
-  alias ForgeAbi.SetupSwapTx
   alias ForgeSwapWebTest.Util
   alias ForgeSwap.Schema.Swap
   alias ForgeSwap.Repo

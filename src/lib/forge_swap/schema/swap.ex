@@ -16,6 +16,7 @@ defmodule ForgeSwap.Schema.Swap do
     field(:status, :string)
     field(:retrieve_hash, :string)
     field(:revoke_hash, :string)
+    field(:set_up_hash, :string)
     field(:offer_assets, {:array, :string})
     field(:offer_token, :decimal)
     field(:offer_chain, :string)
@@ -34,14 +35,19 @@ defmodule ForgeSwap.Schema.Swap do
       :user_did,
       :asset_owner,
       :status,
+      :retrieve_hash,
+      :revoke_hash,
+      :set_up_hash,
       :offer_assets,
       :offer_token,
       :offer_chain,
       :offer_locktime,
+      :offer_swap,
       :demand_assets,
       :demand_token,
       :demand_chain,
-      :demand_locktime
+      :demand_locktime,
+      :demand_swap
     ])
     |> validate_required([
       :user_did,
@@ -56,8 +62,14 @@ defmodule ForgeSwap.Schema.Swap do
 
   def update_changeset(data, params) do
     data
-    |> cast(params, [:status, :offer_swap, :demand_swap, :retrieve_hash, :revoke_hash])
-    |> validate_required([:status])
+    |> cast(params, [
+      :status,
+      :offer_swap,
+      :demand_swap,
+      :retrieve_hash,
+      :revoke_hash,
+      :set_up_hash
+    ])
   end
 
   def get(id) do
@@ -67,10 +79,17 @@ defmodule ForgeSwap.Schema.Swap do
     |> apply(:one, [query])
   end
 
-  # def get_by_status(status) do
-  #   query = from(s in Swap, where: s.status == ^status)
+  def get_by_status(status) when is_list(status) do
+    query = from(s in Swap, where: s.status in ^status)
 
-  #   Repo
-  #   |> apply(:all, [query])
-  # end
+    Repo
+    |> apply(:all, [query])
+  end
+
+  def get_by_status(status) do
+    query = from(s in Swap, where: s.status == ^status)
+
+    Repo
+    |> apply(:all, [query])
+  end
 end

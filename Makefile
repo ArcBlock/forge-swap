@@ -51,15 +51,11 @@ dialyzer:
 	mix dialyzer
 
 # Test under integration topology
-test-all: start-patron
+test-inte: start-patron
 	@echo "Waiting for patron to start"; sleep 10;
-	@MIX_ENV=test make build
-	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace $(TF)
+	@MIX_ENV=integration make build
+	@cd src; MIX_ENV=integration FORGESWAP_CONFIG=../resources/integration.toml mix test --trace --only integration $(TF)
 	@forge-patron stop
-
-# Run under Integration topology
-ri: patron-start
-	@make run
 
 init-forge:
 	@echo "Installing forge chain"
@@ -74,6 +70,10 @@ start-patron:
 	@cp ./resources/patron/*.yml ~/.forge_patron
 	@forge-patron start -v $(FORGE_VERSION)
 
+rebuild-db:
+	@cd src; mix ecto.drop; mix ecto.create; mix ecto.migrate;
+	@cd src; MIX_ENV=test mix ecto.drop; MIX_ENV=test mix ecto.create; MIX_ENV=test mix ecto.migrate;
+	@cd src; MIX_ENV=integration mix ecto.drop; MIX_ENV=integration mix ecto.create; MIX_ENV=integration mix ecto.migrate;
 # upgrade:
 # 	@cd assets; yarn install; yarn upgrade @arcblock/forge-web; cp node_modules/@arcblock/forge-web/build/index.html .; sed -i 's/\.\//\//g' index.html; npm run deploy;
 
