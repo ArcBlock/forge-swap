@@ -66,7 +66,10 @@ defmodule ForgeSwap.Utils.Config do
 
   defp do_read_config() do
     default =
-      :forge_swap |> Application.app_dir() |> Path.join("priv/config/default.toml") |> read_toml()
+      :forge_swap
+      |> Application.app_dir()
+      |> Path.join("priv/config/default.toml")
+      |> read_toml()
 
     change =
       case System.get_env("FORGESWAP_CONFIG") do
@@ -74,7 +77,7 @@ defmodule ForgeSwap.Utils.Config do
         path -> read_toml(path)
       end
 
-    default |> Map.merge(change) |> parse()
+    default |> DeepMerge.deep_merge(change) |> parse()
   end
 
   # Traverse the config map and replace values by system environment variables.

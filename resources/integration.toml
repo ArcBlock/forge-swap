@@ -1,7 +1,7 @@
 # The information of the application which delegates the swap to Forge Swap Service.
 [application]
-name = ""
-description = ""
+name = "Event Chain"
+description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -12,17 +12,6 @@ schema = "http"
 # this host and port.
 host = "localhost"
 port = 8807
-# The seconds the swapper should wait between two ticks.
-# The smaller this number is the more frequent will the 
-# service set up, retrieve and revoke swaps for you.
-swapper_tick_gap = 3
-
-# This section contains the configs to send swap transactions to chains.
-[swap]
-# The default seconds to lock swap that is set up by the application for users.
-offer_locktime = 86400
-# The default seconds to lock swap that is set up by an user for the application.
-demand_locktime = 172800
 
 # Configs the off-chain database to store swap information.
 [database]
@@ -42,12 +31,12 @@ connection = "localhost"
 #     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
 [asset_owners]
   [asset_owners.default]
-    address = ""
-    pk = ""
+    address = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
+    pk = "75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
     # The private key of the public key, base 16 encoded.
-    sk = ""
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
+    sk = "B4C1FED5090DD64518C20EAF5F1636CB4C2A68456A945161192635EFB83C675275CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
 
 
 # Config the chains that swap service shall connect to.

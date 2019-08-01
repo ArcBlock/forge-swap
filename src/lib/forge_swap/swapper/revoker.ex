@@ -22,6 +22,7 @@ defmodule ForgeSwap.Swapper.Revoker do
   alias ForgeSwap.Swapper.Retriever
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
+  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -37,7 +38,15 @@ defmodule ForgeSwap.Swapper.Revoker do
 
   ####################### Call backs ############################
   def init(:ok) do
-    {:ok, []}
+    swaps =
+      ["both_set_up", "user_revoked"]
+      |> Swap.get_by_status()
+      |> Enum.map(fn
+        %{status: "both_set_up"} = swap -> {swap, false, ""}
+        %{status: "user_revoked"} = swap -> {swap, true, swap.revoke_hash || ""}
+      end)
+
+    {:ok, swaps}
   end
 
   def handle_cast({:delete, swap}, gen_server_state) do
@@ -58,7 +67,8 @@ defmodule ForgeSwap.Swapper.Revoker do
       |> Enum.reject(&is_nil/1)
 
     if gen_server_state != [] do
-      Process.send_after(__MODULE__, :tick, 3000)
+      gap = ConfigUtil.read_config()["service"]["swapper_tick_gap"]
+      Process.send_after(__MODULE__, :tick, trunc(gap * 1000))
     end
 
     {:noreply, gen_server_state}
@@ -81,6 +91,10 @@ defmodule ForgeSwap.Swapper.Revoker do
       "Server sent RevokeSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(revoke_hash)}"
     end)
 
+    change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
+    apply(Repo, :update!, [change])
+    swap = Swap.get(swap.id)
+
     {swap, true, revoke_hash}
   end
 
@@ -92,11 +106,11 @@ defmodule ForgeSwap.Swapper.Revoker do
 
       # Revoke swap tx failed, reset the hash and try again
       %{"code" => _} ->
-        Logger.info(fn ->
+        Logger.warn(
           "Server RevokeSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
             inspect(revoke_hash)
           }"
-        end)
+        )
 
         {swap, true, ""}
 
@@ -117,7 +131,7 @@ defmodule ForgeSwap.Swapper.Revoker do
       "Server sent RevokeSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(revoke_hash)}"
     end)
 
-    change = Swap.update_changeset(swap, %{status: "user_revoked"})
+    change = Swap.update_changeset(swap, %{status: "user_revoked", revoke_hash: revoke_hash})
     apply(Repo, :update!, [change])
     swap = Swap.get(swap.id)
 

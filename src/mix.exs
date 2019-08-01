@@ -41,6 +41,7 @@ defmodule ForgeSwap.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:integration), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -68,7 +69,8 @@ defmodule ForgeSwap.MixProject do
       {:toml, "~> 0.5"},
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
-      {:mock, "~> 0.3.0", only: :test},
+      {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
+      {:deep_merge, "~> 0.1"},
 
       # ArcBlock
       {:abt_did_elixir, "~> 0.3"},

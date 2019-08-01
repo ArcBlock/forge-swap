@@ -12,6 +12,10 @@ schema = "http"
 # this host and port.
 host = "localhost"
 port = 8807
+# The seconds the swapper should wait between two ticks.
+# The smaller this number is the more frequent will the 
+# service set up, retrieve and revoke swaps for you.
+swapper_tick_gap = 0.1
 
 # Configs the off-chain database to store swap information.
 [database]

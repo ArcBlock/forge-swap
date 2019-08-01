@@ -4,10 +4,10 @@ defmodule ForgeSwap.Swapper.Setupper do
   The state of this gen server is list looks like this:
     [ 
         # If the offer hash is empty, then it means there has not been a successfully set up swap tx yet.
-        {swap, demand_state, ”“},
+        {swap, hashlock, ”“},
         # If the offer hash is not empty, then the gen server will try to validate the tx.
-        {swap, demand_state, offer_hash},
-        {swap, demand_state, offer_hash},
+        {swap, hashlock, offer_hash},
+        {swap, hashlock, offer_hash},
     ]
   """
   use GenServer
@@ -18,24 +18,37 @@ defmodule ForgeSwap.Swapper.Setupper do
   alias ForgeSwap.Schema.Swap
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
+  alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Swapper.{Retriever, Revoker}
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def set_up_swap(swap, demand_state) do
-    GenServer.cast(__MODULE__, {:set_up_swap, swap, demand_state})
+  def set_up_swap(swap, hashlock) do
+    GenServer.cast(__MODULE__, {:set_up_swap, swap, hashlock})
   end
 
   ####################### Call backs ############################
 
   def init(:ok) do
-    {:ok, []}
+    swaps =
+      "user_set_up"
+      |> Swap.get_by_status()
+      |> Enum.map(fn swap ->
+        demand_state = ChainUtil.get_swap_state(swap.demand_swap, swap.demand_chain)
+        {swap, demand_state["hashlock"], swap.set_up_hash || ""}
+      end)
+
+    if swaps != [] do
+      send(__MODULE__, :tick)
+    end
+
+    {:ok, swaps}
   end
 
-  def handle_cast({:set_up_swap, swap, demand_state}, gen_server_state) do
-    gen_server_state = gen_server_state ++ [{swap, demand_state, ""}]
+  def handle_cast({:set_up_swap, swap, hashlock}, gen_server_state) do
+    gen_server_state = gen_server_state ++ [{swap, hashlock, ""}]
     send(__MODULE__, :tick)
     {:noreply, gen_server_state}
   end
@@ -47,45 +60,50 @@ defmodule ForgeSwap.Swapper.Setupper do
       |> Enum.reject(&is_nil/1)
 
     if gen_server_state != [] do
-      Process.send_after(__MODULE__, :tick, 3000)
+      gap = ConfigUtil.read_config()["service"]["swapper_tick_gap"]
+      Process.send_after(__MODULE__, :tick, trunc(gap * 1000))
     end
 
     {:noreply, gen_server_state}
   end
 
-  defp do_set_up_swap({swap, demand_state, ""}) do
-    offer_hash = TxUtil.set_up_swap(swap, demand_state["hashlock"])
+  defp do_set_up_swap({swap, hashlock, ""}) do
+    offer_hash = TxUtil.set_up_swap(swap, hashlock)
 
     Logger.info(fn ->
       "Server sent SetupSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(offer_hash)}"
     end)
 
-    {swap, demand_state, offer_hash}
+    change = Swap.update_changeset(swap, %{set_up_hash: offer_hash})
+    apply(Repo, :update!, [change])
+    swap = Swap.get(swap.id)
+
+    {swap, hashlock, offer_hash}
   end
 
-  defp do_set_up_swap({swap, demand_state, offer_hash}) do
+  defp do_set_up_swap({swap, hashlock, offer_hash}) do
     case ChainUtil.get_tx(offer_hash, swap.offer_chain) do
       %{"code" => "OK"} ->
-        both_set_up(swap, demand_state, offer_hash)
+        both_set_up(swap, hashlock, offer_hash)
 
       %{"code" => _} ->
-        Logger.info(fn ->
+        Logger.warn(
           "Server SetupSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
             inspect(offer_hash)
           }"
-        end)
+        )
 
-        {swap, demand_state, ""}
+        {swap, hashlock, ""}
 
       nil ->
-        {swap, demand_state, offer_hash}
+        {swap, hashlock, offer_hash}
     end
   end
 
   # Updates the swap in DB.
   # Sets the status = 'both_set_up', offer_swap = swap_state.address
   # If successfully updates the DB, return nil, othewise returns the original input.
-  defp both_set_up(swap, demand_state, offer_hash) do
+  defp both_set_up(swap, hashlock, offer_hash) do
     offer_address = ForgeSdk.Util.to_swap_address(offer_hash)
 
     Logger.info(fn ->
@@ -108,6 +126,6 @@ defmodule ForgeSwap.Swapper.Setupper do
         }. Error: #{inspect(e)}."
       )
 
-      {swap, demand_state, offer_hash}
+      {swap, hashlock, offer_hash}
   end
 end

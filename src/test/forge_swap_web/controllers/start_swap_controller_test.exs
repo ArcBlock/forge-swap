@@ -145,7 +145,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
         value: BigInt.biguint(@demand_token),
         assets: [],
         receiver: @owner.address,
-        locktime: current_block + trunc(demand_locktime / 3) + 1,
+        locktime: current_block + trunc(demand_locktime / 3) + 5,
         hashlock: hashlock
       )
 

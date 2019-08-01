@@ -9,6 +9,7 @@ defmodule ForgeSwap.Repo.Migrations.InitDb do
       add(:status, :string, null: false)
       add(:retrieve_hash, :string)
       add(:revoke_hash, :string)
+      add(:set_up_hash, :string)
       add(:offer_assets, {:array, :string})
       add(:offer_token, :decimal)
       add(:offer_chain, :string, null: false)

@@ -31,7 +31,7 @@ defmodule ForgeSwapWebTest.Util do
              "name" => "Event Chain"
            }
 
-    assert auth_body["chanInfo"] == %{"host" => "http://127.0.0.1:8410/api"}
+    assert auth_body["chainInfo"] == %{"host" => "http://127.0.0.1:8410/api/"}
     assert auth_body["iss"] == "did:abt:#{owner.address}"
     assert not is_nil(auth_body["exp"])
     assert not is_nil(auth_body["iat"])

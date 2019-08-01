@@ -15,18 +15,9 @@ defmodule ForgeSwap.Application do
     update_endpoint_config(config)
     repo = get_repo(config)
 
-    # List all child processes to be supervised
-    children = [
-      # Start the Ecto repository
-      repo,
-      Setupper,
-      Retriever,
-      Revoker,
-      # Start the endpoint when the application starts
-      ForgeSwapWeb.Endpoint
-      # Starts a worker by calling: ForgeSwap.Worker.start_link(arg)
-      # {ForgeSwap.Worker, arg},
-    ]
+    children =
+      [repo, ForgeSwapWeb.Endpoint] ++
+        get_swapper(Application.get_env(:forge_swap, :env))
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -53,6 +44,9 @@ defmodule ForgeSwap.Application do
         raise "Not supported database type: #{config["database"]["type"]}"
     end
   end
+
+  defp get_swapper(:test), do: []
+  defp get_swapper(_), do: [Setupper, Retriever, Revoker]
 
   defp update_endpoint_config(config) do
     schema = config["service"]["schema"]

@@ -80,14 +80,16 @@ defmodule ForgeSwapWeb.StartSwapController do
       demand_state == nil ->
         json(conn, %{error: "Could not find the demanded swap state #{demand_address}"})
 
-      verify_swap(swap, demand_state) == false ->
-        json(conn, %{error: "Invalid demanded swap state, address: #{demand_address}"})
+      (error = verify_swap(swap, demand_state)) != :ok ->
+        json(conn, %{
+          error: "Invalid demanded swap state, address: #{demand_address}, error: #{error}"
+        })
 
       true ->
         # Change the swap status to user_set_up in db.
         swap = user_set_up(swap, demand_state)
         # Asynchronously set up a swap for user 
-        Setupper.set_up_swap(swap, demand_state)
+        Setupper.set_up_swap(swap, demand_state["hashlock"])
         callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
         json(conn, %{response: %{callback: callback}})
     end
@@ -102,17 +104,32 @@ defmodule ForgeSwapWeb.StartSwapController do
 
     cond do
       # if it is not set up by user
-      demand_state["sender"] !== swap.user_did -> false
-      # if it is set up for app
-      demand_state["receiver"] !== asset_owner.address -> false
+      demand_state["sender"] !== swap.user_did ->
+        "Unexpected swap sender."
+
+      # if it is not set up for app
+      demand_state["receiver"] !== asset_owner.address ->
+        "Unexpected swap receiver."
+
       # if set up assets are not exactly same as demand assets
-      demand_state["assets"] -- swap.demand_assets !== [] -> false
-      swap.demand_assets -- demand_state["assets"] !== [] -> false
+      demand_state["assets"] -- swap.demand_assets !== [] ->
+        "Unexpected swap assets"
+
+      swap.demand_assets -- demand_state["assets"] !== [] ->
+        "Unexpected swap assets"
+
       # if set up token is not exactly same as demand token
-      actual_token !== expected_token -> false
+      actual_token !== expected_token ->
+        "Unexpected swap token"
+
       # if set up locktime is earlier than expected locktime
-      demand_state["locktime"] < expected_locktime -> false
-      true -> true
+      demand_state["locktime"] < expected_locktime ->
+        "Unexpected swap locktime, required locktime: #{expected_locktime}, actual locktime: #{
+          demand_state["locktime"]
+        }"
+
+      true ->
+        :ok
     end
   end
 
