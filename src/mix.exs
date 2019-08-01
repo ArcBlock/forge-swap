@@ -70,6 +70,7 @@ defmodule ForgeSwap.MixProject do
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
       {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
+      {:deep_merge, "~> 0.1"},
 
       # ArcBlock
       {:abt_did_elixir, "~> 0.3"},
