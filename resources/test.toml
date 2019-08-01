@@ -21,7 +21,6 @@ swapper_tick_gap = 0.1
 [database]
 # The database type, now only supports postgres
 type = "postgres"
-connection = "localhost"
 
 # This section contains the keys of assets owners for doing swapping.
 # Each owner has a moniker, the application can specify which owner to use when

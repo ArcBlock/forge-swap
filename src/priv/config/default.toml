@@ -28,7 +28,10 @@ demand_locktime = 172800
 [database]
 # The database type, now only supports postgres
 type = "postgres"
-connection = "localhost"
+username = "postgres"
+password = "postgres"
+database = ""
+hostname = "localhost"
 
 # This section contains the keys of assets owners for doing swapping.
 # Each owner has a moniker, the application can specify which owner to use when

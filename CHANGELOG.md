@@ -1,3 +1,6 @@
+## 0.0.5 (Aug 1, 2019)
+  - Make database configurable
+
 ## 0.0.4 (July 30, 2019)
   - Stabilize the tests.
   - Separate unit tests and integration tests.
