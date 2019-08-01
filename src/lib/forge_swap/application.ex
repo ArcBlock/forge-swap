@@ -13,7 +13,7 @@ defmodule ForgeSwap.Application do
     config = ConfigUtil.read_config()
     ConfigUtil.enrich_chain_config()
     update_endpoint_config(config)
-    repo = get_repo(config)
+    repo = update_repo_config(config)
 
     children =
       [repo, ForgeSwapWeb.Endpoint] ++
@@ -32,17 +32,6 @@ defmodule ForgeSwap.Application do
   def config_change(changed, _new, removed) do
     ForgeSwapWeb.Endpoint.config_change(changed, removed)
     :ok
-  end
-
-  defp get_repo(config) do
-    case config["database"]["type"] do
-      "postgres" ->
-        Repo.set_module(PostgresRepo)
-        PostgresRepo
-
-      _ ->
-        raise "Not supported database type: #{config["database"]["type"]}"
-    end
   end
 
   defp get_swapper(:test), do: []
@@ -66,6 +55,37 @@ defmodule ForgeSwap.Application do
 
     Application.put_env(:forge_swap, ForgeSwapWeb.Endpoint, endpoint)
   end
+
+  defp update_repo_config(config) do
+    repo = get_repo(config)
+    db_config = config["database"]
+
+    repo_config =
+      :forge_swap
+      |> Application.get_env(repo)
+      |> update_keyword(:username, db_config["username"])
+      |> update_keyword(:password, db_config["password"])
+      |> update_keyword(:database, db_config["database"])
+      |> update_keyword(:hostname, db_config["hostname"])
+
+    Application.put_env(:forge_swap, repo, repo_config)
+    repo
+  end
+
+  defp get_repo(config) do
+    case config["database"]["type"] do
+      "postgres" ->
+        Repo.set_module(PostgresRepo)
+        PostgresRepo
+
+      _ ->
+        raise "Not supported database type: #{config["database"]["type"]}"
+    end
+  end
+
+  defp update_keyword(list, _key, nil), do: list
+  defp update_keyword(list, _key, ""), do: list
+  defp update_keyword(list, key, value), do: Keyword.put(list, key, value)
 
   defp prepare_wallet(:dev) do
     ForgeSdk.connect("tcp://127.0.0.1:10020", name: "asset_chain", default: true)
