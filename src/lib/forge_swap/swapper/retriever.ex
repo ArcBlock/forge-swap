@@ -22,6 +22,7 @@ defmodule ForgeSwap.Swapper.Retriever do
   alias ForgeSwap.Swapper.Revoker
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
+  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -38,7 +39,15 @@ defmodule ForgeSwap.Swapper.Retriever do
   ####################### Call backs ############################
 
   def init(:ok) do
-    {:ok, []}
+    swaps =
+      ["both_set_up", "user_retrieved"]
+      |> Swap.get_by_status()
+      |> Enum.map(fn swap ->
+        offer_state = ChainUtil.get_swap_state(swap.offer_swap, swap.offer_chain)
+        {swap, offer_state["hashkey"], swap.retrieve_hash || ""}
+      end)
+
+    {:ok, swaps}
   end
 
   def handle_cast({:delete, swap}, gen_server_state) do
@@ -59,7 +68,8 @@ defmodule ForgeSwap.Swapper.Retriever do
       |> Enum.reject(&is_nil/1)
 
     if gen_server_state != [] do
-      Process.send_after(__MODULE__, :tick, 3000)
+      gap = ConfigUtil.read_config()["service"]["swapper_tick_gap"]
+      Process.send_after(__MODULE__, :tick, trunc(gap * 1000))
     end
 
     {:noreply, gen_server_state}
@@ -82,6 +92,10 @@ defmodule ForgeSwap.Swapper.Retriever do
     Logger.info(fn ->
       "Server sent RetrieveSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(retrieve_hash)}"
     end)
+
+    change = Swap.update_changeset(swap, %{retrieve_hash: retrieve_hash})
+    apply(Repo, :update!, [change])
+    swap = Swap.get(swap.id)
 
     {swap, hashkey, retrieve_hash}
   end
@@ -119,7 +133,9 @@ defmodule ForgeSwap.Swapper.Retriever do
       "Server sent RetrieveSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(retrieve_hash)}"
     end)
 
-    change = Swap.update_changeset(swap, %{status: "user_retrieved"})
+    change =
+      Swap.update_changeset(swap, %{status: "user_retrieved", retrieve_hash: retrieve_hash})
+
     apply(Repo, :update!, [change])
     swap = Swap.get(swap.id)
 
