@@ -1,0 +1,43 @@
+# The information of the application which delegates the swap to Forge Swap Service.
+[application]
+name = "Your awesome dApp"
+description = "Awesome dApp powered by ArcBlock Forge."
+
+# This section contains configurations for Forge Swap service itself.
+[service]
+# Either http or https
+schema = "http"
+# The url host and port used by swap service to generate the qr_code. 
+# You should make sure the wallet can reach swap service through
+# this host and port.
+host = "localhost"
+port = 8807
+
+# Configs the off-chain database to store swap information.
+[database]
+# The database type, now only supports postgres
+type = "postgres"
+username = "postgres"
+password = "postgres"
+database = "forge_swap"
+hostname = "localhost"
+
+# This section contains the keys of assets owners for doing swapping.
+# Each owner has a moniker, the application can specify which owner to use when
+# creating a swap. For example, you can create an owner whose moniker is 'concert'
+# to manage all concert-related assets.
+# 
+# [asset_owner]
+#   [asset_owner.concert]
+#     address = "SYSTEM:ASSET_OWNER_CONCERT_ADDRESS"
+#     pk = "SYSTEM:ASSET_OWNER_CONCERT_PK"
+#     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
+[asset_owners]
+  [asset_owners.default]
+    address = "SYSTEM:ASSET_OWNER_DEFAULT_ADDRESS"
+    pk = "SYSTEM:ASSET_OWNER_DEFAULT_PK"
+    # The private key of the public key, base 16 encoded.
+    # You can also read the secret key from environment variables like this:
+    # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
+    sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
+
