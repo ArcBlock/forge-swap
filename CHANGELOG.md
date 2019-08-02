@@ -1,3 +1,6 @@
+## 0.0.7 (Aug 1, 2019)
+  - Add release toml config file.
+
 ## 0.0.6 (Aug 1, 2019)
   - Fix release script
   
