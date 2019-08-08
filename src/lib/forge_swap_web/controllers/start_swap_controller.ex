@@ -52,6 +52,7 @@ defmodule ForgeSwapWeb.StartSwapController do
     callback = Routes.start_swap_url(conn, :start_re_swap, swap.id)
     extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
     response = DidUtil.gen_and_sign_response!(extra, swap.asset_owner)
+    IO.inspect(response)
     json(conn, response)
   end
 
