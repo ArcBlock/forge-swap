@@ -74,8 +74,8 @@ defmodule ForgeSwap.MixProject do
 
       # ArcBlock
       {:abt_did_elixir, "~> 0.3"},
-      {:forge_abi, "~> 1.9"},
-      {:forge_sdk, "~> 0.33"}
+      {:forge_abi, "~> 1.13"},
+      {:forge_sdk, "~> 0.34"}
     ]
   end
 
