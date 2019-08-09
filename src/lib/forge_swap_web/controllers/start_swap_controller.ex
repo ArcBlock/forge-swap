@@ -31,7 +31,7 @@ defmodule ForgeSwapWeb.StartSwapController do
     claims = [DidUtil.require_user_did(swap)]
     callback = Routes.start_swap_url(conn, :start_re_user, swap.id)
     extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra, swap.asset_owner)
+    response = DidUtil.gen_and_sign_response!(extra)
     json(conn, response)
   end
 
@@ -51,7 +51,7 @@ defmodule ForgeSwapWeb.StartSwapController do
     claims = [DidUtil.require_user_set_up(swap)]
     callback = Routes.start_swap_url(conn, :start_re_swap, swap.id)
     extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra, swap.asset_owner)
+    response = DidUtil.gen_and_sign_response!(extra)
     IO.inspect(response)
     json(conn, response)
   end

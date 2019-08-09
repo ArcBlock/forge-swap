@@ -2,6 +2,9 @@
 [application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
+did = "did:abt:zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
+pk = "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
+sk = "zTTuJYf65VQqp2bFwHP9dspDgdA3cdVTxjkNWKMJyZLmwAvG5TdJh5oyfYN1xZmL7yvtaXduAETevdvYqtbpFA9L"
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -10,7 +13,7 @@ schema = "http"
 # The url host and port used by swap service to generate the qr_code. 
 # You should make sure the wallet can reach swap service through
 # this host and port.
-host = "localhost"
+host = "10.1.10.85"
 port = 8807
 
 # Configs the off-chain database to store swap information.
@@ -44,7 +47,7 @@ type = "postgres"
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
+  host = "http://10.1.10.85"
   port = 8310
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_gap = 3
@@ -52,7 +55,7 @@ type = "postgres"
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
+  host = "http://10.1.10.85"
   port = 8410
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_gap = 3

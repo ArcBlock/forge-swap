@@ -78,16 +78,26 @@ defmodule ForgeSwap.Utils.Did do
     }
   end
 
-  def gen_and_sign_response!(extra, asset_owner) do
-    case ConfigUtil.read_config()["asset_owners"][asset_owner] do
-      nil ->
-        raise "Could not find asset owner #{asset_owner} in config files."
+  # def gen_and_sign_response!(extra, asset_owner) do
+  #   case ConfigUtil.read_config()["asset_owners"][asset_owner] do
+  #     nil ->
+  #       raise "Could not find asset owner #{asset_owner} in config files."
 
-      owner ->
-        %{
-          appPk: Multibase.encode!(owner.pk, :base58_btc),
-          authInfo: AbtDid.Signer.gen_and_sign(owner.address, owner.sk, extra)
-        }
-    end
+  #     owner ->
+  #       %{
+  #         appPk: Multibase.encode!(owner.pk, :base58_btc),
+  #         authInfo: AbtDid.Signer.gen_and_sign(owner.address, owner.sk, extra)
+  #       }
+  #   end
+  # end
+  def gen_and_sign_response!(extra) do
+    config = ConfigUtil.read_config()
+    sk = Multibase.decode!(config["application"]["sk"]) |> IO.inspect(label: "@@")
+    did = config["application"]["did"]
+
+    %{
+      appPk: config["application"]["pk"],
+      authInfo: AbtDid.Signer.gen_and_sign(did, sk, extra)
+    }
   end
 end
