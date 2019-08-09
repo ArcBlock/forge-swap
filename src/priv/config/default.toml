@@ -2,9 +2,11 @@
 [application]
 name = ""
 description = ""
+# The DID of the application.
 did = ""
-pk = ""
+# The secret key and public key of the application DID, multi-base encoded.
 sk = ""
+pk = ""
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -49,8 +51,8 @@ hostname = "localhost"
 [asset_owners]
   [asset_owners.default]
     address = ""
+    # The private key of the public key, multi-base encoded.
     pk = ""
-    # The private key of the public key, base 16 encoded.
     sk = ""
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"

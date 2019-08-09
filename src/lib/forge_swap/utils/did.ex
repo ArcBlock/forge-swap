@@ -92,7 +92,7 @@ defmodule ForgeSwap.Utils.Did do
   # end
   def gen_and_sign_response!(extra) do
     config = ConfigUtil.read_config()
-    sk = Multibase.decode!(config["application"]["sk"]) |> IO.inspect(label: "@@")
+    sk = Util.str_to_bin(config["application"]["sk"])
     did = config["application"]["did"]
 
     %{

@@ -2,6 +2,11 @@
 [application]
 name = "Your awesome dApp"
 description = "Awesome dApp powered by ArcBlock Forge."
+# The DID of the application.
+did = ""
+# The secret key and public key of the application DID, multi-base encoded.
+sk = ""
+pk = ""
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -36,7 +41,7 @@ hostname = "localhost"
   [asset_owners.default]
     address = "SYSTEM:ASSET_OWNER_DEFAULT_ADDRESS"
     pk = "SYSTEM:ASSET_OWNER_DEFAULT_PK"
-    # The private key of the public key, base 16 encoded.
+    # The private key of the public key, multi-base encoded.
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
     sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"

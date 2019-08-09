@@ -1,6 +1,7 @@
 defmodule ForgeSwap.Utils.Tx do
   alias ForgeAbi.{RetrieveSwapTx, RevokeSwapTx, SetupSwapTx, Transaction}
   alias ForgeAbi.Util.BigInt
+  alias ForgeSwap.Utils.Util
   alias ForgeSdk.Wallet.Util, as: WalletUtil
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Config, as: ConfigUtil
@@ -10,7 +11,7 @@ defmodule ForgeSwap.Utils.Tx do
       SetupSwapTx.new(
         assets: swap.offer_assets,
         value: to_token(swap.offer_token),
-        hashlock: Base.decode16!(hashlock),
+        hashlock: Util.str_to_bin(hashlock),
         locktime: ChainUtil.time_to_locktime(swap.offer_locktime, swap.offer_chain),
         receiver: swap.user_did
       )
@@ -34,7 +35,7 @@ defmodule ForgeSwap.Utils.Tx do
     retrieve_swap =
       RetrieveSwapTx.new(
         address: swap.demand_swap,
-        hashkey: Base.decode16!(hashkey)
+        hashkey: Util.str_to_bin(hashkey)
       )
 
     itx =

@@ -9,6 +9,11 @@ defmodule ForgeSwap.Utils.Util do
     scale: 6
   }
 
+  def to_full_did("did:abt:" <> _ = did), do: did
+  def to_full_did(addr), do: "did:abt:" <> addr
+
+  def str_to_bin("0x" <> str), do: Multibase.decode!("f" <> str)
+
   def str_to_bin(str) do
     case Base.decode16(str, case: :mixed) do
       {:ok, bin} ->

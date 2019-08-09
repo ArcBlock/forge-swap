@@ -2,6 +2,11 @@
 [application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
+# The DID of the application.
+did = ""
+# The secret key and public key of the application DID, multi-base encoded.
+sk = ""
+pk = ""
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -35,11 +40,11 @@ type = "postgres"
 [asset_owners]
   [asset_owners.default]
     address = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
-    pk = "75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
-    # The private key of the public key, base 16 encoded.
+    pk = "F75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
+    # The private key of the public key, multi-base encoded.
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
-    sk = "B4C1FED5090DD64518C20EAF5F1636CB4C2A68456A945161192635EFB83C675275CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
+    sk = "FB4C1FED5090DD64518C20EAF5F1636CB4C2A68456A945161192635EFB83C675275CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
 
 
 # Config the chains that swap service shall connect to.
