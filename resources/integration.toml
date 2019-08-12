@@ -2,7 +2,7 @@
 [application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
-# The 
+# The Did of the application
 did = "zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
 # The secret key and public key of the dApp, multi-base encoded.
 sk = "zTTuJYf65VQqp2bFwHP9dspDgdA3cdVTxjkNWKMJyZLmwAvG5TdJh5oyfYN1xZmL7yvtaXduAETevdvYqtbpFA9L"
@@ -51,13 +51,9 @@ type = "postgres"
   # The host and port to connect to the forge web
   host = "http://10.1.10.85"
   port = 8310
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
   host = "http://10.1.10.85"
   port = 8410
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3

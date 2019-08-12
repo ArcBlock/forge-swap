@@ -52,7 +52,6 @@ defmodule ForgeSwapWeb.StartSwapController do
     callback = Routes.start_swap_url(conn, :start_re_swap, swap.id)
     extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
     response = DidUtil.gen_and_sign_response!(extra)
-    IO.inspect(response)
     json(conn, response)
   end
 
@@ -99,7 +98,7 @@ defmodule ForgeSwapWeb.StartSwapController do
   defp verify_swap(swap, demand_state) do
     config = ConfigUtil.read_config()
     asset_owner = config["asset_owners"][swap.asset_owner]
-    expected_locktime = ChainUtil.time_to_locktime(swap.demand_locktime, swap.demand_chain)
+    expected_locktime = ChainUtil.to_locktime(swap.demand_locktime, swap.demand_chain)
     actual_token = String.to_integer(demand_state["value"])
     expected_token = Decimal.to_integer(swap.demand_token)
 

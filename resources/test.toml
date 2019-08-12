@@ -55,13 +55,9 @@ type = "postgres"
   # The host and port to connect to the forge web
   host = "http://127.0.0.1"
   port = 8310
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
   host = "http://127.0.0.1"
   port = 8410
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3

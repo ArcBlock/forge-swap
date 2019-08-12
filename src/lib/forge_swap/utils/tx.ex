@@ -12,7 +12,7 @@ defmodule ForgeSwap.Utils.Tx do
         assets: swap.offer_assets,
         value: to_token(swap.offer_token),
         hashlock: Util.str_to_bin(hashlock),
-        locktime: ChainUtil.time_to_locktime(swap.offer_locktime, swap.offer_chain),
+        locktime: ChainUtil.to_locktime(swap.offer_locktime, swap.offer_chain),
         receiver: swap.user_did
       )
 

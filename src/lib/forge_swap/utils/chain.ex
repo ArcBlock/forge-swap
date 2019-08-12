@@ -74,29 +74,13 @@ defmodule ForgeSwap.Utils.Chain do
     """
 
   @doc """
-  Convert time to locktime. Parameter `chain_name` is what you configured in 
-  the `chains` section if the config file. `time` is the time(hours) you 
-  want to lock a swap, e.g. 24 hours.
-
-  The output is a block height that the expected time to reach it from the current block 
-  height is the input `time`.
+  Converts the number of block to locktime by adding the number of block 
+  to the current block height of the specified chain.
   """
-  @spec time_to_locktime(number(), String.t()) :: Integer.t()
-  def time_to_locktime(time, chain_name) do
-    config = ConfigUtil.read_config()
-
-    case config["chains"][chain_name] do
-      nil ->
-        raise "Not able to find configuration for chain: #{inspect(chain_name)}. Please make sure you configured it in the 'Chains' section."
-
-      %{"block_gap" => block_gap} ->
-        block_numbers = trunc(time / block_gap) + 1
-        current_height = get_chain_info(chain_name)["blockHeight"] |> String.to_integer()
-        current_height + block_numbers
-
-      _ ->
-        raise "The configuration must contain the block_time which specifies the average time in seconds to generate a block."
-    end
+  @spec to_locktime(number(), String.t()) :: Integer.t()
+  def to_locktime(number_of_block, chain_name) do
+    current_height = get_chain_info(chain_name)["blockHeight"] |> String.to_integer()
+    current_height + number_of_block
   end
 
   @doc """

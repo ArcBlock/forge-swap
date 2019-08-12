@@ -5,6 +5,9 @@ defmodule ForgeSwapWebTest.Util do
 
   import ExUnit.Assertions
 
+  @app_did "zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
+  @app_pk "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
+
   def gen_signed_request(w, extra) do
     user_info = AbtDid.Signer.gen_and_sign(w.address, w.sk, extra)
 
@@ -23,7 +26,7 @@ defmodule ForgeSwapWebTest.Util do
   end
 
   def assert_common_auth_info(pk, auth_body, owner) do
-    assert pk === Multibase.encode!(owner.pk, :base58_btc)
+    assert pk === @app_pk
 
     assert auth_body["appInfo"] == %{
              "description" =>
@@ -31,8 +34,9 @@ defmodule ForgeSwapWebTest.Util do
              "name" => "Event Chain"
            }
 
-    assert auth_body["chainInfo"] == %{"host" => "http://127.0.0.1:8410/api/"}
-    assert auth_body["iss"] == "did:abt:#{owner.address}"
+    assert auth_body["chainInfo"]["host"] != nil
+    assert auth_body["chainInfo"]["host"] != ""
+    assert auth_body["iss"] == "did:abt:#{@app_did}"
     assert not is_nil(auth_body["exp"])
     assert not is_nil(auth_body["iat"])
     assert not is_nil(auth_body["nbf"])
