@@ -27,7 +27,7 @@ defmodule ForgeSwapWeb.RetrieveSwapController do
     claims = [DidUtil.require_user_did(swap)]
     callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
     extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra, swap.asset_owner)
+    response = DidUtil.gen_and_sign_response!(extra)
     json(conn, response)
   end
 

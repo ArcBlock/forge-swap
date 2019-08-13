@@ -60,7 +60,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
 
   @tag :integration
   test "Start and revoke swap, all good", %{conn: conn} do
-    {id, swap_address, _, _} = both_set_up_swap(conn, 3, 6)
+    {id, swap_address, _, _} = both_set_up_swap(conn, 2, 3)
 
     # Step 5, Wallet Revoke the swap.
     tx = RevokeSwapTx.new(address: swap_address)
@@ -73,7 +73,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
     assert String.length(swap.revoke_hash) > 0
   end
 
-  defp both_set_up_swap(conn, offer_locktime \\ 86400, demand_locktime \\ 172_800) do
+  defp both_set_up_swap(conn, offer_locktime \\ 28800, demand_locktime \\ 57600) do
     # Create a Swap 
     body = %{
       "userDid" => @user.address,
@@ -145,7 +145,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
         value: BigInt.biguint(@demand_token),
         assets: [],
         receiver: @owner.address,
-        locktime: current_block + trunc(demand_locktime / 3) + 5,
+        locktime: current_block + demand_locktime + 5,
         hashlock: hashlock
       )
 

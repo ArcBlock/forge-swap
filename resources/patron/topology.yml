@@ -6,9 +6,9 @@ chains:
       - '[address: "127.0.0.1", p2p: 10000, proxy: 10010, grpc: 10020, tm_rpc: 10030, tm_grpc: 10040, ipfs_swarm: 10050, ipfs_api: 10060, ipfs_gateway: 10070, web: 8310, moniker: "asset_chain0"]'
     genesis_config: asset_chain.toml
     moderator:
-      sk: tk3pcIjpDRzeUGutXL7mjf52jNfA_kztlQnIgYnBStiY2X5pZlsLGwfiMgFA6a8qLhCEgMjGmEBjcFROew9TXw
-      pk: mNl-aWZbCxsH4jIBQOmvKi4QhIDIxphAY3BUTnsPU18
-      address: z1TpjUv5ZVVpY854GVk9W9Zfnb4HKqQzRSg
+      sk: Z0K5K2Vv_v00NLNiM4AqzMfcHeZKQoTM0kyxd1h9EmQTI2y1y7UmT0U-C0NP1AkyRb6CHqKFKboC2P0jjXYbpA
+      pk: EyNstcu1Jk9FPgtDT9QJMkW-gh6ihSm6Atj9I412G6Q
+      address: z11N3R6GZrNingR11Dub9EbVMJGgyZTJGMQB
     forge_bin: '~/.forge_cli/release/forge/<%= version %>/bin/forge'
     forge_web_bin: '~/.forge_cli/release/forge_web/<%= version %>/bin/forge_web'
     tm_bin: '~/.forge_cli/release/forge/<%= version %>/lib/consensus-<%= version %>/priv/tendermint/tendermint --home <%= forge_path %>/tendermint'
@@ -18,9 +18,9 @@ chains:
       - '[address: "127.0.0.1", p2p: 10100, proxy: 10110, grpc: 10120, tm_rpc: 10130, tm_grpc: 10140, ipfs_swarm: 10150, ipfs_api: 10160, ipfs_gateway: 10170, web: 8410, moniker: "app_chain0"]'
     genesis_config: app_chain.toml
     moderator:
-      sk: AbGCbsZRQuk4bJbtU4-1ZqJc41YDgvISZC2BDpC4pGdZS2ai83D8N-QM9p9_FBzsmMZD2o4HzmE6gLo6Lxqf2Q
-      pk: WUtmovNw_DfkDPaffxQc7JjGQ9qOB85hOoC6Oi8an9k
-      address: z1VFy8hB9ndynkWAAH9P1a2L5WaU7AvtKGy
+      sk: Z0K5K2Vv_v00NLNiM4AqzMfcHeZKQoTM0kyxd1h9EmQTI2y1y7UmT0U-C0NP1AkyRb6CHqKFKboC2P0jjXYbpA
+      pk: EyNstcu1Jk9FPgtDT9QJMkW-gh6ihSm6Atj9I412G6Q
+      address: z11N3R6GZrNingR11Dub9EbVMJGgyZTJGMQB
     forge_bin: '~/.forge_cli/release/forge/<%= version %>/bin/forge'
     forge_web_bin: '~/.forge_cli/release/forge_web/<%= version %>/bin/forge_web'
     tm_bin: '~/.forge_cli/release/forge/<%= version %>/lib/consensus-<%= version %>/priv/tendermint/tendermint --home <%= forge_path %>/tendermint'

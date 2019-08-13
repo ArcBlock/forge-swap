@@ -2,6 +2,11 @@
 [application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
+# The Did of the application
+did = "zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
+# The secret key and public key of the dApp, multi-base encoded.
+sk = "zTTuJYf65VQqp2bFwHP9dspDgdA3cdVTxjkNWKMJyZLmwAvG5TdJh5oyfYN1xZmL7yvtaXduAETevdvYqtbpFA9L"
+pk = "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -31,11 +36,11 @@ type = "postgres"
 [asset_owners]
   [asset_owners.default]
     address = "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7"
-    pk = "75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
-    # The private key of the public key, base 16 encoded.
+    pk = "F75CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
+    # The private key of the public key, multi-base encoded.
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
-    sk = "B4C1FED5090DD64518C20EAF5F1636CB4C2A68456A945161192635EFB83C675275CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
+    sk = "FB4C1FED5090DD64518C20EAF5F1636CB4C2A68456A945161192635EFB83C675275CB8DA37D1FBE381AD7190ACE1C87E4D1312A689B2605F4C27A2C9E1CE63CC5"
 
 
 # Config the chains that swap service shall connect to.
@@ -44,15 +49,11 @@ type = "postgres"
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
+  host = "http://localhost"
   port = 8310
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
+  host = "http://localhost"
   port = 8410
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3

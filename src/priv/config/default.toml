@@ -2,6 +2,11 @@
 [application]
 name = ""
 description = ""
+# The DID of the application.
+did = ""
+# The secret key and public key of the application DID, multi-base encoded.
+sk = ""
+pk = ""
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -13,16 +18,9 @@ schema = "http"
 host = "localhost"
 port = 8807
 # The seconds the swapper should wait between two ticks.
-# The smaller this number is the more frequent will the 
-# service set up, retrieve and revoke swaps for you.
+# The smaller this number is the more frequently will the 
+# service try to set up, retrieve and revoke swaps for the dApp.
 swapper_tick_gap = 3
-
-# This section contains the configs to send swap transactions to chains.
-[swap]
-# The default seconds to lock swap that is set up by the application for users.
-offer_locktime = 86400
-# The default seconds to lock swap that is set up by an user for the application.
-demand_locktime = 172800
 
 # Configs the off-chain database to store swap information.
 [database]
@@ -46,8 +44,8 @@ hostname = "localhost"
 [asset_owners]
   [asset_owners.default]
     address = ""
+    # The private key of the public key, multi-base encoded.
     pk = ""
-    # The private key of the public key, base 16 encoded.
     sk = ""
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
@@ -63,11 +61,17 @@ hostname = "localhost"
   port = 8310
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_gap = 3
+  # The default number of blocks to lock swap that is set up by the application for users on this chain.
+  offer_locktime = 28800
+  # The default expected number of blocks to lock swap that is set up by an user for the application on this chain.
+  demand_locktime = 57600
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
   host = "http://127.0.0.1"
   port = 8410
-  # The average time(seconds) to generate a block. You should figure out this value from the chain.
-  block_gap = 3
+  # The default number of blocks to lock swap that is set up by the application for users on this chain.
+  offer_locktime = 28800
+  # The default expected number of blocks to lock swap that is set up by an user for the application on this chain.
+  demand_locktime = 57600

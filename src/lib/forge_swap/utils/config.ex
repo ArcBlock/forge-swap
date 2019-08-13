@@ -1,4 +1,5 @@
 defmodule ForgeSwap.Utils.Config do
+  alias ForgeSwap.Utils.Util
   alias ForgeSwap.Utils.Chain, as: ChainUtil
 
   def enrich_chain_config(:test) do
@@ -109,8 +110,8 @@ defmodule ForgeSwap.Utils.Config do
       {moniker,
        ForgeAbi.WalletInfo.new(
          address: owner["address"],
-         pk: Base.decode16!(owner["pk"], case: :mixed),
-         sk: Base.decode16!(owner["sk"], case: :mixed)
+         pk: Util.str_to_bin(owner["pk"]),
+         sk: Util.str_to_bin(owner["sk"])
        )}
     end)
   end

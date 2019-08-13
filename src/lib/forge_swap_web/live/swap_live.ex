@@ -41,7 +41,10 @@ defmodule ForgeSwapWeb.SwapLive do
       display_not_started: "none",
       display_user_set_up: "none",
       display_both_set_up: "none",
-      display_user_retrieved: "none"
+      display_user_retrieved: "none",
+      display_both_retrieved: "none",
+      display_user_revoked: "none",
+      display_both_revoked: "none"
     }
 
     key = String.to_atom("display_" <> status)

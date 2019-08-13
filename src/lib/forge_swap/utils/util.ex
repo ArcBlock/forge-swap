@@ -3,6 +3,16 @@ defmodule ForgeSwap.Utils.Util do
 
   alias ForgeSwapWeb.Router.Helpers
   alias ForgeSwapWeb.Endpoint
+  alias ForgeSwap.Utils.Config, as: ConfigUtil
+
+  @svg_setting %QRCode.SvgSettings{
+    scale: 6
+  }
+
+  def to_full_did("did:abt:" <> _ = did), do: did
+  def to_full_did(addr), do: "did:abt:" <> addr
+
+  def str_to_bin("0x" <> str), do: Multibase.decode!("f" <> str)
 
   def str_to_bin(str) do
     case Base.decode16(str, case: :mixed) do
@@ -24,7 +34,10 @@ defmodule ForgeSwap.Utils.Util do
     str |> String.trim() |> String.to_integer()
   end
 
-  def gen_qr_code(url) when is_binary(url), do: url |> EQRCode.encode() |> EQRCode.svg()
+  def gen_qr_code(link) when is_binary(link) do
+    {:ok, qr_code} = QRCode.create(link, :low)
+    QRCode.Svg.create(qr_code, @svg_setting)
+  end
 
   # Generates the QR code by scanning which a user can start the swap process.
   def gen_qr_code("not_started", swap_id),
@@ -36,6 +49,13 @@ defmodule ForgeSwap.Utils.Util do
 
   def gen_qr_code(_, _), do: ""
 
-  def padding(url),
-    do: "https://abtwallet.io/i/?action=requestAuth&url=#{URI.encode_www_form(url)}"
+  def padding(url) do
+    config = ConfigUtil.read_config()
+    pk = config["application"]["pk"]
+    did = config["application"]["did"]
+
+    "https://abtwallet.io/i/?appPk=#{pk}&appDid=#{did}&action=requestAuth&url=#{
+      URI.encode_www_form(url)
+    }"
+  end
 end

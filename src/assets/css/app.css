@@ -4,8 +4,8 @@
 @import "../../../deps/phoenix_live_view/assets/css/live_view.css";
 
 .qrcode {
-  width: 350px !important;
-  height: 350px !important;
+  width: 550px !important;
+  height: 550px !important;
 }
 
 .qrcode-wrapper {

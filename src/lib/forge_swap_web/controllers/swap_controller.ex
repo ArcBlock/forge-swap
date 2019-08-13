@@ -4,9 +4,10 @@ defmodule ForgeSwapWeb.SwapController do
   alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
   alias ForgeSwap.Utils.Config, as: ConfigUtil
-  alias ForgeSwapWeb.Plugs.ReadSwap
+  alias ForgeSwapWeb.Plugs.{ReadSwap, VerifyCreateSwap}
 
   plug(ReadSwap when action == :show)
+  plug(VerifyCreateSwap when action == :create)
 
   @doc """
   Creates a swap for between the application and a wallet.
@@ -16,15 +17,17 @@ defmodule ForgeSwapWeb.SwapController do
     user_did = params["userDid"]
     asset_owner = params["assetOwner"] || "default"
 
+    offer_chain = params["offerChain"] || "application"
     offer_assets = params["offerAssets"] || []
     offer_token = params["offerToken"] || 0
-    offer_chain = params["offerChain"] || "application"
-    offer_locktime = params["offerLocktime"] || config["swap"]["offer_locktime"]
+    offer_chain_config = config["chains"][offer_chain]
+    offer_locktime = params["offerLocktime"] || offer_chain_config["offer_locktime"]
 
+    demand_chain = params["demandChain"] || "asset"
     demand_assets = params["demandAssets"] || []
     demand_token = params["demandToken"] || 0
-    demand_chain = params["demandChain"] || "asset"
-    demand_locktime = params["demandLocktime"] || config["swap"]["demand_locktime"]
+    demand_chain_config = config["chains"][demand_chain]
+    demand_locktime = params["demandLocktime"] || demand_chain_config["demand_locktime"]
 
     do_create(conn, %{
       user_did: user_did,
@@ -51,8 +54,11 @@ defmodule ForgeSwapWeb.SwapController do
     change_set = Swap.insert_changeset(params)
 
     case apply(Repo, :insert, [change_set]) do
-      {:ok, swap} -> json(conn, %{response: %{id: swap.id}})
-      {:error, change} -> json(conn, %{error: "#{inspect(change.errors)}"})
+      {:ok, swap} ->
+        json(conn, %{response: %{id: swap.id, redirect: Routes.swap_url(conn, :show, swap.id)}})
+
+      {:error, change} ->
+        json(conn, %{error: "#{inspect(change.errors)}"})
     end
   end
 

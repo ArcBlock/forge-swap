@@ -65,7 +65,7 @@ defmodule ForgeSwap.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.4"},
-      {:eqrcode, "~> 0.1.6"},
+      {:qr_code, "~> 2.1.0"},
       {:toml, "~> 0.5"},
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
@@ -74,8 +74,8 @@ defmodule ForgeSwap.MixProject do
 
       # ArcBlock
       {:abt_did_elixir, "~> 0.3"},
-      {:forge_abi, "~> 1.9"},
-      {:forge_sdk, "~> 0.33"}
+      {:forge_abi, "~> 1.13"},
+      {:forge_sdk, "~> 0.34"}
     ]
   end
 
