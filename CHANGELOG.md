@@ -1,3 +1,10 @@
+## 0.0.8 (Aug 13, 2019)
+  - Add redirect url in the response.
+  - Use block number as locktime.
+  - Use multibase in config file
+  - Add AppPk and AppDid
+  - Change QR code generator.
+
 ## 0.0.7 (Aug 1, 2019)
   - Add release toml config file.
 
