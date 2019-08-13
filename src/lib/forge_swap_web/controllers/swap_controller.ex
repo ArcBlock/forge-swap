@@ -54,8 +54,11 @@ defmodule ForgeSwapWeb.SwapController do
     change_set = Swap.insert_changeset(params)
 
     case apply(Repo, :insert, [change_set]) do
-      {:ok, swap} -> json(conn, %{response: %{id: swap.id}})
-      {:error, change} -> json(conn, %{error: "#{inspect(change.errors)}"})
+      {:ok, swap} ->
+        json(conn, %{response: %{id: swap.id, redirect: Routes.swap_url(conn, :show, swap.id)}})
+
+      {:error, change} ->
+        json(conn, %{error: "#{inspect(change.errors)}"})
     end
   end
 
