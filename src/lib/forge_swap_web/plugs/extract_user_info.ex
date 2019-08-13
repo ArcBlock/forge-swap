@@ -34,26 +34,24 @@ defmodule ForgeSwapWeb.Plugs.ExtractUserInfo do
     do: conn |> json(%{error: "Must specify 'iat' in user info."}) |> halt()
 
   defp check_iat(conn, %{"iat" => iat}, now) do
-    assign(conn, :iat, iat)
-    # if iat <= now and iat > now - 300 do
-    #   assign(conn, :iat, iat)
-    # else
-    #   conn |> json(%{error: "The request must be issued within 5 minutes."}) |> halt()
-    # end
+    if iat <= now and iat > now - 300 do
+      assign(conn, :iat, iat)
+    else
+      conn |> json(%{error: "The request must be issued within 5 minutes."}) |> halt()
+    end
   end
 
   defp check_nbf(conn, %{"nbf" => nbf}, _) when is_nil(nbf),
     do: conn |> json(%{error: "Must specify 'nbf' in user info."}) |> halt()
 
   defp check_nbf(conn, %{"nbf" => nbf}, now) do
-    assign(conn, :nbf, nbf)
-    # if now >= nbf do
-    #   assign(conn, :nbf, nbf)
-    # else
-    #   conn
-    #   |> json(%{error: "The request is not valid before #{inspect(DateTime.from_unix!(nbf))}"})
-    #   |> halt()
-    # end
+    if now >= nbf do
+      assign(conn, :nbf, nbf)
+    else
+      conn
+      |> json(%{error: "The request is not valid before #{inspect(DateTime.from_unix!(nbf))}"})
+      |> halt()
+    end
   end
 
   defp check_exp(conn, %{"exp" => exp}, _) when is_nil(exp),
