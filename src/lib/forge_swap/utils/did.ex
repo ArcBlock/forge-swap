@@ -81,10 +81,11 @@ defmodule ForgeSwap.Utils.Did do
   def gen_and_sign_response!(extra) do
     config = ConfigUtil.read_config()
     sk = Util.str_to_bin(config["application"]["sk"])
+    pk = config["application"]["pk"] |> Util.str_to_bin() |> Multibase.encode!(:base58_btc)
     did = config["application"]["did"]
 
     %{
-      appPk: config["application"]["pk"],
+      appPk: pk,
       authInfo: AbtDid.Signer.gen_and_sign(did, sk, extra)
     }
   end
