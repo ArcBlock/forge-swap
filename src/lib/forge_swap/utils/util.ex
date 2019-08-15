@@ -51,7 +51,7 @@ defmodule ForgeSwap.Utils.Util do
 
   def padding(url) do
     config = ConfigUtil.read_config()
-    pk = config["application"]["pk"]
+    pk = config["application"]["pk"] |> str_to_bin() |> Multibase.encode!(:base58_btc)
     did = config["application"]["did"]
 
     "https://abtwallet.io/i/?appPk=#{pk}&appDid=#{did}&action=requestAuth&url=#{

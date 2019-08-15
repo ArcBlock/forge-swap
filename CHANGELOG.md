@@ -1,3 +1,6 @@
+## 0.0.9 (Aug 14, 2019)
+  - Fix appPk issue.
+
 ## 0.0.8 (Aug 13, 2019)
   - Add redirect url in the response.
   - Use block number as locktime.
