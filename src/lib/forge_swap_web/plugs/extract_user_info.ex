@@ -7,6 +7,8 @@ defmodule ForgeSwapWeb.Plugs.ExtractUserInfo do
   alias ForgeSwap.Utils.Util
   alias ForgeSwap.Utils.Did, as: DidUtil
 
+  use Plug.Builder
+
   def init(_) do
   end
 
@@ -17,11 +19,11 @@ defmodule ForgeSwapWeb.Plugs.ExtractUserInfo do
 
     conn
     |> assign(:user, %{address: body["iss"], pk: pk_bin})
+    |> assign(:claims, Map.get(body, "requestedClaims", []))
+    |> assign(:params, Map.get(body, "params", %{}))
     |> check_iat(body, now)
     |> check_nbf(body, now)
     |> check_exp(body, now)
-    |> assign(:claims, Map.get(body, "requestedClaims", []))
-    |> assign(:params, Map.get(body, "params", %{}))
   end
 
   def call(conn, _) do
@@ -30,16 +32,20 @@ defmodule ForgeSwapWeb.Plugs.ExtractUserInfo do
     |> halt()
   end
 
+  defp check_iat(%{halted: true} = conn, _, _), do: conn
+
   defp check_iat(conn, %{"iat" => iat}, _) when is_nil(iat),
     do: conn |> json(%{error: "Must specify 'iat' in user info."}) |> halt()
 
   defp check_iat(conn, %{"iat" => iat}, now) do
-    if iat <= now and iat > now - 300 do
+    if iat > now - 300 do
       assign(conn, :iat, iat)
     else
       conn |> json(%{error: "The request must be issued within 5 minutes."}) |> halt()
     end
   end
+
+  defp check_nbf(%{halted: true} = conn, _, _), do: conn
 
   defp check_nbf(conn, %{"nbf" => nbf}, _) when is_nil(nbf),
     do: conn |> json(%{error: "Must specify 'nbf' in user info."}) |> halt()
@@ -53,6 +59,8 @@ defmodule ForgeSwapWeb.Plugs.ExtractUserInfo do
       |> halt()
     end
   end
+
+  defp check_exp(%{halted: true} = conn, _, _), do: conn
 
   defp check_exp(conn, %{"exp" => exp}, _) when is_nil(exp),
     do: conn |> json(%{error: "Must specify 'exp' in user info."}) |> halt()

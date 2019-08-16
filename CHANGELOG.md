@@ -1,3 +1,6 @@
+## 0.0.10 (Aug 14, 2019)
+  - Fix the ResponseAlreadySent error.
+
 ## 0.0.9 (Aug 14, 2019)
   - Fix appPk issue.
 
