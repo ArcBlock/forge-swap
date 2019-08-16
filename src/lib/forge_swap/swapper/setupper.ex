@@ -71,7 +71,7 @@ defmodule ForgeSwap.Swapper.Setupper do
     offer_hash = TxUtil.set_up_swap(swap, hashlock)
 
     Logger.info(fn ->
-      "Server sent SetupSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(offer_hash)}"
+      "Swap Id: #{swap.id}, Server sent SetupSwapTx, Hash: #{inspect(offer_hash)}"
     end)
 
     change = Swap.update_changeset(swap, %{set_up_hash: offer_hash})
@@ -88,7 +88,7 @@ defmodule ForgeSwap.Swapper.Setupper do
 
       %{"code" => _} ->
         Logger.warn(
-          "Server SetupSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
+          "Swap Id: #{swap.id}, Server SetupSwapTx failed, will retry. Hash: #{
             inspect(offer_hash)
           }"
         )
@@ -107,7 +107,7 @@ defmodule ForgeSwap.Swapper.Setupper do
     offer_address = ForgeSdk.Util.to_swap_address(offer_hash)
 
     Logger.info(fn ->
-      "Server set up a swap, Swap Id: #{swap.id}, Swap address: #{offer_address}"
+      "Swap Id: #{swap.id}, Server set up a swap, Swap address: #{offer_address}"
     end)
 
     change = Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: offer_address})
@@ -121,7 +121,7 @@ defmodule ForgeSwap.Swapper.Setupper do
   rescue
     e ->
       Logger.warn(
-        "Failed to set swap status to both_set_up, will retry. Swap Id: #{swap.id}, Hash: #{
+        "Swap Id: #{swap.id}, Failed to set swap status to both_set_up, will retry. Hash: #{
           inspect(offer_hash)
         }. Error: #{inspect(e)}."
       )

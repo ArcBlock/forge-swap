@@ -88,7 +88,7 @@ defmodule ForgeSwap.Swapper.Revoker do
     revoke_hash = TxUtil.revoke_swap(swap)
 
     Logger.info(fn ->
-      "Server sent RevokeSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(revoke_hash)}"
+      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
     end)
 
     change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
@@ -107,7 +107,7 @@ defmodule ForgeSwap.Swapper.Revoker do
       # Revoke swap tx failed, reset the hash and try again
       %{"code" => _} ->
         Logger.warn(
-          "Server RevokeSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
+          "Swap Id: #{swap.id}, Server RevokeSwapTx failed, will retry. Hash: #{
             inspect(revoke_hash)
           }"
         )
@@ -122,13 +122,13 @@ defmodule ForgeSwap.Swapper.Revoker do
 
   defp user_revoked(swap) do
     Logger.info(fn ->
-      "User revoked the swap, Swap Id: #{swap.id}, Swap address: #{swap.demand_swap}"
+      "Swap Id: #{swap.id}, User revoked the swap, Swap address: #{swap.demand_swap}"
     end)
 
     revoke_hash = TxUtil.revoke_swap(swap)
 
     Logger.info(fn ->
-      "Server sent RevokeSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(revoke_hash)}"
+      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
     end)
 
     change = Swap.update_changeset(swap, %{status: "user_revoked", revoke_hash: revoke_hash})
@@ -144,7 +144,7 @@ defmodule ForgeSwap.Swapper.Revoker do
 
   defp both_revoked(swap, revoke_hash) do
     Logger.info(fn ->
-      "Server RevokeSwapTx succeeded, Swap Id: #{swap.id}, Hash: #{inspect(revoke_hash)}"
+      "Swap Id: #{swap.id}, Server RevokeSwapTx succeeded, Hash: #{inspect(revoke_hash)}"
     end)
 
     change = Swap.update_changeset(swap, %{status: "both_revoked", revoke_hash: revoke_hash})

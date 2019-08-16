@@ -105,25 +105,61 @@ defmodule ForgeSwapWeb.StartSwapController do
     cond do
       # if it is not set up by user
       demand_state["sender"] !== swap.user_did ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap sender. Expected: #{swap.user_did}, actual: #{
+            demand_state["sender"]
+          }"
+        end)
+
         "Unexpected swap sender."
 
       # if it is not set up for app
       demand_state["receiver"] !== asset_owner.address ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap receiver. Expected: #{asset_owner.address}, actual: #{
+            demand_state["receiver"]
+          }"
+        end)
+
         "Unexpected swap receiver."
 
       # if set up assets are not exactly same as demand assets
       demand_state["assets"] -- swap.demand_assets !== [] ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap assets. Expected: #{swap.demand_assets}, actual: #{
+            demand_state["assets"]
+          }"
+        end)
+
         "Unexpected swap assets"
 
       swap.demand_assets -- demand_state["assets"] !== [] ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap assets. Expected: #{swap.demand_assets}, actual: #{
+            demand_state["assets"]
+          }"
+        end)
+
         "Unexpected swap assets"
 
       # if set up token is not exactly same as demand token
       actual_token !== expected_token ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap token. Expected: #{expected_token}, actual: #{
+            actual_token
+          }"
+        end)
+
         "Unexpected swap token"
 
       # if set up locktime is earlier than expected locktime
       demand_state["locktime"] < expected_locktime ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Unexpected swap locktime. Expected: #{expected_locktime}, actual: #{
+            demand_state["locktime"]
+          }"
+        end)
+
         "Unexpected swap locktime, required locktime: #{expected_locktime}, actual locktime: #{
           demand_state["locktime"]
         }"
@@ -135,7 +171,7 @@ defmodule ForgeSwapWeb.StartSwapController do
 
   defp user_set_up(swap, state) do
     Logger.info(fn ->
-      "User set up a swap, Swap Id: #{swap.id}, Swap address: #{state["address"]}"
+      "Swap Id: #{swap.id}, User set up a swap, Swap address: #{state["address"]}"
     end)
 
     change = Swap.update_changeset(swap, %{status: "user_set_up", demand_swap: state["address"]})

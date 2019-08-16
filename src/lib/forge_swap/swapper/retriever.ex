@@ -90,7 +90,7 @@ defmodule ForgeSwap.Swapper.Retriever do
     retrieve_hash = TxUtil.retrieve_swap(swap, hashkey)
 
     Logger.info(fn ->
-      "Server sent RetrieveSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(retrieve_hash)}"
+      "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
     end)
 
     change = Swap.update_changeset(swap, %{retrieve_hash: retrieve_hash})
@@ -109,7 +109,7 @@ defmodule ForgeSwap.Swapper.Retriever do
       # Retrieve swap tx failed, reset the hash and try again
       %{"code" => _} ->
         Logger.info(fn ->
-          "Server RetrieveSwapTx failed, will retry. Swap Id: #{swap.id}, Hash: #{
+          "Swap Id: #{swap.id}, Server RetrieveSwapTx failed, will retry. Hash: #{
             inspect(retrieve_hash)
           }"
         end)
@@ -124,13 +124,13 @@ defmodule ForgeSwap.Swapper.Retriever do
 
   defp user_retrieved(swap, hashkey) do
     Logger.info(fn ->
-      "User retrieved the swap, Swap Id: #{swap.id}, Swap address: #{swap.offer_swap}"
+      "Swap Id: #{swap.id}, User retrieved the swap, Swap address: #{swap.offer_swap}"
     end)
 
     retrieve_hash = TxUtil.retrieve_swap(swap, hashkey)
 
     Logger.info(fn ->
-      "Server sent RetrieveSwapTx, Swap Id: #{swap.id}, Hash: #{inspect(retrieve_hash)}"
+      "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
     end)
 
     change =
@@ -148,7 +148,7 @@ defmodule ForgeSwap.Swapper.Retriever do
 
   defp both_retrieved(swap, retrieve_hash) do
     Logger.info(fn ->
-      "Server RetrieveSwapTx succeeded, Swap Id: #{swap.id}, Hash: #{inspect(retrieve_hash)}"
+      "Swap Id: #{swap.id}, Server RetrieveSwapTx succeeded, Hash: #{inspect(retrieve_hash)}"
     end)
 
     change =

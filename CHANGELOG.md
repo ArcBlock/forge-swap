@@ -1,3 +1,6 @@
+## 0.0.11 (Aug 16, 2019)
+  - Add more logs.
+
 ## 0.0.10 (Aug 14, 2019)
   - Fix the ResponseAlreadySent error.
 
