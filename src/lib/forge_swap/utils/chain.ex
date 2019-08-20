@@ -2,7 +2,6 @@ defmodule ForgeSwap.Utils.Chain do
   require Logger
 
   alias ForgeAbi.Transaction
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   @query_get_chain_info """
   {
@@ -120,7 +119,7 @@ defmodule ForgeSwap.Utils.Chain do
   end
 
   defp do_query(query, chain_name) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
 
     case config["chains"][chain_name] do
       nil ->

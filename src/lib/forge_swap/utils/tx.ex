@@ -4,7 +4,6 @@ defmodule ForgeSwap.Utils.Tx do
   alias ForgeSwap.Utils.Util
   alias ForgeSdk.Wallet.Util, as: WalletUtil
   alias ForgeSwap.Utils.Chain, as: ChainUtil
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def set_up_swap(swap, hashlock) do
     setup_swap =
@@ -22,7 +21,7 @@ defmodule ForgeSwap.Utils.Tx do
         value: SetupSwapTx.encode(setup_swap)
       )
 
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     owner = config["asset_owners"][swap.asset_owner]
     chain_id = config["chains"][swap.offer_chain]["chain_id"]
 
@@ -44,7 +43,7 @@ defmodule ForgeSwap.Utils.Tx do
         value: RetrieveSwapTx.encode(retrieve_swap)
       )
 
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     owner = config["asset_owners"][swap.asset_owner]
     chain_id = config["chains"][swap.demand_chain]["chain_id"]
 
@@ -62,7 +61,7 @@ defmodule ForgeSwap.Utils.Tx do
         value: RetrieveSwapTx.encode(revoke_swap)
       )
 
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     owner = config["asset_owners"][swap.asset_owner]
     chain_id = config["chains"][swap.offer_chain]["chain_id"]
 

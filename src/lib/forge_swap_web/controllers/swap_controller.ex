@@ -3,7 +3,6 @@ defmodule ForgeSwapWeb.SwapController do
 
   alias ForgeSwap.Repo
   alias ForgeSwap.Schema.Swap
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwapWeb.Plugs.{ReadSwap, VerifyCreateSwap}
 
   plug(ReadSwap when action == :show)
@@ -13,7 +12,7 @@ defmodule ForgeSwapWeb.SwapController do
   Creates a swap for between the application and a wallet.
   """
   def create(conn, params) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     user_did = params["userDid"]
     asset_owner = params["assetOwner"] || "default"
 

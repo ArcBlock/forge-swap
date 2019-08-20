@@ -3,7 +3,6 @@ defmodule ForgeSwap.Utils.Util do
 
   alias ForgeSwapWeb.Router.Helpers
   alias ForgeSwapWeb.Endpoint
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   @svg_setting %QRCode.SvgSettings{
     scale: 6
@@ -50,7 +49,7 @@ defmodule ForgeSwap.Utils.Util do
   def gen_qr_code(_, _), do: ""
 
   def padding(url) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     pk = config["application"]["pk"] |> str_to_bin() |> Multibase.encode!(:base58_btc)
     did = config["application"]["did"]
 

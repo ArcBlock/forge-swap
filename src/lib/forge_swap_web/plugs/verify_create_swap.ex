@@ -4,13 +4,11 @@ defmodule ForgeSwapWeb.Plugs.VerifyCreateSwap do
   import Plug.Conn
   import Phoenix.Controller
 
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
-
   def init(_) do
   end
 
   def call(%Plug.Conn{body_params: body_params} = conn, _) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     offer_chain = body_params["offerChain"] || "application"
     demand_chain = body_params["demandChain"] || "asset"
     offer_chain_config = config["chains"][offer_chain]

@@ -41,12 +41,12 @@ format:
 
 run:
 	@echo "Running the software..."
-	@cd src; FORGESWAP_CONFIG=../resources/integration.toml iex -S mix phx.server
+	@cd src; FORGE_SWAP_CONFIG=../resources/integration.toml iex -S mix phx.server
 
 test:
 	@echo "Running test suites..."
 	@MIX_ENV=test make build
-	@cd src; MIX_ENV=test FORGESWAP_CONFIG=../resources/test.toml mix test --trace --exclude integration $(TF)
+	@cd src; MIX_ENV=test FORGE_SWAP_CONFIG=../resources/test.toml mix test --trace --exclude integration $(TF)
 
 dialyzer:
 	mix dialyzer
@@ -55,7 +55,7 @@ dialyzer:
 test-inte: start-patron
 	@echo "Waiting for patron to start"; sleep 10;
 	@MIX_ENV=integration make build
-	@cd src; MIX_ENV=integration FORGESWAP_CONFIG=../resources/integration.toml mix test --trace --only integration $(TF)
+	@cd src; MIX_ENV=integration FORGE_SWAP_CONFIG=../resources/integration.toml mix test --trace --only integration $(TF)
 	@forge-patron stop
 
 init-forge:
