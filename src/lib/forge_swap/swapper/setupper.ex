@@ -44,27 +44,41 @@ defmodule ForgeSwap.Swapper.Setupper do
       send(__MODULE__, :tick)
     end
 
-    {:ok, swaps}
+    set = Enum.reduce(swaps, MapSet.new(), fn {swap, _, _}, acc -> MapSet.put(acc, swap.id) end)
+
+    {:ok, {swaps, set}}
   end
 
-  def handle_cast({:set_up_swap, swap, hashlock}, gen_server_state) do
-    gen_server_state = gen_server_state ++ [{swap, hashlock, ""}]
-    send(__MODULE__, :tick)
-    {:noreply, gen_server_state}
+  def handle_cast({:set_up_swap, swap, hashlock}, {swaps, set}) do
+    case MapSet.member?(set, swap.id) do
+      true ->
+        {swaps, set}
+
+      false ->
+        swaps = swaps ++ [{swap, hashlock, ""}]
+        set = MapSet.put(set, swap.id)
+        send(__MODULE__, :tick)
+        {:noreply, {swaps, set}}
+    end
   end
 
-  def handle_info(:tick, gen_server_state) do
-    gen_server_state =
-      gen_server_state
+  def handle_info(:tick, {swaps, set}) do
+    {rest, to_delete} =
+      swaps
       |> Enum.map(&do_set_up_swap/1)
-      |> Enum.reject(&is_nil/1)
+      |> Enum.split_with(fn
+        {_, :delete, _} -> false
+        _ -> true
+      end)
 
-    if gen_server_state != [] do
+    set = Enum.reduce(to_delete, set, fn {swap, _, _}, acc -> MapSet.delete(acc, swap.id) end)
+
+    if rest != [] do
       gap = ConfigUtil.read_config()["service"]["swapper_tick_gap"]
       Process.send_after(__MODULE__, :tick, trunc(gap * 1000))
     end
 
-    {:noreply, gen_server_state}
+    {:noreply, {rest, set}}
   end
 
   defp do_set_up_swap({swap, hashlock, ""}) do
@@ -122,7 +136,7 @@ defmodule ForgeSwap.Swapper.Setupper do
 
     Retriever.retrieve_swap(swap)
     Revoker.revoke_swap(swap)
-    nil
+    {swap, :delete, ""}
   rescue
     e ->
       Logger.warn(
