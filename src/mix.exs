@@ -66,13 +66,12 @@ defmodule ForgeSwap.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.4"},
       {:qr_code, "~> 2.1.0"},
-      {:toml, "~> 0.5"},
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
       {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
-      {:deep_merge, "~> 0.1"},
 
       # ArcBlock
+      {:arc_config, github: "ArcBlock/arc_config", tag: "master"},
       {:abt_did_elixir, "~> 0.3"},
       {:forge_abi, "~> 1.13"},
       {:forge_sdk, "~> 0.34"}

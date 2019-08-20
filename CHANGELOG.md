@@ -1,4 +1,7 @@
-## 0.0.12 (Aug 16, 2019)
+## 0.0.13 (Aug 20, 2019)
+  - Use arc_config.
+
+## 0.0.12 (Aug 19, 2019)
   - Make send tx more stable.
   
 ## 0.0.11 (Aug 16, 2019)

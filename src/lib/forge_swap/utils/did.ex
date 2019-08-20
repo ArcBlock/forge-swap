@@ -4,7 +4,6 @@ defmodule ForgeSwap.Utils.Did do
   """
 
   alias ForgeSwap.Utils.Util
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def parse_user_info(user_info) do
     result =
@@ -36,7 +35,7 @@ defmodule ForgeSwap.Utils.Did do
   end
 
   def require_user_set_up(swap) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     chain_config = config["chains"][swap.demand_chain]
     owner = config["asset_owners"][swap.asset_owner]
 
@@ -63,7 +62,7 @@ defmodule ForgeSwap.Utils.Did do
   end
 
   def get_general_response(offer_chain) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     app_config = config["application"]
     chain_config = config["chains"][offer_chain]
 
@@ -79,7 +78,7 @@ defmodule ForgeSwap.Utils.Did do
   end
 
   def gen_and_sign_response!(extra) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     sk = Util.str_to_bin(config["application"]["sk"])
     pk = config["application"]["pk"] |> Util.str_to_bin() |> Multibase.encode!(:base58_btc)
     did = config["application"]["did"]

@@ -22,7 +22,6 @@ defmodule ForgeSwap.Swapper.Revoker do
   alias ForgeSwap.Swapper.Retriever
   alias ForgeSwap.Utils.Chain, as: ChainUtil
   alias ForgeSwap.Utils.Tx, as: TxUtil
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -71,7 +70,7 @@ defmodule ForgeSwap.Swapper.Revoker do
       |> Enum.reject(&is_nil/1)
 
     if gen_server_state != [] do
-      gap = ConfigUtil.read_config()["service"]["swapper_tick_gap"]
+      gap = ArcConfig.read_config(:forge_swap)["service"]["swapper_tick_gap"]
       Process.send_after(__MODULE__, :tick, trunc(gap * 1000))
     end
 
