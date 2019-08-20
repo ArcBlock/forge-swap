@@ -67,7 +67,7 @@ defmodule ForgeSwap.Utils.Chain do
   defp mutation_send_tx(tx),
     do: """
     mutation MyMutation {
-      sendTx(commit: true, tx: "#{tx}") {
+      sendTx(tx: "#{tx}") {
         hash
       }
     }

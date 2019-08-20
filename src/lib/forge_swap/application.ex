@@ -87,6 +87,9 @@ defmodule ForgeSwap.Application do
   defp update_keyword(list, _key, ""), do: list
   defp update_keyword(list, key, value), do: Keyword.put(list, key, value)
 
+  defp prepare_wallet() do
+  end
+
   defp prepare_wallet(:dev) do
     ForgeSdk.connect("tcp://127.0.0.1:10020", name: "asset_chain", default: true)
     ForgeSdk.connect("tcp://127.0.0.1:10120", name: "app_chain", default: false)
