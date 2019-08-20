@@ -25,19 +25,25 @@ defmodule ForgeSwapWeb.SwapLive do
 
   def handle_info(:tick, socket) do
     id = socket.assigns.id
-    swap = Swap.get(id)
 
     assigns =
-      swap.status
-      |> determine_display()
-      |> Map.put(:qr_code, Util.gen_qr_code(swap.status, id))
-      |> Map.to_list()
+      case Swap.get(id) do
+        nil ->
+          "not_found" |> determine_display() |> Map.to_list()
+
+        swap ->
+          swap.status
+          |> determine_display()
+          |> Map.put(:qr_code, Util.gen_qr_code(swap.status, id))
+          |> Map.to_list()
+      end
 
     {:noreply, assign(socket, assigns)}
   end
 
   defp determine_display(status) do
     display = %{
+      display_note_found: "none",
       display_not_started: "none",
       display_user_set_up: "none",
       display_both_set_up: "none",
