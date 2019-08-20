@@ -1,3 +1,6 @@
+## 0.0.12 (Aug 19, 2019)
+  - Use arc_config.
+
 ## 0.0.11 (Aug 16, 2019)
   - Add more logs.
 
