@@ -85,17 +85,22 @@ defmodule ForgeSwap.Swapper.Revoker do
   end
 
   defp do_revoke_swap({swap, true, ""}) do
-    revoke_hash = TxUtil.revoke_swap(swap)
+    case TxUtil.revoke_swap(swap) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent RevokeSwapTx.")
+        {swap, true, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
-    end)
+      revoke_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
+        end)
 
-    change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    {swap, true, revoke_hash}
+        {swap, true, revoke_hash}
+    end
   end
 
   defp do_revoke_swap({swap, true, revoke_hash}) do
@@ -125,21 +130,26 @@ defmodule ForgeSwap.Swapper.Revoker do
       "Swap Id: #{swap.id}, User revoked the swap, Swap address: #{swap.demand_swap}"
     end)
 
-    revoke_hash = TxUtil.revoke_swap(swap)
+    case TxUtil.revoke_swap(swap) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent RevokeSwapTx.")
+        {swap, true, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
-    end)
+      revoke_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
+        end)
 
-    change = Swap.update_changeset(swap, %{status: "user_revoked", revoke_hash: revoke_hash})
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        change = Swap.update_changeset(swap, %{status: "user_revoked", revoke_hash: revoke_hash})
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    # Since user has revoked the swap set up by her, then there
-    # is no for us to check if we can retrieve that swap.
-    Retriever.delete(swap)
+        # Since user has revoked the swap set up by her, then there
+        # is no for us to check if we can retrieve that swap.
+        Retriever.delete(swap)
 
-    {swap, true, revoke_hash}
+        {swap, true, revoke_hash}
+    end
   end
 
   defp both_revoked(swap, revoke_hash) do
