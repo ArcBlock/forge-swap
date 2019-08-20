@@ -70,8 +70,8 @@ defmodule ForgeSwap.Utils.Tx do
     |> ChainUtil.send_tx(swap.offer_chain)
   end
 
-  def declare_wallet(wallet, chain_name) do
-    declare_tx = DeclareTx.new(moniker: "")
+  def declare_wallet(moniker, wallet, chain_name) do
+    declare_tx = DeclareTx.new(moniker: moniker)
 
     itx =
       Google.Protobuf.Any.new(
@@ -79,7 +79,7 @@ defmodule ForgeSwap.Utils.Tx do
         value: DeclareTx.encode(declare_tx)
       )
 
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     chain_id = config["chains"][chain_name]["chain_id"]
 
     wallet

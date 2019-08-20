@@ -52,6 +52,20 @@ defmodule ForgeSwap.Utils.Chain do
     }
     """
 
+  defp query_get_account_state(address),
+    do: """
+      {
+        getAccountState(address: "#{address}") {
+          state {
+            address
+            balance
+            moniker
+            nonce
+          }
+        }
+      }
+    """
+
   defp query_get_tx(hash),
     do: """
     {
@@ -98,6 +112,12 @@ defmodule ForgeSwap.Utils.Chain do
   def get_swap_state(address, chain_name) do
     query = query_get_swap_state(address)
     %{"getSwapState" => %{"state" => state}} = do_query(query, chain_name)
+    state
+  end
+
+  def get_account_state(address, chain_name) do
+    query = query_get_account_state(address)
+    %{"getAccountState" => %{"state" => state}} = do_query(query, chain_name)
     state
   end
 
