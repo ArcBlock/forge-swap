@@ -80,24 +80,30 @@ defmodule ForgeSwap.Swapper.Retriever do
     offer_state = ChainUtil.get_swap_state(swap.offer_swap, swap.offer_chain)
 
     case offer_state do
+      %{"hashkey" => nil} -> {swap, "", ""}
+      %{"hashkey" => ""} -> {swap, "", ""}
       # Hashkey is not empty, user has retrieved the swap.
-      %{"hashkey" => hashkey} when hashkey != "" -> user_retrieved(swap, hashkey)
-      _ -> {swap, "", ""}
+      %{"hashkey" => hashkey} -> user_retrieved(swap, hashkey)
     end
   end
 
   defp do_retrieve_swap({swap, hashkey, ""}) do
-    retrieve_hash = TxUtil.retrieve_swap(swap, hashkey)
+    case TxUtil.retrieve_swap(swap, hashkey) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent RetrieveSwapTx.")
+        {swap, hashkey, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
-    end)
+      retrieve_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
+        end)
 
-    change = Swap.update_changeset(swap, %{retrieve_hash: retrieve_hash})
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        change = Swap.update_changeset(swap, %{retrieve_hash: retrieve_hash})
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    {swap, hashkey, retrieve_hash}
+        {swap, hashkey, retrieve_hash}
+    end
   end
 
   defp do_retrieve_swap({swap, hashkey, retrieve_hash}) do
@@ -127,23 +133,28 @@ defmodule ForgeSwap.Swapper.Retriever do
       "Swap Id: #{swap.id}, User retrieved the swap, Swap address: #{swap.offer_swap}"
     end)
 
-    retrieve_hash = TxUtil.retrieve_swap(swap, hashkey)
+    case TxUtil.retrieve_swap(swap, hashkey) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent RetrieveSwapTx.")
+        {swap, hashkey, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
-    end)
+      retrieve_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent RetrieveSwapTx, Hash: #{inspect(retrieve_hash)}"
+        end)
 
-    change =
-      Swap.update_changeset(swap, %{status: "user_retrieved", retrieve_hash: retrieve_hash})
+        change =
+          Swap.update_changeset(swap, %{status: "user_retrieved", retrieve_hash: retrieve_hash})
 
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    # Since user has already retrieved the swap we set up for her, 
-    # then there is no need to check if we shall revoke the swap.
-    Revoker.delete(swap)
+        # Since user has already retrieved the swap we set up for her, 
+        # then there is no need to check if we shall revoke the swap.
+        Revoker.delete(swap)
 
-    {swap, hashkey, retrieve_hash}
+        {swap, hashkey, retrieve_hash}
+    end
   end
 
   defp both_retrieved(swap, retrieve_hash) do

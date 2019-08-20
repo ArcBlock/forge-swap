@@ -68,17 +68,22 @@ defmodule ForgeSwap.Swapper.Setupper do
   end
 
   defp do_set_up_swap({swap, hashlock, ""}) do
-    offer_hash = TxUtil.set_up_swap(swap, hashlock)
+    case TxUtil.set_up_swap(swap, hashlock) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent SetupSwapTx.")
+        {swap, hashlock, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent SetupSwapTx, Hash: #{inspect(offer_hash)}"
-    end)
+      offer_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent SetupSwapTx, Hash: #{inspect(offer_hash)}"
+        end)
 
-    change = Swap.update_changeset(swap, %{set_up_hash: offer_hash})
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        change = Swap.update_changeset(swap, %{set_up_hash: offer_hash})
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    {swap, hashlock, offer_hash}
+        {swap, hashlock, offer_hash}
+    end
   end
 
   defp do_set_up_swap({swap, hashlock, offer_hash}) do
