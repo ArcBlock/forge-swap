@@ -25,7 +25,7 @@ defmodule ForgeSwapWebTest.Util do
     |> Jason.decode!()
   end
 
-  def assert_common_auth_info(pk, auth_body, owner) do
+  def assert_common_auth_info(pk, auth_body) do
     assert pk === @app_pk
 
     assert auth_body["appInfo"] == %{

@@ -12,7 +12,6 @@ defmodule ForgeSwapWeb.StartSwapController do
 
   alias ForgeSwap.{Repo, Schema.Swap, Swapper.Setupper}
   alias ForgeSwap.Utils.Chain, as: ChainUtil
-  alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
 
   alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
@@ -97,7 +96,7 @@ defmodule ForgeSwapWeb.StartSwapController do
   end
 
   defp verify_swap(swap, demand_state) do
-    config = ConfigUtil.read_config()
+    config = ArcConfig.read_config(:forge_swap)
     asset_owner = config["asset_owners"][swap.asset_owner]
     expected_locktime = ChainUtil.to_locktime(swap.demand_locktime, swap.demand_chain)
     actual_token = String.to_integer(demand_state["value"])
