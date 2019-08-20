@@ -1,3 +1,6 @@
+## 0.0.14 (Aug 20, 2019)
+  - Auto declare asset owners if necessary.
+  
 ## 0.0.13 (Aug 20, 2019)
   - Use arc_config.
 

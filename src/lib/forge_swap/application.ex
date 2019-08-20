@@ -7,6 +7,8 @@ defmodule ForgeSwap.Application do
 
   alias ForgeSwap.Swapper.{Setupper, Retriever, Revoker}
   alias ForgeSwap.Utils.Config, as: ConfigUtil
+  alias ForgeSwap.Utils.Chain, as: ChainUtil
+  alias ForgeSwap.Utils.Tx, as: TxUtil
 
   def start(_type, _args) do
     ArcConfig.read_config(:forge_swap)
@@ -35,13 +37,25 @@ defmodule ForgeSwap.Application do
   defp get_swapper(:test), do: []
   defp get_swapper(_), do: [Setupper, Retriever, Revoker]
 
-  defp prepare_wallet(:dev) do
-    ForgeSdk.connect("tcp://127.0.0.1:10020", name: "asset_chain", default: true)
-    ForgeSdk.connect("tcp://127.0.0.1:10120", name: "app_chain", default: false)
-    wallet = ArcConfig.read_config(:forge_swap)["asset_owners"]["default"]
-    itx = apply(ForgeAbi.DeclareTx, :new, [[moniker: "owner"]])
-    ForgeSdk.declare(itx, wallet: wallet, conn: "asset_chain", send: :commit)
+  defp prepare_wallet(:test), do: :ok
+
+  defp prepare_wallet(_) do
+    :forge_swap
+    |> ArcConfig.read_config()
+    |> Map.get("asset_owners")
+    |> Enum.each(fn {moniker, wallet} -> prepare_wallet(moniker, wallet) end)
   end
 
-  defp prepare_wallet(_), do: :ok
+  defp prepare_wallet(moniker, wallet) do
+    :forge_swap
+    |> ArcConfig.read_config()
+    |> Map.get("chains")
+    |> Enum.each(&prepare_wallet(&1, moniker, wallet))
+  end
+
+  defp prepare_wallet({chain_name, _}, moniker, wallet) do
+    if ChainUtil.get_account_state(wallet.address, chain_name) == nil do
+      TxUtil.declare_wallet(moniker, wallet, chain_name)
+    end
+  end
 end
