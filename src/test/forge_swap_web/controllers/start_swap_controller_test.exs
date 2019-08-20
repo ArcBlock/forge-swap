@@ -136,7 +136,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
            ]
 
     # Step 3, Wallet sets up a swap on required chain.
-    hashkey = :crypto.strong_rand_bytes(32)
+    hashkey = :crypto.strong_rand_bytes(128)
     hashlock = Mcrypto.hash(@sha3, hashkey)
     current_block = ForgeSdk.get_chain_info("asset_chain").block_height
 

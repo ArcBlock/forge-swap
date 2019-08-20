@@ -66,9 +66,10 @@ defmodule ForgeSwapWeb.StartSwapController do
         _ -> false
       end)
 
-    case claim do
-      nil -> json(conn, %{error: "Invalid request, could not find swap state address."})
-      _ -> do_start_re_swap(conn, swap, claim)
+    cond do
+      swap.status != "not_started" -> json(conn, %{error: "User has already set up a swap."})
+      claim == nil -> json(conn, %{error: "Invalid request, could not find swap state address."})
+      true -> do_start_re_swap(conn, swap, claim)
     end
   end
 

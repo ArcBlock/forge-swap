@@ -108,14 +108,17 @@ defmodule ForgeSwap.Utils.Chain do
   end
 
   def send_tx(tx, chain_name) do
-    %{"sendTx" => %{"hash" => hash}} =
+    %{"sendTx" => sendTxResponse} =
       tx
       |> Transaction.encode()
       |> Base.url_encode64(padding: false)
       |> mutation_send_tx()
       |> do_query(chain_name)
 
-    hash
+    case sendTxResponse do
+      nil -> nil
+      %{"hash" => hash} -> hash
+    end
   end
 
   defp do_query(query, chain_name) do

@@ -45,6 +45,10 @@ defmodule ForgeSwap.Swapper.Revoker do
         %{status: "user_revoked"} = swap -> {swap, true, swap.revoke_hash || ""}
       end)
 
+    if swaps != [] do
+      send(__MODULE__, :tick)
+    end
+
     {:ok, swaps}
   end
 
@@ -84,17 +88,22 @@ defmodule ForgeSwap.Swapper.Revoker do
   end
 
   defp do_revoke_swap({swap, true, ""}) do
-    revoke_hash = TxUtil.revoke_swap(swap)
+    case TxUtil.revoke_swap(swap) do
+      nil ->
+        Logger.warn("Swap Id: #{swap.id}, Server failed to sent RevokeSwapTx.")
+        {swap, true, ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
-    end)
+      revoke_hash ->
+        Logger.info(fn ->
+          "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
+        end)
 
-    change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
-    apply(Repo, :update!, [change])
-    swap = Swap.get(swap.id)
+        change = Swap.update_changeset(swap, %{revoke_hash: revoke_hash})
+        apply(Repo, :update!, [change])
+        swap = Swap.get(swap.id)
 
-    {swap, true, revoke_hash}
+        {swap, true, revoke_hash}
+    end
   end
 
   defp do_revoke_swap({swap, true, revoke_hash}) do
@@ -124,13 +133,21 @@ defmodule ForgeSwap.Swapper.Revoker do
       "Swap Id: #{swap.id}, User revoked the swap, Swap address: #{swap.demand_swap}"
     end)
 
-    revoke_hash = TxUtil.revoke_swap(swap)
+    delta =
+      case TxUtil.revoke_swap(swap) do
+        nil ->
+          Logger.warn("Swap Id: #{swap.id}, Server failed to sent RevokeSwapTx.")
+          %{status: "user_revoked", revoke_hash: ""}
 
-    Logger.info(fn ->
-      "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
-    end)
+        revoke_hash ->
+          Logger.info(fn ->
+            "Swap Id: #{swap.id}, Server sent RevokeSwapTx, Hash: #{inspect(revoke_hash)}"
+          end)
 
-    change = Swap.update_changeset(swap, %{status: "user_revoked", revoke_hash: revoke_hash})
+          %{status: "user_revoked", revoke_hash: revoke_hash}
+      end
+
+    change = Swap.update_changeset(swap, delta)
     apply(Repo, :update!, [change])
     swap = Swap.get(swap.id)
 
@@ -138,7 +155,7 @@ defmodule ForgeSwap.Swapper.Revoker do
     # is no for us to check if we can retrieve that swap.
     Retriever.delete(swap)
 
-    {swap, true, revoke_hash}
+    {swap, true, delta.revoke_hash}
   end
 
   defp both_revoked(swap, revoke_hash) do
