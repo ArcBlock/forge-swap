@@ -47,6 +47,10 @@ defmodule ForgeSwap.Swapper.Retriever do
         {swap, offer_state["hashkey"], swap.retrieve_hash || ""}
       end)
 
+    if swaps != [] do
+      send(__MODULE__, :tick)
+    end
+
     {:ok, swaps}
   end
 

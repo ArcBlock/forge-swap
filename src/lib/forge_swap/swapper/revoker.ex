@@ -46,6 +46,10 @@ defmodule ForgeSwap.Swapper.Revoker do
         %{status: "user_revoked"} = swap -> {swap, true, swap.revoke_hash || ""}
       end)
 
+    if swaps != [] do
+      send(__MODULE__, :tick)
+    end
+
     {:ok, swaps}
   end
 
