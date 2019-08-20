@@ -15,7 +15,7 @@ schema = "http"
 # The url host and port used by swap service to generate the qr_code. 
 # You should make sure the wallet can reach swap service through
 # this host and port.
-host = "10.1.10.85"
+host = "localhost"
 port = 8807
 
 # Configs the off-chain database to store swap information.
@@ -49,11 +49,11 @@ type = "postgres"
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "http://10.1.10.85"
+  host = "http://localhost"
   port = 8310
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "http://10.1.10.85"
+  host = "http://localhost"
   port = 8410
