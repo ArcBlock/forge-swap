@@ -71,10 +71,10 @@ defmodule ForgeSwap.MixProject do
       {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
 
       # ArcBlock
-      {:arc_config, github: "ArcBlock/arc_config", tag: "master"},
+      {:arc_config, git: "git@github.com:arcblock/arc_config.git", tag: "master"},
       {:abt_did_elixir, "~> 0.3"},
       {:forge_abi, "~> 1.13"},
-      {:forge_sdk, "~> 0.34"}
+      {:forge_sdk, "~> 0.37"}
     ]
   end
 
