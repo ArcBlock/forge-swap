@@ -1,3 +1,6 @@
+## 0.0.15 (Sep 6, 2019)
+  - Update deps version
+  
 ## 0.0.14 (Aug 20, 2019)
   - Auto declare asset owners if necessary.
   
