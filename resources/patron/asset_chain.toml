@@ -11,6 +11,10 @@ path = "<%= forge_path %>/core"
 logpath = "logs"
 sock_grpc = "tcp://127.0.0.1:<%= grpc %>"
 
+[forge.web]
+enabled = true
+port= <%= web %>
+
 [forge.transaction]
 
 # max asset size
@@ -19,20 +23,22 @@ max_asset_size = 1000000
 [forge.transaction.declare]
 restricted = false
 
+[forge.transaction.poke]
+# the amount account get with poke tx
+amount = 25
+balance = 3750000000
+
 [forge.stake.timeout]
 general = 10
 stake_for_node = 60
 
-[forge.moderator]
-
+[forge.prime.moderator]
 # address of interrim moderator
 address = "<%= moderator.address %>"
-
 # public key of the moderator
 pk = "<%= moderator.pk %>"
+balance = 0
 
-[forge.web]
-port= <%= web %>
 
 [forge.token]
 name = "ArcBlock TBA"
@@ -41,14 +47,9 @@ unit = "arc"
 description = "ArcBlock TBA"
 icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAT5SURBVHic7ZxLiB1FFIa/meiYSYzvxDdGVHRUNGA2iYqbRHQxaNQJUWMCgiCCuNdFVsaFiLiJKArGGZ8giqLgK2AQRVTEB0FRNKhk0CSO6EQd44wuyqbrVO7cZ1ed7tvng4bpe6tP/VPddar6VJ0LhmEYhmEYhmEYhmEYhmEYhmEYRhVYCpymLcJwjAIzwCxwl7IWA/gY+Pf/4xfgCF059eZ88puRHderKuqRQW0BPbKpwWe3JFdhAO5h+p5De8jfwAmKumrLGg69Gdlxh6Ku2rIdeRNmvb/fV9RVSxYDv5HfgF3AS8gbdK6auh6o6qC+DljinY8DE0GZm9LJMV4n7wlzwHJgITDlff4dMKCkr1acAvxD3vA7vO8eRbqtS5Or65EquqybgQXe+bj3d+i27J0kAZ+S94A/gKO97waAb73vLZQSmRVIl/R0gzL3BmWuS6auhjyAbOyrG5Q5LyjzYjJ1NWMBsIe8oX8CDpun7IdeuRkqFEqp0qC+FjjZO5/AzbYa4Q/uQ8D6WKLqzFNIV7SiSdllwEGvrIVSCuZIYJq8gb9o45rXkDewEqGUqrisMVz8KmN7G9dYKCUiO5BR3XY2NCxCBiAtlFIQpyJDJW90cO0TSLdV+lBKFVzWJuYPlbTCQikR+Jz8CZ/GDfDtMgj84F1voZQeWYl0OU92YeP+wIaFUnrgIWRjru3CxkWBjZeBY3s45osOlJ7bkQtG/XIcAG4tsJ0EMaeBU8AxEe1rMolbKCucmLOsHyPa1uarWIZj9pCzcW5rSauCDTgK2OCd76az949GXA6MeOev4J70TtkDbAP29qinUtyG9Nt3FmBzQ2BzSwE2a8NO8oY7CJxYgM1wV8o3WCilLc7Abe3xp6lF8Tiyl6wq0HYhlDF0shn55HYSKmlFaMtCKW3wJfkT/CswXKDtAVzUN7O/HwulNGUV0qU8EqGOrUEd10aoo2/YhmysyyLUMRLU8UKEOvqCIWAfeUPtJt4s6COvnhng+Ej1dEyZBvVRZMNk+R8x8Af3IeCGSPVUmpT5HctwqW9ZXe9GrKuSHAf8Rd5A7yWo81WvvjngrAR1tiTmm+pVwH24uFQrhpGb4GZwG6ljMox7e884gOs1rZgC7gGejSEq5g2ZBE6KaF+TvTi3VzgxB/XfI9rWZn8swzGXI9cDd+OWPZtxIbInfUC6m7kIWO2dT9J6gJ8GHoymSBntBJtB3EJaVv8+3DS4tlyBnOo+rKAhzDkZVdBQGh5DNsbq5sWjEGZlPa+goRSEC0Zfo7dg9Jmn408UN2dohk7WIf/xceKFSlrhbzldSE1DKX7+hvabcpj7/o6iFhXCDKedunIAeBP5gJypIULLZW1EvgMVuUzbLb6GAeBGLSEafEJJBlGPxbgX0kxXtM1wZeMCyjvNnEBqW5lagIbL2hycl8FdZdRuV0qYQPMzcLiqIkkYSkmuL3UPWYNM2HwGN9sqC3PIdY6lwJVKWpKQvfyp+eg2uBipMcpCVBkIZzG7dOU0xf8JqKSzwJQuawyZsNlNvmAqwlBKX+Ylvk3+1M0Cp+vKaUqznxHsC8Lk/7d05bRFGEpZnqLSVC5rIzL5P0zoLyO+Sx1AZnRVnueQWazdpLmlJvwFor6abY2Ru6ytylo6YQv5/t9rlLUUzjnAJdoiumAEuYnPMAzDMAzDMAzDMAzDMAzDMAzD6IH/AHiBs4jYg7WwAAAAAElFTkSuQmCC"
 decimal = 16
-initial_supply = 4750000000
+initial_supply = 5000000000
 total_supply = 750000000
 inflation_rate = 0
-
-[forge.poke]
-# the amount account get with poke tx
-amount = 25
-balance = 3750000000
 
 [[forge.accounts]]
 address = "z1SWvGbnCiJf5MpWnV8qoYQWrYnK2BdtpaQ"
