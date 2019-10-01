@@ -1,5 +1,5 @@
 # The information of the application which delegates the swap to Forge Swap Service.
-[application]
+[hyjal.application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
 # The Did of the application
@@ -7,6 +7,11 @@ did = "zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
 # The secret key and public key of the dApp, multi-base encoded.
 sk = "zTTuJYf65VQqp2bFwHP9dspDgdA3cdVTxjkNWKMJyZLmwAvG5TdJh5oyfYN1xZmL7yvtaXduAETevdvYqtbpFA9L"
 pk = "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
+
+[hyjal.chain]
+# The host and port to connect to the forge web
+host = "http://localhost"
+port = 8410
 
 # This section contains configurations for Forge Swap service itself.
 [service]

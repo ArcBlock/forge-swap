@@ -53,21 +53,19 @@ defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
     # Step 1, Wallet scans the QR code
     %{"appPk" => pk, "authInfo" => auth_info} =
       conn
-      |> get(Routes.retrieve_swap_path(conn, :retrieve, id))
+      |> get(Routes.retrieve_swap_path(conn, :start, id))
       |> json_response(200)
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.retrieve_swap_url(@endpoint, :retrieve_re_user, id)
+    assert auth_body["url"] === Routes.retrieve_swap_url(@endpoint, :auth_principal, id)
 
     assert auth_body["requestedClaims"] == [
              %{
-               "type" => "did",
-               "didType" => "account",
-               "meta" => %{
-                 "description" => "Please proof you won DID #{@user.address} before start.",
-                 "target" => "#{@user.address}"
-               }
+               "type" => "authPrincipal",
+               "description" => "Please set the authentication principal to the specified DID.",
+               "target" => "#{@user.address}",
+               "meta" => nil
              }
            ]
 

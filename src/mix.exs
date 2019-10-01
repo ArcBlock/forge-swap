@@ -65,12 +65,12 @@ defmodule ForgeSwap.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.4"},
-      {:qr_code, "~> 2.1.0"},
       {:multibase, ">= 0.0.0"},
       {:protobuf, "~> 0.6"},
       {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
 
       # ArcBlock
+      {:hyjal, git: "git@github.com:ArcBlock/Hyjal.git", tag: "master"},
       {:arc_config, git: "git@github.com:arcblock/arc_config.git", tag: "master"},
       {:abt_did_elixir, "~> 0.3"},
       {:forge_abi, "~> 1.13"},

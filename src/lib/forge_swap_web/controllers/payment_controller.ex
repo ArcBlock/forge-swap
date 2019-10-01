@@ -1,96 +1,93 @@
-defmodule ForgeSwapWeb.StartSwapController do
-  @moduledoc """
-  Handles the workflow in which user starts the swap process.
-  There 3 steps in this workflow.
-    Step 1, user calls :start by scanning a QR code, server requires proof of wonership for a user address.
-    Step 2, user returns the user did by calling :start_re_user, server requires a swap address.
-    Step 3, user returns the swap address by calling :start_re_swap, server sets up a swap and returns the address.
-  """
+defmodule ForgeSwapWeb.PaymentController do
   use ForgeSwapWeb, :controller
+  use Hyjal, router: ForgeSwapWeb.Router
 
   require Logger
 
+  alias ForgeSwapWeb.Plugs.{CompareAuthPrincipal, ReadSwap}
   alias ForgeSwap.{Repo, Schema.Swap, Swapper.Setupper}
+  alias ForgeSwap.Utils.Util
   alias ForgeSwap.Utils.Chain, as: ChainUtil
-  alias ForgeSwap.Utils.Did, as: DidUtil
 
-  alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
+  alias Hyjal.Plugs.VerifyAuthPrincipal
+  alias Hyjal.Claims.{AuthPrincipal, SetUpSwap}
 
-  plug(VerifySig when action in [:start_re_user, :start_re_swap])
-  plug(ExtractUserInfo when action in [:start_re_user, :start_re_swap])
-  plug(ReadSwap when action in [:start, :start_re_user, :start_re_swap])
-  plug(VerifyUser when action in [:start_re_user, :start_re_swap])
+  plug(VerifyAuthPrincipal when action != :start)
+  plug(ReadSwap)
+  plug(CompareAuthPrincipal when action != :start)
 
-  @doc """
-  The endpoint of the QR code by scanning which a user can start the swap process.
-  This endpoint requires user to proof of ownership of a certain DID.
-  """
-  def start(conn, _) do
+  @impl AuthFlow
+  def start(conn, _params) do
     swap = conn.assigns.swap
-    claims = [DidUtil.require_user_did(swap)]
-    callback = Routes.start_swap_url(conn, :start_re_user, swap.id)
-    extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra)
-    json(conn, response)
+
+    claim = %AuthPrincipal{
+      description: "Please set the authentication principal to the specified DID.",
+      target: swap.user_did
+    }
+
+    reply(conn, [claim], __MODULE__, :auth_principal, [swap.id])
   end
 
-  @doc """
-  Handles user returning user address during start swap workflow.
-  """
-  def start_re_user(conn, _params) do
+  @impl AuthFlow
+  def auth_principal(conn, _params) do
     swap = conn.assigns.swap
 
     case swap.status do
-      "not_started" -> do_start_re_user(conn, swap)
-      _ -> json(conn, %{error: "Cannot start the swap again as it has already started."})
+      "not_started" -> require_set_up_swap(conn, swap)
+      _ -> reply(conn, :error, "Cannot start the swap again as it has already started.")
     end
   end
 
-  defp do_start_re_user(conn, swap) do
-    claims = [DidUtil.require_user_set_up(swap)]
-    callback = Routes.start_swap_url(conn, :start_re_swap, swap.id)
-    extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra)
-    json(conn, response)
+  defp require_set_up_swap(conn, swap) do
+    config = ArcConfig.read_config(:forge_swap)
+    chain_config = config["chains"][swap.demand_chain]
+    owner = config["asset_owners"][swap.asset_owner]
+
+    claim = %SetUpSwap{
+      description: "Please set up an atomic swap on the ABT asset chain.",
+      offer_assets: swap.offer_assets,
+      offer_token: Decimal.to_integer(swap.offer_token),
+      demand_assets: swap.demand_assets,
+      demand_token: Decimal.to_integer(swap.demand_token),
+      demand_locktime: swap.demand_locktime,
+      receiver: owner.address,
+      demand_chain: chain_config["chain_id"]
+    }
+
+    reply(conn, [claim], __MODULE__, :payment_return_swap, [swap.id])
   end
 
-  @doc """
-  Handles user returning swap address during start swap workflow.
-  """
-  def start_re_swap(conn, _params) do
+  def payment_return_swap(conn, _params) do
     swap = conn.assigns.swap
-
-    claim =
-      Enum.find(conn.assigns.claims, fn
-        %{"type" => "swap", "address" => address} when address != "" -> true
-        _ -> false
-      end)
+    claim = Util.find_claim(conn.assigns.claims, SetUpSwap, fn c -> c.address != "" end)
 
     cond do
-      swap.status != "not_started" -> json(conn, %{error: "User has already set up a swap."})
-      claim == nil -> json(conn, %{error: "Invalid request, could not find swap state address."})
-      true -> do_start_re_swap(conn, swap, claim)
+      swap.status != "not_started" -> reply(conn, :error, "User has already set up a swap.")
+      claim == nil -> reply(conn, :error, "Invalid request, could not find swap state address.")
+      true -> do_payment_return_swap(conn, swap, claim)
     end
   end
 
-  defp do_start_re_swap(conn, swap, %{"address" => demand_address}) do
+  defp do_payment_return_swap(conn, swap, %{address: demand_address}) do
     demand_state = ChainUtil.get_swap_state(demand_address, swap.demand_chain)
 
     cond do
       demand_state == nil ->
-        json(conn, %{error: "Could not find the demanded swap state #{demand_address}"})
+        reply(conn, :error, "Could not find the demanded swap state #{demand_address}")
 
       (error = verify_swap(swap, demand_state)) != :ok ->
-        json(conn, %{
-          error: "Invalid demanded swap state, address: #{demand_address}, error: #{error}"
-        })
+        reply(
+          conn,
+          :error,
+          "Invalid demanded swap state, address: #{demand_address}, error: #{error}"
+        )
 
       true ->
         # Change the swap status to user_set_up in db.
         swap = user_set_up(swap, demand_state)
         # Asynchronously set up a swap for user 
         Setupper.set_up_swap(swap, demand_state["hashlock"])
-        callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
+        callback = Routes.retrieve_swap_url(conn, :auth_principal, swap.id)
         json(conn, %{response: %{callback: callback}})
     end
   end

@@ -1,4 +1,4 @@
-defmodule ForgeSwapWeb.StartSwapControllerTest do
+defmodule ForgeSwapWeb.PaymentControllerTest do
   use ForgeSwapWeb.ConnCase
 
   alias ForgeAbi.Util.BigInt
@@ -91,21 +91,19 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
     # Step 1, Wallet scans the QR code
     %{"appPk" => pk, "authInfo" => auth_info} =
       conn
-      |> get(Routes.start_swap_path(conn, :start, id))
+      |> get(Routes.payment_path(conn, :start, id))
       |> json_response(200)
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.start_swap_url(@endpoint, :start_re_user, id)
+    assert auth_body["url"] === Routes.payment_url(@endpoint, :auth_principal, id)
 
     assert auth_body["requestedClaims"] == [
              %{
-               "type" => "did",
-               "didType" => "account",
-               "meta" => %{
-                 "description" => "Please proof you won DID #{@user.address} before start.",
-                 "target" => "#{@user.address}"
-               }
+               "type" => "authPrincipal",
+               "description" => "Please set the authentication principal to the specified DID.",
+               "target" => "#{@user.address}",
+               "meta" => nil
              }
            ]
 
@@ -117,7 +115,7 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.start_swap_url(@endpoint, :start_re_swap, id)
+    assert auth_body["url"] === Routes.payment_url(@endpoint, :payment_return_swap, id)
 
     assert auth_body["requestedClaims"] == [
              %{
@@ -129,9 +127,8 @@ defmodule ForgeSwapWeb.StartSwapControllerTest do
                "offerAssets" => [],
                "offerToken" => @offer_token,
                "receiver" => @owner.address,
-               "meta" => %{
-                 "description" => "Please set up an atomic swap on the ABT asset chain."
-               }
+               "description" => "Please set up an atomic swap on the ABT asset chain.",
+               "meta" => nil
              }
            ]
 

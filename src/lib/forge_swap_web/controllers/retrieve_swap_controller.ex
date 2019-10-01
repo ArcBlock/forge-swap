@@ -4,34 +4,34 @@ defmodule ForgeSwapWeb.RetrieveSwapController do
   There 2 steps in this workflow.
     Step 1, user calls :retrieve by scanning a QR code, server requires proof of wonership for a user address.
     Step 2, user returns the user did by calling :start_re_user, server requires a swap address.
-    Step 3, user returns the swap address by calling :start_re_swap, server sets up a swap and returns the address.
+    Step 3, user returns the swap address by calling :payment_return_swap, server sets up a swap and returns the address.
   """
   use ForgeSwapWeb, :controller
+  use Hyjal, router: ForgeSwapWeb.Router
 
-  # alias ForgeSwap.Repo
-  # alias ForgeSwap.Schema.Swap
-  # alias ForgeSwap.Utils.Chain, as: ChainUtil
-  # alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Did, as: DidUtil
-  # alias ForgeSwap.Utils.Tx, as: TxUtil
+  alias ForgeSwapWeb.Plugs.{CompareAuthPrincipal, ReadSwap}
 
-  alias ForgeSwapWeb.Plugs.{ExtractUserInfo, ReadSwap, VerifySig, VerifyUser}
+  alias Hyjal.Plugs.VerifyAuthPrincipal
 
-  plug(VerifySig when action in [:retrieve_re_user])
-  plug(ExtractUserInfo when action in [:retrieve_re_user])
-  plug(ReadSwap when action in [:retrieve, :retrieve_re_user])
-  plug(VerifyUser when action in [:retrieve_re_user])
+  plug(VerifyAuthPrincipal when action != :start)
+  plug(ReadSwap)
+  plug(CompareAuthPrincipal when action != :start)
 
-  def retrieve(conn, _params) do
+  @impl AuthFlow
+  def start(conn, _params) do
     swap = conn.assigns.swap
-    claims = [DidUtil.require_user_did(swap)]
-    callback = Routes.retrieve_swap_url(conn, :retrieve_re_user, swap.id)
-    extra = DidUtil.prepare_extra_response(claims, callback, swap.offer_chain)
-    response = DidUtil.gen_and_sign_response!(extra)
-    json(conn, response)
+
+    claim = %AuthPrincipal{
+      description: "Please set the authentication principal to the specified DID.",
+      target: swap.user_did
+    }
+
+    reply(conn, [claim], __MODULE__, :auth_principal, [swap.id])
   end
 
-  def retrieve_re_user(conn, _params) do
+  @impl AuthFlow
+  def auth_principal(conn, _params) do
     swap = conn.assigns.swap
     json(conn, %{response: %{swapAddress: swap.offer_swap}})
   end
