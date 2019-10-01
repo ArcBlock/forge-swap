@@ -1,3 +1,6 @@
+## 0.1.0 (Oct 1, 2019)
+  - Use Hyjal to re-implement the authentication cycles.
+
 ## 0.0.15 (Sep 6, 2019)
   - Update deps version
   
