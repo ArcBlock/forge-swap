@@ -28,17 +28,17 @@ defmodule ForgeSwapWeb.Router do
 
     # The workflow to start a swap.
     # Step 1, The QR code endpoint to start the swap
-    get("/swap/:id/start", StartSwapController, :start)
+    get("/swap/:id/payment", PaymentController, :start)
     # Step 2, The endpoint to let user return user addr
-    post("/swap/:id/start/re/user", StartSwapController, :start_re_user)
+    post("/swap/:id/payment/authprincipal", PaymentController, :auth_principal)
     # Step 3, The endpoint to let user return swap addr
-    post("/swap/:id/start/re/swap", StartSwapController, :start_re_swap)
+    post("/swap/:id/payment/returnswap", PaymentController, :payment_return_swap)
 
     # The workflow to let user continue retrieve the swap.
     # Step 1, The QR code to scan.
-    get("/swap/:id/retrieve", RetrieveSwapController, :retrieve)
+    get("/swap/:id/retrieve", RetrieveSwapController, :start)
     # Step 2, The endpoint to let user return user addr
-    post("/swap/:id/retrieve/re/user", RetrieveSwapController, :retrieve_re_user)
+    post("/swap/:id/retrieve/authprincipal", RetrieveSwapController, :auth_principal)
   end
 
   # Other scopes may use custom stacks.

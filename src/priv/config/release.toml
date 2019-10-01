@@ -1,5 +1,5 @@
 # The information of the application which delegates the swap to Forge Swap Service.
-[application]
+[hyjal.application]
 name = "Your awesome dApp"
 description = "Awesome dApp powered by ArcBlock Forge."
 # The DID of the application.

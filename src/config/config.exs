@@ -7,6 +7,8 @@
 # General application configuration
 use Mix.Config
 
+config :hyjal, app_name: :forge_swap
+
 config :forge_swap, ForgeSwap.PostgresRepo, priv: "priv/repo"
 
 config :forge_swap,
