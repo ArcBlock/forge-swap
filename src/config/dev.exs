@@ -31,6 +31,20 @@ config :forge_swap, ForgeSwapWeb.Endpoint,
     ]
   ]
 
+config :forge_swap, ForgeSwapManageWeb.Endpoint,
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false,
+  watchers: [
+    node: [
+      "node_modules/webpack/bin/webpack.js",
+      "--mode",
+      "development",
+      "--watch-stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -63,6 +77,16 @@ config :forge_swap, ForgeSwapWeb.Endpoint,
       ~r"priv/gettext/.*(po)$",
       ~r"lib/forge_swap_web/{live,views}/.*(ex)$",
       ~r"lib/forge_swap_web/templates/.*(eex)$"
+    ]
+  ]
+
+config :forge_swap, ForgeSwapManageWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/forge_swap_manage_web/{live,views}/.*(ex)$",
+      ~r"lib/forge_swap_manage_web/templates/.*(eex)$"
     ]
   ]
 

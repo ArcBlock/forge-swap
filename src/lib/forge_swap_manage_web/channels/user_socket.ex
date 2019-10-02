@@ -1,4 +1,4 @@
-defmodule ForgeSwapWeb.UserSocket do
+defmodule ForgeSwapManageWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels

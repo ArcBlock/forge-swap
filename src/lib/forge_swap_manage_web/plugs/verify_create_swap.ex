@@ -1,4 +1,4 @@
-defmodule ForgeSwapWeb.Plugs.VerifyCreateSwap do
+defmodule ForgeSwapManageWeb.Plugs.VerifyCreateSwap do
   @moduledoc false
 
   import Plug.Conn

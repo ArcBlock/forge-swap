@@ -24,8 +24,6 @@ defmodule ForgeSwapWeb.Router do
   scope "/api", ForgeSwapWeb do
     pipe_through(:api)
 
-    post("/swap/", SwapController, :create)
-
     # The workflow to start a swap.
     # Step 1, The QR code endpoint to start the swap
     get("/swap/:id/payment", PaymentController, :start)
