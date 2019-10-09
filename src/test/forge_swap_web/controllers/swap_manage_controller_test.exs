@@ -1,5 +1,5 @@
-defmodule ForgeSwapWeb.SwapControllerTest do
-  use ForgeSwapWeb.ConnCase
+defmodule ForgeSwapManageWeb.SwapControllerTest do
+  use ForgeSwapManageWeb.ConnCase
   alias ForgeSwap.Schema.Swap
 
   @user %{
@@ -23,7 +23,7 @@ defmodule ForgeSwapWeb.SwapControllerTest do
 
     %{"response" => %{"id" => id}} =
       conn
-      |> post(Routes.swap_path(conn, :create), body)
+      |> post(Routes.swap_manage_path(conn, :create), body)
       |> json_response(200)
 
     assert is_binary(id)
