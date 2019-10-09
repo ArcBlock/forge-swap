@@ -35,16 +35,15 @@ defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
   @tag :integration
   test "Retrieve swap, all good", %{conn: conn} do
     # Create a Swap 
-    body = %{
-      "userDid" => @user.address,
-      "offerToken" => @offer_token,
-      "demandToken" => @demand_token
-    }
 
-    %{"response" => %{"id" => id}} =
-      conn
-      |> post(Routes.swap_path(conn, :create), body)
-      |> json_response(200)
+    {:ok, %{id: id}} =
+      %{
+        "userDid" => @user.address,
+        "offerToken" => @offer_token,
+        "demandToken" => @demand_token
+      }
+      |> Util.create_swap()
+      |> Repo.insert()
 
     swap = Swap.get(id)
     change = Swap.update_changeset(swap, %{status: "both_set_up", offer_swap: @offer_swap})

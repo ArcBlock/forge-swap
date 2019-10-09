@@ -5,6 +5,7 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
   alias ForgeAbi.{RetrieveSwapTx, RevokeSwapTx, SetupSwapTx}
   alias ForgeSwapWebTest.Util
   alias ForgeSwap.Schema.Swap
+  alias ForgeSwap.Repo
 
   @sha3 %Mcrypto.Hasher.Sha3{}
   @user %{
@@ -75,18 +76,16 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
 
   defp both_set_up_swap(conn, offer_locktime \\ 28800, demand_locktime \\ 57600) do
     # Create a Swap 
-    body = %{
-      "userDid" => @user.address,
-      "offerToken" => @offer_token,
-      "demandToken" => @demand_token,
-      "offerLocktime" => offer_locktime,
-      "demandLocktime" => demand_locktime
-    }
-
-    %{"response" => %{"id" => id}} =
-      conn
-      |> post(Routes.swap_path(conn, :create), body)
-      |> json_response(200)
+    {:ok, %{id: id}} =
+      %{
+        "userDid" => @user.address,
+        "offerToken" => @offer_token,
+        "demandToken" => @demand_token,
+        "offerLocktime" => offer_locktime,
+        "demandLocktime" => demand_locktime
+      }
+      |> Util.create_swap()
+      |> Repo.insert()
 
     # Step 1, Wallet scans the QR code
     %{"appPk" => pk, "authInfo" => auth_info} =

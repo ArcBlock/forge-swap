@@ -15,6 +15,10 @@ config :forge_swap, ForgeSwapWeb.Endpoint,
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
+config :forge_swap, ForgeSwapManageWeb.Endpoint,
+  server: true,
+  cache_static_manifest: "priv/static/cache_manifest.json"
+
 # Do not print debug messages in production
 config :logger, level: :info
 

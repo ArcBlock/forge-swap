@@ -1,0 +1,7 @@
+<ul>
+  <%= for swap <- @swaps do %>
+    <li>
+        <%= swap.id %> &nbsp;&nbsp;&nbsp;&nbsp; <%= swap.status %>
+    </li>
+  <% end %>
+</ul>

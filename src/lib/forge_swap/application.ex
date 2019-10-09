@@ -5,6 +5,8 @@ defmodule ForgeSwap.Application do
 
   use Application
 
+  alias ForgeSwapWeb.Endpoint, as: SwapEndpoint
+  alias ForgeSwapManageWeb.Endpoint, as: ManageEndpoint
   alias ForgeSwap.Swapper.{Setupper, Retriever, Revoker}
   alias ForgeSwap.Utils.Config, as: ConfigUtil
   alias ForgeSwap.Utils.Chain, as: ChainUtil
@@ -14,11 +16,13 @@ defmodule ForgeSwap.Application do
     ArcConfig.read_config(:forge_swap)
     ArcConfig.update_config(:forge_swap, ["asset_owners"], &ConfigUtil.parse_wallets/1)
     ArcConfig.update_config(:forge_swap, ["chains"], &ConfigUtil.enrich_chain_config/1)
-    ConfigUtil.apply_endpoint_config()
+    ConfigUtil.apply_endpoint_config(ArcConfig.read_config(:forge_swap)["service"], SwapEndpoint)
+    ConfigUtil.apply_endpoint_config(ArcConfig.read_config(:forge_swap)["manage"], ManageEndpoint)
+
     repo = ConfigUtil.apply_repo_config()
 
     children =
-      [repo, ForgeSwapWeb.Endpoint] ++
+      [repo, SwapEndpoint, ManageEndpoint] ++
         get_swapper(Application.get_env(:forge_swap, :env))
 
     opts = [strategy: :one_for_one, name: ForgeSwap.Supervisor]
@@ -30,7 +34,7 @@ defmodule ForgeSwap.Application do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    ForgeSwapWeb.Endpoint.config_change(changed, removed)
+    SwapEndpoint.config_change(changed, removed)
     :ok
   end
 
