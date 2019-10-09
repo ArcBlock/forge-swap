@@ -70,9 +70,7 @@ defmodule ForgeSwap.MixProject do
       {:mock, "~> 0.3.0", only: [:dev, :test, :integration]},
 
       # ArcBlock
-      {:hyjal, git: "git@github.com:ArcBlock/Hyjal.git", tag: "master"},
-      {:arc_config, git: "git@github.com:arcblock/arc_config.git", tag: "master"},
-      {:abt_did_elixir, "~> 0.3"},
+      {:hyjal, git: "git@github.com:ArcBlock/Hyjal.git"},
       {:forge_abi, "~> 1.13"},
       {:forge_sdk, "~> 0.37"}
     ]
