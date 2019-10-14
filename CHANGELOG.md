@@ -1,3 +1,6 @@
+## 0.1.1 (Oct 14, 2019)
+  - Use new version of Hyjal.
+
 ## 0.1.0 (Oct 1, 2019)
   - Use Hyjal to re-implement the authentication cycles.
 
