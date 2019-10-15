@@ -39,10 +39,10 @@ hostname = "localhost"
 #     sk = "SYSTEM:ASSET_OWNER_CONCERT_SK"
 [asset_owners]
   [asset_owners.default]
-    address = "SYSTEM:ASSET_OWNER_DEFAULT_ADDRESS"
-    pk = "SYSTEM:ASSET_OWNER_DEFAULT_PK"
+    address = ""
+    pk = ""
     # The private key of the public key, multi-base encoded.
     # You can also read the secret key from environment variables like this:
     # sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
-    sk = "SYSTEM:ASSET_OWNER_DEFAULT_SK"
+    sk = ""
 

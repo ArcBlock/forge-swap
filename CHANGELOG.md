@@ -1,3 +1,6 @@
+## 0.1.2 (Oct 15, 2019)
+  - Add code to do migration in production
+  
 ## 0.1.1 (Oct 14, 2019)
   - Use new version of Hyjal.
 
