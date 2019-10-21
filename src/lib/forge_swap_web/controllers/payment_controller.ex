@@ -88,7 +88,7 @@ defmodule ForgeSwapWeb.PaymentController do
         # Asynchronously set up a swap for user 
         Setupper.set_up_swap(swap, demand_state["hashlock"])
         callback = Routes.retrieve_swap_url(conn, :auth_principal, swap.id)
-        json(conn, %{response: %{callback: callback}})
+        reply(conn, :ok, %{callback: callback})
     end
   end
 
