@@ -33,6 +33,6 @@ defmodule ForgeSwapWeb.RetrieveSwapController do
   @impl AuthFlow
   def auth_principal(conn, _params) do
     swap = conn.assigns.swap
-    json(conn, %{response: %{swapAddress: swap.offer_swap}})
+    reply(conn, :ok, %{swapAddress: swap.offer_swap})
   end
 end

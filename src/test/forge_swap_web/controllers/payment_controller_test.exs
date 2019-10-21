@@ -41,11 +41,15 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
     {id, _, hashkey, callback} = both_set_up_swap(conn)
 
     # Step 5: wallet poll the swap set up by application by calling the callback
-    %{"response" => %{"swapAddress" => swap_address}} =
+
+    %{"appPk" => pk, "authInfo" => auth_info} =
       conn
       |> post(callback, Util.gen_signed_request(@user, %{}))
       |> json_response(200)
 
+    auth_body = Util.get_auth_body(auth_info)
+    Util.assert_common_auth_info(pk, auth_body)
+    %{"response" => %{"swapAddress" => swap_address}} = auth_body
     assert String.length(swap_address) > 0
 
     # Step 6: Wallet retrieve the swap
@@ -155,10 +159,14 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
         "requestedClaims" => [%{"type" => "swap", "address" => swap_address}]
       })
 
-    %{"response" => %{"callback" => callback}} =
+    %{"appPk" => pk, "authInfo" => auth_info} =
       conn
       |> post(auth_body["url"], body)
       |> json_response(200)
+
+    auth_body = Util.get_auth_body(auth_info)
+    Util.assert_common_auth_info(pk, auth_body)
+    %{"response" => %{"callback" => callback}} = auth_body
 
     Process.sleep(6 * 1000)
 

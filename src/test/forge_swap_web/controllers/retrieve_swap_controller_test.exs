@@ -20,18 +20,6 @@ defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
         75, 48, 20, 159, 173, 66>>
   }
 
-  @owner %{
-    address: "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7",
-    pk:
-      <<117, 203, 141, 163, 125, 31, 190, 56, 26, 215, 25, 10, 206, 28, 135, 228, 209, 49, 42,
-        104, 155, 38, 5, 244, 194, 122, 44, 158, 28, 230, 60, 197>>,
-    sk:
-      <<180, 193, 254, 213, 9, 13, 214, 69, 24, 194, 14, 175, 95, 22, 54, 203, 76, 42, 104, 69,
-        106, 148, 81, 97, 25, 38, 53, 239, 184, 60, 103, 82, 117, 203, 141, 163, 125, 31, 190, 56,
-        26, 215, 25, 10, 206, 28, 135, 228, 209, 49, 42, 104, 155, 38, 5, 244, 194, 122, 44, 158,
-        28, 230, 60, 197>>
-  }
-
   @tag :integration
   test "Retrieve swap, all good", %{conn: conn} do
     # Create a Swap 
@@ -69,11 +57,14 @@ defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
            ]
 
     # Step 2, Wallet returns user did
-    %{"response" => %{"swapAddress" => swap_address}} =
+    %{"appPk" => pk, "authInfo" => auth_info} =
       conn
       |> post(auth_body["url"], Util.gen_signed_request(@user, %{}))
       |> json_response(200)
 
+    auth_body = Util.get_auth_body(auth_info)
+    Util.assert_common_auth_info(pk, auth_body)
+    %{"response" => %{"swapAddress" => swap_address}} = auth_body
     assert swap_address == @offer_swap
   end
 end
