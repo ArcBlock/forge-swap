@@ -1,3 +1,6 @@
+## 0.1.3 (Oct 21, 2019)
+  - Make sure the last response is also signed.
+
 ## 0.1.2 (Oct 15, 2019)
   - Add code to do migration in production
   
