@@ -1,3 +1,6 @@
+## 0.1.4 (Oct 22, 2019)
+  - Use new version of Hyjal.
+
 ## 0.1.3 (Oct 21, 2019)
   - Make sure the last response is also signed.
 
