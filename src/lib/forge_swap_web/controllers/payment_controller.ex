@@ -99,13 +99,15 @@ defmodule ForgeSwapWeb.PaymentController do
     actual_token = String.to_integer(demand_state["value"])
     expected_token = Decimal.to_integer(swap.demand_token)
 
+    delegator = get_in(demand_state, ["context", "genesisTx", "tx", "delegator"])
+
     cond do
       # if it is not set up by user
-      demand_state["sender"] !== swap.user_did ->
+      demand_state["sender"] !== swap.user_did && delegator !== swap.user_did ->
         Logger.info(fn ->
-          "Swap Id: #{swap.id}, Unexpected swap sender. Expected: #{swap.user_did}, actual: #{
+          "Swap Id: #{swap.id}, Unexpected swap sender. Expected: #{swap.user_did}, actual sender: #{
             demand_state["sender"]
-          }"
+          }, actual delegator: #{delegator}"
         end)
 
         "Unexpected swap sender."

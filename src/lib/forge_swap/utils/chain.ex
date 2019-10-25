@@ -47,6 +47,13 @@ defmodule ForgeSwap.Utils.Chain do
           receiver
           sender
           value
+          context {
+            genesisTx {
+              tx {
+                delegator
+              }
+            }
+          }
         }
       }
     }
