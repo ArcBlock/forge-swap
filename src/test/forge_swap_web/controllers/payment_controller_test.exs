@@ -20,6 +20,18 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
         75, 48, 20, 159, 173, 66>>
   }
 
+  @delegator %{
+    address: "z1fZwLq7gAcA7iw6RJ3SBKCZQUhF3ELn4pG",
+    pk:
+      <<19, 70, 210, 217, 68, 170, 215, 252, 170, 93, 193, 77, 250, 50, 92, 194, 62, 47, 198, 162,
+        205, 249, 217, 134, 197, 34, 139, 182, 50, 234, 135, 88>>,
+    sk:
+      <<216, 5, 29, 23, 112, 173, 251, 92, 133, 123, 214, 171, 117, 204, 62, 119, 69, 192, 151,
+        88, 249, 16, 56, 231, 70, 225, 251, 142, 150, 92, 188, 125, 19, 70, 210, 217, 68, 170,
+        215, 252, 170, 93, 193, 77, 250, 50, 92, 194, 62, 47, 198, 162, 205, 249, 217, 134, 197,
+        34, 139, 182, 50, 234, 135, 88>>
+  }
+
   @owner %{
     address: "z1ewYeWM7cLamiB6qy6mDHnzw1U5wEZCoj7",
     pk:
@@ -38,7 +50,45 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
   @tag :integration
   test "Start and retrieve swap, all good", %{conn: conn} do
     # Executes the common steps to set up swap.
-    {id, _, hashkey, callback} = both_set_up_swap(conn)
+    {id, _, hashkey, callback} = both_set_up_swap(conn, 28800, 57600)
+
+    # Step 5: wallet poll the swap set up by application by calling the callback
+
+    %{"appPk" => pk, "authInfo" => auth_info} =
+      conn
+      |> post(callback, Util.gen_signed_request(@user, %{}))
+      |> json_response(200)
+
+    auth_body = Util.get_auth_body(auth_info)
+    Util.assert_common_auth_info(pk, auth_body)
+    %{"response" => %{"swapAddress" => swap_address}} = auth_body
+    assert String.length(swap_address) > 0
+
+    # Step 6: Wallet retrieve the swap
+    tx = RetrieveSwapTx.new(address: swap_address, hashkey: hashkey)
+    hash = ForgeSdk.retrieve_swap(tx, wallet: @user, send: :commit, conn: "app_chain")
+    assert is_binary(hash)
+
+    Process.sleep(10 * 1000)
+    swap = Swap.get(id)
+    assert swap.status == "both_retrieved"
+    assert String.length(swap.retrieve_hash) > 0
+  end
+
+  # @tag :integration
+  test "Start by delegator and retrieve swap, all good", %{conn: conn} do
+    # First, delegates the set up swap tx to delegator.
+    itx =
+      ForgeAbi.DelegateTx.new(
+        to: @delegator.address,
+        ops: [ForgeAbi.DelegateOp.new(type_url: "fg:t:setup_swap", rules: [])]
+      )
+
+    hash = ForgeSdk.delegate(itx, wallet: @user)
+    assert is_binary(hash) == true
+
+    # Executes the common steps to set up swap.
+    {id, _, hashkey, callback} = both_set_up_swap(conn, 28800, 57600, @delegator)
 
     # Step 5: wallet poll the swap set up by application by calling the callback
 
@@ -78,7 +128,7 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
     assert String.length(swap.revoke_hash) > 0
   end
 
-  defp both_set_up_swap(conn, offer_locktime \\ 28800, demand_locktime \\ 57600) do
+  defp both_set_up_swap(conn, offer_locktime, demand_locktime, delegator \\ nil) do
     # Create a Swap 
     {:ok, %{id: id}} =
       %{
@@ -149,7 +199,20 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
         hashlock: hashlock
       )
 
-    hash = ForgeSdk.setup_swap(tx, wallet: @user, send: :commit, conn: "asset_chain")
+    hash =
+      case delegator do
+        nil ->
+          ForgeSdk.setup_swap(tx, wallet: @user, send: :commit, conn: "asset_chain")
+
+        _ ->
+          ForgeSdk.setup_swap(tx,
+            wallet: delegator,
+            delegatee: @user.address,
+            send: :commit,
+            conn: "asset_chain"
+          )
+      end
+
     assert is_binary(hash)
     swap_address = ForgeSdk.Util.to_swap_address(hash)
 

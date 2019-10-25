@@ -1,3 +1,6 @@
+## 0.1.5 (Oct 24, 2019)
+  - Supports delegation.
+
 ## 0.1.4 (Oct 22, 2019)
   - Use new version of Hyjal.
 
