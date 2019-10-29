@@ -1,3 +1,6 @@
+## 0.1.6 (October 29, 2019)
+  - Use ABT DID Authentication Protocol version 1.0.
+
 ## 0.1.5 (Oct 24, 2019)
   - Supports delegation.
 
