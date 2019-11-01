@@ -75,7 +75,7 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
     assert String.length(swap.retrieve_hash) > 0
   end
 
-  # @tag :integration
+  @tag :integration
   test "Start by delegator and retrieve swap, all good", %{conn: conn} do
     # First, delegates the set up swap tx to delegator.
     itx =
