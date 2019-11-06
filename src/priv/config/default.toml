@@ -3,6 +3,7 @@
 [hyjal.application]
 name = ""
 description = ""
+logo = ""
 # The DID of the application.
 did = ""
 # The secret key and public key of the application DID, multi-base encoded.

@@ -2,6 +2,7 @@
 [hyjal.application]
 name = "Your awesome dApp"
 description = "Awesome dApp powered by ArcBlock Forge."
+logo = "http://the/logo/of/your/app"
 # The DID of the application.
 did = ""
 # The secret key and public key of the application DID, multi-base encoded.

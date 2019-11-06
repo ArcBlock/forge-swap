@@ -2,6 +2,7 @@
 [hyjal.application]
 name = "Event Chain"
 description = "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket."
+logo = "https://eventchain.com/logo"
 # The Did of the application
 did = "zNKipquLJtew2CowKBFEmsZBd99s9LmgyDKP"
 # The secret key and public key of the dApp, multi-base encoded.
