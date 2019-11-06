@@ -33,7 +33,8 @@ defmodule ForgeSwapWebTest.Util do
     assert auth_body["appInfo"] == %{
              "description" =>
                "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket.",
-             "name" => "Event Chain"
+             "name" => "Event Chain",
+             "logo" => "https://eventchain.com/logo"
            }
 
     assert auth_body["chainInfo"]["host"] == "http://localhost:8410/api/"

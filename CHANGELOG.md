@@ -1,3 +1,6 @@
+## 0.1.8 (November 6, 2019)
+  - Supports app logo.
+
 ## 0.1.7 (November 1, 2019)
   - Use latest version of Hyjal.
 
