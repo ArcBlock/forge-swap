@@ -11,8 +11,7 @@ sk = ""
 pk = ""
 
 [hyjal.chain]
-host = "http://127.0.0.1"
-port = 8410
+host = "http://127.0.0.1:/8410/api/"
 
 # This section contains configurations for ForgeSwap endpoint itself.
 # This endpoint is designed to be public accessible.
@@ -72,8 +71,7 @@ hostname = "localhost"
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
-  port = 8310
+  host = "http://127.0.0.1:8310/api/"
   # The average time(seconds) to generate a block. You should figure out this value from the chain.
   block_gap = 3
   # The default number of blocks to lock swap that is set up by the application for users on this chain.
@@ -84,8 +82,7 @@ hostname = "localhost"
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
-  port = 8410
+  host = "http://127.0.0.1:8410/api/"
   # The default number of blocks to lock swap that is set up by the application for users on this chain.
   offer_locktime = 28800
   # The default expected number of blocks to lock swap that is set up by an user for the application on this chain.

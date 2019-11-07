@@ -11,8 +11,7 @@ pk = ""
 
 [hyjal.chain]
 # The host and port to connect to the forge web
-host = "http://localhost"
-port = 8410
+host = "http://localhost:8410/api/"
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -59,11 +58,9 @@ type = "postgres"
   # For asset chain.
   [chains.asset]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
-  port = 8310
+  host = "http://127.0.0.1:8310/api/"
 
   # For application chain.
   [chains.application]
   # The host and port to connect to the forge web
-  host = "http://127.0.0.1"
-  port = 8410
+  host = "http://127.0.0.1:8410/api/"

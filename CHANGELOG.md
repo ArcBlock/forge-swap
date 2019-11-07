@@ -1,3 +1,6 @@
+## 0.1.9 (November 7, 2019)
+  - Simplify the config for chain host.
+
 ## 0.1.8 (November 6, 2019)
   - Supports app logo.
 
