@@ -1,6 +1,6 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { create } from '@arcblock/ux/lib/Theme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
@@ -21,7 +21,8 @@ export default function App() {
           <Router>
             <Layout>
               <Switch>
-                <Route exact path="/" component={PageDummy} />
+                <Route exact path="/app/dummy" component={PageDummy} />
+                <Redirect from="/app" to="/app/dummy" />
               </Switch>
             </Layout>
           </Router>

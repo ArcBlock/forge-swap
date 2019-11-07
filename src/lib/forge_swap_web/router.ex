@@ -19,7 +19,7 @@ defmodule ForgeSwapWeb.Router do
 
     get("/", PageController, :index)
     get("/swap/:id", SwapController, :show)
-    get("/webapp/*path", WebappController, :index)
+    get("/app/*path", WebappController, :index)
   end
 
   scope "/api", ForgeSwapWeb do

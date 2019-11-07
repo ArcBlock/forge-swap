@@ -23,4 +23,4 @@ import App from './app';
 
 // const ReactOnPhoenix = () => <div>This is a React Component!!!</div>;
 
-ReactDOM.render(<App />, document.getElementById('webapp'));
+ReactDOM.render(<App />, document.getElementById('app'));
