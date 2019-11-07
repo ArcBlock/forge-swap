@@ -94,7 +94,7 @@ defmodule ForgeSwap.Utils.Chain do
     """
 
   @doc """
-  Converts the number of block to locktime by adding the number of block 
+  Converts the number of block to locktime by adding the number of block
   to the current block height of the specified chain.
   """
   @spec to_locktime(number(), String.t()) :: Integer.t()
