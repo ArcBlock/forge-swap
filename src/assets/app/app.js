@@ -9,7 +9,8 @@ import Layout from './components/layout';
 import PageDummy from './pages/dummy';
 
 const theme = create();
-const GlobalStyle = createGlobalStyle``;
+const GlobalStyle = createGlobalStyle`
+`;
 
 export default function App() {
   return (

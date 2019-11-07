@@ -3,9 +3,21 @@
 /* @import "./phoenix.css"; */
 /* @import "../../../deps/phoenix_live_view/assets/css/live_view.css"; */
 
+.alert {
+  margin: 0;
+}
+
 .qrcode {
   width: 550px !important;
   height: 550px !important;
+}
+
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
 }
 
 .qrcode-wrapper {
