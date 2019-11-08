@@ -11,8 +11,7 @@ pk = "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
 
 [hyjal.chain]
 # The host and port to connect to the forge web
-host = "http://47.104.23.85"
-port = 8213
+host = "http://47.104.23.85:8213/api"
 
 # This section contains configurations for Forge Swap service itself.
 [service]
@@ -54,10 +53,8 @@ type = "postgres"
 
   # For asset chain.
   [chains.asset]
-  host = "http://182.92.167.126"
-  port = 8210
+  host = "http://182.92.167.126:8210/api"
 
   # For application chain.
   [chains.application]
-  host = "http://47.104.23.85"
-  port = 8213
+  host = "http://47.104.23.85:8213/api"

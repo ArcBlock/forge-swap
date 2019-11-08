@@ -155,9 +155,8 @@ defmodule ForgeSwap.Utils.Chain do
       nil ->
         raise "Not able to find configuration for chain: #{inspect(chain_name)}. Please make sure you configured it in the 'Chains' section."
 
-      %{"host" => host, "port" => port} ->
-        url = "#{host}:#{port}/api"
-        gql_call(url, query)
+      %{"host" => host} ->
+        gql_call(host, query)
 
       _ ->
         raise "The configuration must contain the host and port to connect to forge web."
