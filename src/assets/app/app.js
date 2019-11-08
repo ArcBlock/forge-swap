@@ -6,7 +6,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import Layout from './components/layout';
-import PageDummy from './pages/dummy';
+import PageSwap from './pages/swap';
 
 const theme = create();
 const GlobalStyle = createGlobalStyle`
@@ -22,8 +22,8 @@ export default function App() {
           <Router>
             <Layout>
               <Switch>
-                <Route exact path="/app/dummy" component={PageDummy} />
-                <Redirect from="/app" to="/app/dummy" />
+                <Route exact path="/app/swap" component={PageSwap} />
+                <Redirect from="/app" to="/app/swap" />
               </Switch>
             </Layout>
           </Router>
