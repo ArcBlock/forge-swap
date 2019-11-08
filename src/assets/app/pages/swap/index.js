@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
+import { fromUnitToToken } from '@arcblock/forge-util';
 
 import useAsync from 'react-use/lib/useAsync';
 import useInterval from '@arcblock/react-hooks/lib/useInterval';
@@ -19,9 +20,17 @@ const getExplorerUrl = (chainHost, did, type) =>
 
 const fetchConfig = async () => {
   const { data } = await axios.get('/api/config');
-  const { appInfo, offerChainInfo, demandChainInfo, offerChainToken, demandChainToken } = data;
+  const {
+    appInfo,
+    serviceInfo,
+    offerChainInfo,
+    demandChainInfo,
+    offerChainToken,
+    demandChainToken,
+  } = data;
   return {
     appInfo,
+    apiBaseUrl: `${serviceInfo.schema}://${serviceInfo.host}:${serviceInfo.port}`,
     offerChain: {
       id: offerChainInfo.id,
       host: offerChainInfo.host,
@@ -64,6 +73,8 @@ function SwapDetail({ match }) {
       };
     }
   });
+
+  console.log(config);
 
   return (
     <Container>
@@ -121,7 +132,7 @@ function SwapDetail({ match }) {
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {swap.value.offer_token}
+                            {fromUnitToToken(swap.value.offer_token, config.value.offerChain.token.decimal)}
                           </Typography>{' '}
                           {config.value.offerChain.token.symbol}
                         </div>
@@ -154,7 +165,7 @@ function SwapDetail({ match }) {
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {swap.value.demand_token}
+                            {fromUnitToToken(swap.value.demand_token, config.value.demandChain.token.decimal)}
                           </Typography>{' '}
                           {config.value.demandChain.token.symbol}
                         </div>

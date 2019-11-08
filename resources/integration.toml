@@ -20,8 +20,16 @@ schema = "http"
 # The url host and port used by swap service to generate the qr_code.
 # You should make sure the wallet can reach swap service through
 # this host and port.
-host = "localhost"
+host = "192.168.1.10"
 port = 8807
+
+# Configurs the ForgeSwapManage endpoint which is the one used to create,
+# list and manage swaps.
+# This endpoint is designed to internally accessible only.
+[manage]
+schema = "http"
+host = "192.168.1.10"
+port = 8308
 
 # Configs the off-chain database to store swap information.
 [database]

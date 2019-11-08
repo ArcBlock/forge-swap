@@ -11,14 +11,13 @@ defmodule ForgeSwapWeb.PageController do
     config = ArcConfig.read_config(:forge_swap)
 
     payload = %{
+      serviceInfo: config["service"],
       appInfo: config["hyjal"]["application"] |> Map.delete("sk") |> Map.delete("pk"),
       offerChainInfo: config["chains"]["application"],
       demandChainInfo: config["chains"]["asset"],
       offerChainToken: ChainUtil.get_forge_state("application")["token"],
       demandChainToken: ChainUtil.get_forge_state("asset")["token"],
     }
-
-    payload |> IO.inspect(label: "config payload")
 
     json(conn, payload)
   end
