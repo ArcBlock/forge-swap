@@ -16,7 +16,7 @@ defmodule ForgeSwapWeb.PageController do
       offerChainInfo: config["chains"]["application"],
       demandChainInfo: config["chains"]["asset"],
       offerChainToken: ChainUtil.get_forge_state("application")["token"],
-      demandChainToken: ChainUtil.get_forge_state("asset")["token"],
+      demandChainToken: ChainUtil.get_forge_state("asset")["token"]
     }
 
     json(conn, payload)
