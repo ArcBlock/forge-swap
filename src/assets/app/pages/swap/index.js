@@ -60,11 +60,16 @@ const getQRCodeUrl = (swap, apiBaseUrl) => {
   return '';
 };
 
+const CHECK_INTERVAL = 2000;
+const CHECK_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
 function SwapDetail({ match }) {
+  const timeElapsed = useRef(0);
   const swapId = match.params.id;
   const config = useAsync(fetchConfig);
   const [latest, setLatest] = useState(null);
   const [isStarted, setStarted] = useState(false);
+  const [hasTimeout, markTimeout] = useState(false);
   const swap = useAsync(async () => {
     try {
       const { data } = await axios.get(`/api/swap/${swapId}`);
@@ -78,11 +83,17 @@ function SwapDetail({ match }) {
   // 开始轮训
   useInterval(
     async () => {
+      if (timeElapsed.current >= CHECK_TIMEOUT) {
+        markTimeout(true);
+        return;
+      }
+
+      timeElapsed.current += CHECK_INTERVAL;
       const { data } = await axios.get(`/api/swap/${swapId}`);
       data.id = swapId;
       setLatest(data);
     },
-    isStarted ? 2000 : null
+    isStarted ? CHECK_INTERVAL : null
   );
 
   if (swap.value && swap.status !== 'both_retrieved') {
@@ -210,8 +221,11 @@ function SwapDetail({ match }) {
               Make Payment
             </Typography>
             <div className="section__body">
-              {state.status === 'both_retrieved' && <Tag type="success">Payment Success!</Tag>}
-              {state.status !== 'both_retrieved' && (
+              {hasTimeout && <Typography>Payment timeout, please refresh this page!</Typography>}
+              {!hasTimeout && state.status === 'both_retrieved' && (
+                <Tag type="success">Payment Success!</Tag>
+              )}
+              {!hasTimeout && state.status !== 'both_retrieved' && (
                 <Grid container alignItems="center" spacing={4}>
                   <Grid item xs={12} sm={7} className="scan">
                     <Typography component="div" className="scan__title">
