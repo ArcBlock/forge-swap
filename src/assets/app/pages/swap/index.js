@@ -53,7 +53,7 @@ const getQRCodeUrl = (swap, apiBaseUrl) => {
   if (swap.status === 'not_started') {
     return encodeAuthUrl(`${apiBaseUrl}/payment/${swap.id}`);
   }
-  if (swap.status === 'both_setup') {
+  if (swap.status === 'both_set_up') {
     return encodeAuthUrl(`${apiBaseUrl}/retrievepayment/${swap.id}`);
   }
 
