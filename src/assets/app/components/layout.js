@@ -3,10 +3,14 @@ import styled from 'styled-components';
 
 import Container from '@material-ui/core/Container';
 import Footer from '@arcblock/ux/lib/Footer';
+import useWindowSize from 'react-use/lib/useWindowSize';
 
 export default function Layout({ children }) {
+  const { width } = useWindowSize();
+  const baseWidth = width > 800 ? 800 : width;
+
   return (
-    <Wrapper maxWidth="md" style={{ maxWidth: 800 }}>
+    <Wrapper maxWidth="md" style={{ maxWidth: 800 }} baseWidth={baseWidth}>
       <div className="header-container">
         <div className="header-bg-light"></div>
         <div className="header-bg-dark"></div>
@@ -18,8 +22,6 @@ export default function Layout({ children }) {
 }
 
 const Wrapper = styled(Container)`
-  position: relative;
-  min-height: 80vh;
   border: 1px solid ${props => props.theme.colors.lightGrey};
   && {
     padding: 0;
@@ -29,33 +31,35 @@ const Wrapper = styled(Container)`
     height: 120px;
     position: relative;
     overflow: hidden;
+    z-index: -1;
 
     .header-bg-light {
       position: absolute;
-      left: -2000px;
+      left: -${props => props.baseWidth * 3 - props.baseWidth / 2}px;
       bottom: 0px;
-      width: 4800px;
-      height: 4800px;
-      border-radius: 2400px;
-      background-color: #A2B1F7;
+      width: ${props => props.baseWidth * 6}px;
+      height: ${props => props.baseWidth * 6}px;
+      border-radius: ${props => props.baseWidth * 3}px;
+      background-color: #a2b1f7;
     }
 
     .header-bg-dark {
       position: absolute;
-      left: -1950px;
+      left: -${props => (props.baseWidth * 3 - props.baseWidth / 2) * 0.95}px;
       bottom: 2px;
-      width: 4800px;
-      height: 4800px;
-      border-radius: 2400px;
+      width: ${props => props.baseWidth * 6}px;
+      height: ${props => props.baseWidth * 6}px;
+      border-radius: ${props => props.baseWidth * 3}px;
       background-color: ${props => props.theme.colors.blue};
     }
   }
 
   .content-wrapper {
-    margin: 24px;
-    position: absolute;
-    top: 0;
-    left: 0;
+    margin: -106px 40px 40px;
+    z-index: 99;
+    @media (max-width: 768px) {
+      margin: -106px 24px 24px;
+    }
   }
 
   .footer-container {

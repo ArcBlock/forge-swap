@@ -16,7 +16,6 @@ defmodule ForgeSwap.Utils.Chain do
   """
 
   @query_get_forge_state """
-  {
     {
       getForgeState {
         state {
@@ -30,7 +29,6 @@ defmodule ForgeSwap.Utils.Chain do
         }
       }
     }
-  }
   """
 
   defp query_get_swap_state(address),

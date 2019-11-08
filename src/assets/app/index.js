@@ -7,6 +7,8 @@ import css from '../css/app.css';
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
 // in "webpack.config.js".
+import 'react-app-polyfill/ie9';
+import 'react-app-polyfill/stable'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'phoenix_html';
