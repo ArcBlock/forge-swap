@@ -247,7 +247,8 @@ const Container = styled.div`
 
   .title {
     margin-top: 96px;
-    font-size: 30px;
+    font-size: 24px;
+    font-weight: 500;
   }
 
   .loading {
@@ -255,7 +256,7 @@ const Container = styled.div`
   }
 
   .section {
-    margin-top: 20px;
+    margin-top: 24px;
 
     .section__title {
       background-color: #f0f5f5;
