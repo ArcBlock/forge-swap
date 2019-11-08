@@ -55,7 +55,7 @@ const Wrapper = styled(Container)`
   }
 
   .content-wrapper {
-    margin: -106px 40px 40px;
+    margin: -96px 40px 40px;
     z-index: 99;
     @media (max-width: 768px) {
       margin: -106px 24px 24px;

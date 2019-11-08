@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import QRCode from 'qrcode.react';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { fromUnitToToken } from '@arcblock/forge-util';
@@ -13,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import WalletDownload from '@arcblock/ux/lib/Wallet/Download';
+import Tag from '@arcblock/ux/lib/Tag';
 import DidAddress from '@arcblock/did-react/lib/Address';
 
 const getExplorerUrl = (chainHost, did, type) =>
@@ -30,7 +32,7 @@ const fetchConfig = async () => {
   } = data;
   return {
     appInfo,
-    apiBaseUrl: `${serviceInfo.schema}://${serviceInfo.host}:${serviceInfo.port}`,
+    apiBaseUrl: `${serviceInfo.schema}://${serviceInfo.host}:${serviceInfo.port}/api`,
     offerChain: {
       id: offerChainInfo.id,
       host: offerChainInfo.host,
@@ -44,33 +46,30 @@ const fetchConfig = async () => {
   };
 };
 
+const encodeAuthUrl = url =>
+  `https://abtwallet.io/i/?action=requestAuth&url=${encodeURIComponent(url)}`;
+
+const getQRCodeUrl = (swap, apiBaseUrl) => {
+  if (swap.status === 'not_started') {
+    return encodeAuthUrl(`${apiBaseUrl}/payment/${swap.id}`);
+  }
+  if (swap.status === 'both_setup') {
+    return encodeAuthUrl(`${apiBaseUrl}/retrievepayment/${swap.id}`);
+  }
+
+  return '';
+};
+
 function SwapDetail({ match }) {
+  const swapId = match.params.id;
   const config = useAsync(fetchConfig);
   const swap = useAsync(async () => {
     try {
-      const { data } = await axios.get(`/api/swap/${match.params.id}`);
+      const { data } = await axios.get(`/api/swap/${swapId}`);
+      data.id = swapId;
       return data;
     } catch (err) {
-      // FIXME: this only exist for test purpose
-      return {
-        user_did: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-        asset_owner: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-        status: 'not_started',
-        offer_assets: [
-          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-        ],
-        offer_token: 5,
-        offer_chain: 'test',
-        offer_locktime: 2800,
-        demand_assets: [
-          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-        ],
-        demand_token: 10,
-        demand_chain: 'test',
-        demand_locktime: 5600,
-      };
+      throw new Error(`Swap info for ${swapId} can not be fetched`);
     }
   });
 
@@ -104,22 +103,6 @@ function SwapDetail({ match }) {
                 <div className="info-row__value">{config.value.appInfo.name}</div>
               </div>
               <div className="info-row">
-                <div className="info-row__key">Seller</div>
-                <div className="info-row__value">
-                  <DidAddress component="p" copyable={false}>
-                    <a
-                      target="_blank"
-                      href={getExplorerUrl(
-                        config.value.offerChain.host,
-                        config.value.appInfo.did,
-                        'accounts'
-                      )}>
-                      {config.value.appInfo.did}
-                    </a>
-                  </DidAddress>
-                </div>
-              </div>
-              <div className="info-row">
                 <div className="info-row__key">Description</div>
                 <div className="info-row__value">{config.value.appInfo.description}</div>
               </div>
@@ -132,7 +115,10 @@ function SwapDetail({ match }) {
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {fromUnitToToken(swap.value.offer_token, config.value.offerChain.token.decimal)}
+                            {fromUnitToToken(
+                              swap.value.offer_token,
+                              config.value.offerChain.token.decimal
+                            )}
                           </Typography>{' '}
                           {config.value.offerChain.token.symbol}
                         </div>
@@ -157,6 +143,22 @@ function SwapDetail({ match }) {
                 </div>
               </div>
               <div className="info-row">
+                <div className="info-row__key">Seller</div>
+                <div className="info-row__value">
+                  <DidAddress component="p" copyable={false}>
+                    <a
+                      target="_blank"
+                      href={getExplorerUrl(
+                        config.value.offerChain.host,
+                        config.value.appInfo.did,
+                        'accounts'
+                      )}>
+                      {config.value.appInfo.did}
+                    </a>
+                  </DidAddress>
+                </div>
+              </div>
+              <div className="info-row">
                 <div className="info-row__key">You will pay</div>
                 <div className="info-row__value">
                   <div className="info-rows">
@@ -165,7 +167,10 @@ function SwapDetail({ match }) {
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {fromUnitToToken(swap.value.demand_token, config.value.demandChain.token.decimal)}
+                            {fromUnitToToken(
+                              swap.value.demand_token,
+                              config.value.demandChain.token.decimal
+                            )}
                           </Typography>{' '}
                           {config.value.demandChain.token.symbol}
                         </div>
@@ -196,8 +201,8 @@ function SwapDetail({ match }) {
               Make Payment
             </Typography>
             <div className="section__body">
-              <Grid container spacing={4}>
-                <Grid item xs={12} sm={6} className="scan">
+              <Grid container alignItems="center" spacing={4}>
+                <Grid item xs={12} sm={7} className="scan">
                   <Typography component="div" className="scan__title">
                     Scan to Check Out
                   </Typography>
@@ -207,8 +212,20 @@ function SwapDetail({ match }) {
                     transaction.
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6} className="qrcode-wrapper">
-                  QRCODE
+                <Grid item xs={12} sm={5} className="qrcode-wrapper">
+                  {!!getQRCodeUrl(swap.value, config.value.apiBaseUrl) && (
+                    <div className="qrcode-container">
+                      <QRCode
+                        size={180}
+                        renderAs="svg"
+                        level="M"
+                        value={getQRCodeUrl(swap.value, config.value.apiBaseUrl)}
+                      />
+                    </div>
+                  )}
+                  {!getQRCodeUrl(swap.value, config.value.apiBaseUrl) && (
+                    <Tag type="info">{swap.status}</Tag>
+                  )}
                 </Grid>
               </Grid>
             </div>
@@ -276,9 +293,17 @@ const Container = styled.div`
     }
 
     .section__body {
-      padding: 24px;
+      padding: 24px 24px 0;
       @media (max-width: 768px) {
         padding: 24px 0;
+      }
+
+      .qrcode-container {
+        background: #ffffff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        width: 212px;
       }
 
       .info-row {
