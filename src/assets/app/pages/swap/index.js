@@ -1,6 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
 
 import useAsync from 'react-use/lib/useAsync';
 import useInterval from '@arcblock/react-hooks/lib/useInterval';
@@ -33,23 +35,35 @@ const fetchConfig = async () => {
   };
 };
 
-export default function() {
+function SwapDetail({ match }) {
   const config = useAsync(fetchConfig);
-  console.log(config);
-
-  const swapInfo = {
-    user_did: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-    asset_owner: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
-    status: 'not_started',
-    offer_assets: ['z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS', 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS'],
-    offer_token: 5,
-    offer_chain: 'test',
-    offer_locktime: 2800,
-    demand_assets: ['z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS', 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS'],
-    demand_token: 10,
-    demand_chain: 'test',
-    demand_locktime: 5600,
-  };
+  const swap = useAsync(async () => {
+    try {
+      const { data } = await axios.get(`/api/swap/${match.params.id}`);
+      return data;
+    } catch (err) {
+      // FIXME: this only exist for test purpose
+      return {
+        user_did: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+        asset_owner: 'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+        status: 'not_started',
+        offer_assets: [
+          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+        ],
+        offer_token: 5,
+        offer_chain: 'test',
+        offer_locktime: 2800,
+        demand_assets: [
+          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+          'z1k2aXFUpRBAqJo7HuwyMn49WNgcpc8zbUS',
+        ],
+        demand_token: 10,
+        demand_chain: 'test',
+        demand_locktime: 5600,
+      };
+    }
+  });
 
   return (
     <Container>
@@ -59,12 +73,12 @@ export default function() {
           <Typography className="logo__text">ABT Wallet</Typography>
         </Typography>
       </div>
-      {(config.loading || !config.value) && (
+      {(config.loading || !config.value || swap.loading || !swap.value) && (
         <div className="loading">
           <CircularProgress />
         </div>
       )}
-      {config.value && (
+      {config.value && swap.value && (
         <React.Fragment>
           <Typography component="h2" className="title">
             Make Payment to {config.value.appInfo.name}
@@ -102,19 +116,19 @@ export default function() {
                 <div className="info-row__key">You will get</div>
                 <div className="info-row__value">
                   <div className="info-rows">
-                    {swapInfo.offer_token > 0 && (
+                    {swap.value.offer_token > 0 && (
                       <div className="info-row info-row--h">
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {swapInfo.offer_token}
+                            {swap.value.offer_token}
                           </Typography>{' '}
                           {config.value.offerChain.token.symbol}
                         </div>
                       </div>
                     )}
-                    {swapInfo.offer_assets.length > 0 &&
-                      swapInfo.offer_assets.map(x => (
+                    {swap.value.offer_assets.length > 0 &&
+                      swap.value.offer_assets.map(x => (
                         <div className="info-row info-row--h" key={x}>
                           <div className="info-row__key">Asset</div>
                           <div className="info-row__value">
@@ -135,19 +149,19 @@ export default function() {
                 <div className="info-row__key">You will pay</div>
                 <div className="info-row__value">
                   <div className="info-rows">
-                    {swapInfo.demand_token > 0 && (
+                    {swap.value.demand_token > 0 && (
                       <div className="info-row info-row--h">
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {swapInfo.demand_token}
+                            {swap.value.demand_token}
                           </Typography>{' '}
                           {config.value.demandChain.token.symbol}
                         </div>
                       </div>
                     )}
-                    {swapInfo.demand_assets.length > 0 &&
-                      swapInfo.demand_assets.map(x => (
+                    {swap.value.demand_assets.length > 0 &&
+                      swap.value.demand_assets.map(x => (
                         <div className="info-row info-row--h" key={x}>
                           <div className="info-row__key">Asset</div>
                           <div className="info-row__value">
@@ -201,6 +215,12 @@ export default function() {
     </Container>
   );
 }
+
+SwapDetail.propTypes = {
+  match: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+};
 
 const Container = styled.div`
   .logo {
@@ -298,3 +318,5 @@ const Container = styled.div`
     }
   }
 `;
+
+export default withRouter(SwapDetail);

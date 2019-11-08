@@ -22,8 +22,7 @@ export default function App() {
           <Router>
             <Layout>
               <Switch>
-                <Route exact path="/app/swap" component={PageSwap} />
-                <Redirect from="/app" to="/app/swap" />
+                <Route exact path="/app/swap/:id" component={PageSwap} />
               </Switch>
             </Layout>
           </Router>
