@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import QRCode from 'qrcode.react';
@@ -60,9 +60,16 @@ const getQRCodeUrl = (swap, apiBaseUrl) => {
   return '';
 };
 
+const CHECK_INTERVAL = 2000;
+const CHECK_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
 function SwapDetail({ match }) {
+  const timeElapsed = useRef(0);
   const swapId = match.params.id;
   const config = useAsync(fetchConfig);
+  const [latest, setLatest] = useState(null);
+  const [isStarted, setStarted] = useState(false);
+  const [hasTimeout, markTimeout] = useState(false);
   const swap = useAsync(async () => {
     try {
       const { data } = await axios.get(`/api/swap/${swapId}`);
@@ -73,7 +80,30 @@ function SwapDetail({ match }) {
     }
   });
 
-  console.log(config);
+  // 开始轮训
+  useInterval(
+    async () => {
+      if (timeElapsed.current >= CHECK_TIMEOUT) {
+        markTimeout(true);
+        return;
+      }
+
+      timeElapsed.current += CHECK_INTERVAL;
+      const { data } = await axios.get(`/api/swap/${swapId}`);
+      data.id = swapId;
+      setLatest(data);
+    },
+    isStarted ? CHECK_INTERVAL : null
+  );
+
+  if (swap.value && swap.status !== 'both_retrieved') {
+    setTimeout(() => {
+      setStarted(true);
+    });
+  }
+
+  const state = latest || swap.value;
+  const conf = config.value;
 
   return (
     <Container>
@@ -83,15 +113,15 @@ function SwapDetail({ match }) {
           <Typography className="logo__text">ABT Wallet</Typography>
         </Typography>
       </div>
-      {(config.loading || !config.value || swap.loading || !swap.value) && (
+      {(config.loading || !conf || swap.loading || !state) && (
         <div className="loading">
           <CircularProgress />
         </div>
       )}
-      {config.value && swap.value && (
+      {conf && state && (
         <React.Fragment>
           <Typography component="h2" className="title">
-            Make Payment to {config.value.appInfo.name}
+            Make Payment to {conf.appInfo.name}
           </Typography>
           <div className="section section-order">
             <Typography component="div" className="section__title">
@@ -100,39 +130,36 @@ function SwapDetail({ match }) {
             <div className="section__body">
               <div className="info-row">
                 <div className="info-row__key">Application</div>
-                <div className="info-row__value">{config.value.appInfo.name}</div>
+                <div className="info-row__value">{conf.appInfo.name}</div>
               </div>
               <div className="info-row">
                 <div className="info-row__key">Description</div>
-                <div className="info-row__value">{config.value.appInfo.description}</div>
+                <div className="info-row__value">{conf.appInfo.description}</div>
               </div>
               <div className="info-row">
                 <div className="info-row__key">You will get</div>
                 <div className="info-row__value">
                   <div className="info-rows">
-                    {swap.value.offer_token > 0 && (
+                    {state.offer_token > 0 && (
                       <div className="info-row info-row--h">
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {fromUnitToToken(
-                              swap.value.offer_token,
-                              config.value.offerChain.token.decimal
-                            )}
+                            {fromUnitToToken(state.offer_token, conf.offerChain.token.decimal)}
                           </Typography>{' '}
-                          {config.value.offerChain.token.symbol}
+                          {conf.offerChain.token.symbol}
                         </div>
                       </div>
                     )}
-                    {swap.value.offer_assets.length > 0 &&
-                      swap.value.offer_assets.map(x => (
+                    {state.offer_assets.length > 0 &&
+                      state.offer_assets.map(x => (
                         <div className="info-row info-row--h" key={x}>
                           <div className="info-row__key">Asset</div>
                           <div className="info-row__value">
                             <DidAddress component="p" copyable={false}>
                               <a
                                 target="_blank"
-                                href={getExplorerUrl(config.value.offerChain.host, x, 'assets')}>
+                                href={getExplorerUrl(conf.offerChain.host, x, 'assets')}>
                                 {x}
                               </a>
                             </DidAddress>
@@ -148,12 +175,8 @@ function SwapDetail({ match }) {
                   <DidAddress component="p" copyable={false}>
                     <a
                       target="_blank"
-                      href={getExplorerUrl(
-                        config.value.offerChain.host,
-                        config.value.appInfo.did,
-                        'accounts'
-                      )}>
-                      {config.value.appInfo.did}
+                      href={getExplorerUrl(conf.offerChain.host, conf.appInfo.did, 'accounts')}>
+                      {conf.appInfo.did}
                     </a>
                   </DidAddress>
                 </div>
@@ -162,29 +185,26 @@ function SwapDetail({ match }) {
                 <div className="info-row__key">You will pay</div>
                 <div className="info-row__value">
                   <div className="info-rows">
-                    {swap.value.demand_token > 0 && (
+                    {state.demand_token > 0 && (
                       <div className="info-row info-row--h">
                         <div className="info-row__key">Token</div>
                         <div className="info-row__value">
                           <Typography component="strong" className="amount">
-                            {fromUnitToToken(
-                              swap.value.demand_token,
-                              config.value.demandChain.token.decimal
-                            )}
+                            {fromUnitToToken(state.demand_token, conf.demandChain.token.decimal)}
                           </Typography>{' '}
-                          {config.value.demandChain.token.symbol}
+                          {conf.demandChain.token.symbol}
                         </div>
                       </div>
                     )}
-                    {swap.value.demand_assets.length > 0 &&
-                      swap.value.demand_assets.map(x => (
+                    {state.demand_assets.length > 0 &&
+                      state.demand_assets.map(x => (
                         <div className="info-row info-row--h" key={x}>
                           <div className="info-row__key">Asset</div>
                           <div className="info-row__value">
                             <DidAddress component="p" copyable={false}>
                               <a
                                 target="_blank"
-                                href={getExplorerUrl(config.value.demandChain.host, x, 'assets')}>
+                                href={getExplorerUrl(conf.demandChain.host, x, 'assets')}>
                                 {x}
                               </a>
                             </DidAddress>
@@ -201,33 +221,37 @@ function SwapDetail({ match }) {
               Make Payment
             </Typography>
             <div className="section__body">
-              <Grid container alignItems="center" spacing={4}>
-                <Grid item xs={12} sm={7} className="scan">
-                  <Typography component="div" className="scan__title">
-                    Scan to Check Out
-                  </Typography>
-                  <Typography component="div" className="scan__tip">
-                    Scan the QR code to make payment on your ABT Wallet app. If you leave the app
-                    without finishing the payment, you may come back, re-scan it to active the
-                    transaction.
-                  </Typography>
+              {hasTimeout && <Typography>Payment timeout, please refresh this page!</Typography>}
+              {!hasTimeout && state.status === 'both_retrieved' && (
+                <Tag type="success">Payment Success!</Tag>
+              )}
+              {!hasTimeout && state.status !== 'both_retrieved' && (
+                <Grid container alignItems="center" spacing={4}>
+                  <Grid item xs={12} sm={7} className="scan">
+                    <Typography component="div" className="scan__title">
+                      Scan to Check Out
+                    </Typography>
+                    <Typography component="div" className="scan__tip">
+                      Scan the QR code to make payment on your ABT Wallet app. If you leave the app
+                      without finishing the payment, you may come back, re-scan it to active the
+                      transaction.
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={5} className="qrcode-wrapper">
+                    {!!getQRCodeUrl(state, conf.apiBaseUrl) && (
+                      <div className="qrcode-container">
+                        <QRCode
+                          size={180}
+                          renderAs="svg"
+                          level="M"
+                          value={getQRCodeUrl(state, conf.apiBaseUrl)}
+                        />
+                      </div>
+                    )}
+                    {!getQRCodeUrl(state, conf.apiBaseUrl) && <Tag type="info">{swap.status}</Tag>}
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={5} className="qrcode-wrapper">
-                  {!!getQRCodeUrl(swap.value, config.value.apiBaseUrl) && (
-                    <div className="qrcode-container">
-                      <QRCode
-                        size={180}
-                        renderAs="svg"
-                        level="M"
-                        value={getQRCodeUrl(swap.value, config.value.apiBaseUrl)}
-                      />
-                    </div>
-                  )}
-                  {!getQRCodeUrl(swap.value, config.value.apiBaseUrl) && (
-                    <Tag type="info">{swap.status}</Tag>
-                  )}
-                </Grid>
-              </Grid>
+              )}
             </div>
           </div>
           <div className="section section-order">
@@ -274,13 +298,13 @@ const Container = styled.div`
   }
 
   .title {
-    margin-top: 96px;
+    margin-top: 80px;
     font-size: 24px;
     font-weight: 500;
   }
 
   .loading {
-    margin-top: 96px;
+    margin-top: 80px;
   }
 
   .section {
@@ -310,7 +334,7 @@ const Container = styled.div`
         display: flex;
         flex-direction: column;
         line-height: 1.6;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
 
         .info-row__key {
           color: #4a4a4a;

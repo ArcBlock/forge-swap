@@ -2,18 +2,18 @@
 # yarn lockfile v1
 
 
-"@arcblock/did-logo@^0.36.0":
-  version "0.36.0"
-  resolved "https://registry.npm.taobao.org/@arcblock/did-logo/download/@arcblock/did-logo-0.36.0.tgz#c9360b0dad172f01c41f332ad2ad9b4d1cb8efa1"
-  integrity sha1-yTYLDa0XLwHEHzMq0q2bTRy476E=
+"@arcblock/did-logo@^0.37.0":
+  version "0.37.0"
+  resolved "https://registry.npm.taobao.org/@arcblock/did-logo/download/@arcblock/did-logo-0.37.0.tgz#0ced015261b73bb4fea3b27c1dc802e9a3666f4e"
+  integrity sha1-DO0BUmG3O7T+o7J8HcgC6aNmb04=
 
-"@arcblock/did-react@^0.36.0":
-  version "0.36.0"
-  resolved "https://registry.npm.taobao.org/@arcblock/did-react/download/@arcblock/did-react-0.36.0.tgz#14bf45ec44af70e52cb591d779c4b716082e294f"
-  integrity sha1-FL9F7ESvcOUstZHXecS3FgguKU8=
+"@arcblock/did-react@^0.37.0":
+  version "0.37.0"
+  resolved "https://registry.npm.taobao.org/@arcblock/did-react/download/@arcblock/did-react-0.37.0.tgz#148cde8bc0600002db5b13e0b59e50ff640c673b"
+  integrity sha1-FIzei8BgAALbWxPgtZ5Q/2QMZzs=
   dependencies:
-    "@arcblock/react-hooks" "^0.36.0"
-    "@arcblock/ux" "^0.36.0"
+    "@arcblock/react-hooks" "^0.37.0"
+    "@arcblock/ux" "^0.37.0"
     ismobilejs "^0.5.2"
     qrcode.react "^0.9.3"
     react-load-script "^0.0.6"
@@ -30,21 +30,21 @@
     number-to-bn "^1.7.0"
     utf8 "^3.0.0"
 
-"@arcblock/react-hooks@^0.36.0":
-  version "0.36.0"
-  resolved "https://registry.npm.taobao.org/@arcblock/react-hooks/download/@arcblock/react-hooks-0.36.0.tgz#cd96d4b072a2a516b82a85b75220bfb2adcafa3d"
-  integrity sha1-zZbUsHKipRa4KoW3UiC/sq3K+j0=
+"@arcblock/react-hooks@^0.37.0":
+  version "0.37.0"
+  resolved "https://registry.npm.taobao.org/@arcblock/react-hooks/download/@arcblock/react-hooks-0.37.0.tgz#8938b95b90800775809360aef2bd3925ad92753e"
+  integrity sha1-iTi5W5CAB3WAk2Cu8r05Ja2SdT4=
   dependencies:
     event-target-shim "^5.0.1"
     qrcode.react "^0.9.3"
     react-load-script "^0.0.6"
 
-"@arcblock/ux@^0.36.0":
-  version "0.36.0"
-  resolved "https://registry.npm.taobao.org/@arcblock/ux/download/@arcblock/ux-0.36.0.tgz#1e1bada83e32c1e7eca2db76e696f2872e372ab3"
-  integrity sha1-HhutqD4ywefsott25pbyhy43KrM=
+"@arcblock/ux@^0.37.0":
+  version "0.37.0"
+  resolved "https://registry.npm.taobao.org/@arcblock/ux/download/@arcblock/ux-0.37.0.tgz#10df9f8142597c1e88f7293cedaf0fbc13c17a37"
+  integrity sha1-EN+fgUJZfB6I9yk87a8PvBPBejc=
   dependencies:
-    "@arcblock/react-hooks" "^0.36.0"
+    "@arcblock/react-hooks" "^0.37.0"
     "@babel/plugin-syntax-dynamic-import" "^7.2.0"
     copy-to-clipboard "^3.2.0"
     d3-geo "^1.11.6"
@@ -2563,6 +2563,11 @@ core-js-compat@^3.1.1:
   dependencies:
     browserslist "^4.7.2"
     semver "^6.3.0"
+
+core-js@2.6.5:
+  version "2.6.5"
+  resolved "https://registry.npm.taobao.org/core-js/download/core-js-2.6.5.tgz?cache=0&sync_timestamp=1573077118193&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcore-js%2Fdownload%2Fcore-js-2.6.5.tgz#44bc8d249e7fb2ff5d00e0341a7ffb94fbf67895"
+  integrity sha1-RLyNJJ5/sv9dAOA0Gn/7lPv2eJU=
 
 core-js@3.2.1:
   version "3.2.1"
