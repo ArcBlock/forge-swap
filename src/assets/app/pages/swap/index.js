@@ -298,13 +298,13 @@ const Container = styled.div`
   }
 
   .title {
-    margin-top: 96px;
+    margin-top: 80px;
     font-size: 24px;
     font-weight: 500;
   }
 
   .loading {
-    margin-top: 96px;
+    margin-top: 80px;
   }
 
   .section {
@@ -334,7 +334,7 @@ const Container = styled.div`
         display: flex;
         flex-direction: column;
         line-height: 1.6;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
 
         .info-row__key {
           color: #4a4a4a;
