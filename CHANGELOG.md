@@ -1,3 +1,6 @@
+## 0.2.0 (November 11, 2019)
+  - Move swap page to react webapp.
+
 ## 0.1.9 (November 7, 2019)
   - Simplify the config for chain host.
 
