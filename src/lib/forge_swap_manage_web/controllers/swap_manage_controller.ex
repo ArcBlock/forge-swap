@@ -56,7 +56,11 @@ defmodule ForgeSwapManageWeb.SwapManageController do
         json(conn, %{
           response: %{
             id: swap.id,
-            redirect: ForgeSwapWeb.Router.Helpers.swap_url(ForgeSwapWeb.Endpoint, :show, swap.id)
+            redirect:
+              ForgeSwapWeb.Router.Helpers.webapp_url(ForgeSwapWeb.Endpoint, :index, [
+                "swap",
+                swap.id
+              ])
           }
         })
 

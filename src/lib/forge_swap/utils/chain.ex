@@ -16,7 +16,6 @@ defmodule ForgeSwap.Utils.Chain do
   """
 
   @query_get_forge_state """
-  {
     {
       getForgeState {
         state {
@@ -30,7 +29,6 @@ defmodule ForgeSwap.Utils.Chain do
         }
       }
     }
-  }
   """
 
   defp query_get_swap_state(address),
@@ -94,7 +92,7 @@ defmodule ForgeSwap.Utils.Chain do
     """
 
   @doc """
-  Converts the number of block to locktime by adding the number of block 
+  Converts the number of block to locktime by adding the number of block
   to the current block height of the specified chain.
   """
   @spec to_locktime(number(), String.t()) :: Integer.t()
