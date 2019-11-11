@@ -11,25 +11,17 @@ pk = "zEY3RfiTmbQLtEP393c2FJ2YrQpqmdZLRS33wRg5TrVSe"
 
 [hyjal.chain]
 # The host and port to connect to the forge web
-host = "http://47.104.23.85:8213/api"
+host = "http://localhost:8410/api/"
 
 # This section contains configurations for Forge Swap service itself.
 [service]
 # Either http or https
 schema = "http"
-# The url host and port used by swap service to generate the qr_code.
+# The url host and port used by swap service to generate the qr_code. 
 # You should make sure the wallet can reach swap service through
 # this host and port.
-host = "192.168.1.10"
+host = "localhost"
 port = 8807
-
-# Configurs the ForgeSwapManage endpoint which is the one used to create,
-# list and manage swaps.
-# This endpoint is designed to internally accessible only.
-[manage]
-schema = "http"
-host = "192.168.1.10"
-port = 8308
 
 # Configs the off-chain database to store swap information.
 [database]
@@ -40,7 +32,7 @@ type = "postgres"
 # Each owner has a moniker, the application can specify which owner to use when
 # creating a swap. For example, you can create an owner whose moniker is 'concert'
 # to manage all concert-related assets.
-#
+# 
 # [asset_owner]
 #   [asset_owner.concert]
 #     did = "SYSTEM:ASSET_OWNER_CONCERT_DID"
@@ -61,8 +53,10 @@ type = "postgres"
 
   # For asset chain.
   [chains.asset]
-  host = "http://182.92.167.126:8210/api"
+  # The host and port to connect to the forge web
+  host = "http://localhost:8310/api/"
 
   # For application chain.
   [chains.application]
-  host = "http://47.104.23.85:8213/api"
+  # The host and port to connect to the forge web
+  host = "http://localhost:8410/api/"
