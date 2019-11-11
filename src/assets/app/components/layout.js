@@ -7,10 +7,10 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 
 export default function Layout({ children }) {
   const { width } = useWindowSize();
-  const baseWidth = width > 800 ? 800 : width;
+  const baseWidth = width > 720 ? 720 : width;
 
   return (
-    <Wrapper maxWidth="md" style={{ maxWidth: 800 }} baseWidth={baseWidth}>
+    <Wrapper maxWidth="md" style={{ maxWidth: 720 }} baseWidth={baseWidth}>
       <div className="header-container">
         <div className="header-bg-light"></div>
         <div className="header-bg-dark"></div>
@@ -22,7 +22,11 @@ export default function Layout({ children }) {
 }
 
 const Wrapper = styled(Container)`
+  margin-top: 32px;
   border: 1px solid ${props => props.theme.colors.lightGrey};
+  @media (max-width: 768px) {
+    margin-top: 0;
+  }
   && {
     padding: 0;
   }
