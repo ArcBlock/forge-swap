@@ -1,3 +1,6 @@
+## 1.0.0 (November 12, 2019)
+  - release 1.0.0
+
 ## 0.2.0 (November 11, 2019)
   - Move swap page to react webapp.
 
