@@ -4,6 +4,7 @@
 name = ""
 description = ""
 logo = ""
+link = ""
 # The DID of the application.
 did = ""
 # The secret key and public key of the application DID, multi-base encoded.
@@ -12,6 +13,7 @@ pk = ""
 
 [hyjal.chain]
 host = "http://127.0.0.1:/8410/api/"
+restricted_declared = false
 
 # This section contains configurations for ForgeSwap endpoint itself.
 # This endpoint is designed to be public accessible.

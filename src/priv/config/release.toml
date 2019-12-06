@@ -3,11 +3,16 @@
 name = "Your awesome dApp"
 description = "Awesome dApp powered by ArcBlock Forge."
 logo = "http://the/logo/of/your/app"
+link = "The URL or deeplink pointing to your app."
 # The DID of the application.
 did = ""
 # The secret key and public key of the application DID, multi-base encoded.
 sk = ""
 pk = ""
+
+[hyjal.chain]
+host = "http://127.0.0.1:/8410/api/"
+restricted_declared = false
 
 # This section contains configurations for Forge Swap service itself.
 [service]
