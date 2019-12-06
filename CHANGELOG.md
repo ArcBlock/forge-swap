@@ -1,3 +1,6 @@
+## 1.0.2 (December 06, 2019)
+  - release 1.0.2
+
 ## 1.0.0 (November 12, 2019)
   - release 1.0.0
 

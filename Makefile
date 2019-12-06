@@ -7,9 +7,6 @@ APP_NAME=forge_swap
 TEST_PATH=/tmp/.forge_swap_test/
 FORGE_VERSION=$(strip $(shell cat .forge_version))
 
-tt:
-	@echo $(FORGE_VERSION)
-
 dep:
 	@echo "Install dependencies required for this repo..."
 	@cd src; mix deps.get
