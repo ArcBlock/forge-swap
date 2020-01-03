@@ -34,7 +34,8 @@ defmodule ForgeSwapWebTest.Util do
              "description" =>
                "A blockchain-based ticket-selling application that allows event hosts and participants to have full control of every ticket.",
              "name" => "Event Chain",
-             "logo" => "https://eventchain.com/logo"
+             "logo" => "https://eventchain.com/logo",
+             "link" => ""
            }
 
     assert auth_body["chainInfo"]["host"] == "http://localhost:8410/api/"

@@ -17,11 +17,14 @@ host = "http://localhost:8410/api/"
 [service]
 # Either http or https
 schema = "http"
-# The url host and port used by swap service to generate the qr_code. 
-# You should make sure the wallet can reach swap service through
-# this host and port.
 host = "localhost"
 port = 8807
+
+# The URL path used by swap service to generate the qr_code. 
+# You should make sure the wallet can reach swap service through
+# this host and port.
+path = "http://localhost:8807"
+
 # The seconds the swapper should wait between two ticks.
 # The smaller this number is the more frequent will the 
 # service set up, retrieve and revoke swaps for you.

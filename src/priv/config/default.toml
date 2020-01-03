@@ -20,11 +20,13 @@ restricted_declared = false
 [service]
 # Either http or https
 schema = "http"
-# The url host and port used by swap service to generate the qr_code. 
-# You should make sure the wallet can reach swap service through
-# this host and port.
 host = "localhost"
 port = 8807
+# The URL path used by swap service to generate the qr_code. 
+# You should make sure the wallet can reach swap service through
+# this host and port.
+path = "http://localhost:8807"
+
 # The seconds the swapper should wait between two ticks.
 # The smaller this number is the more frequently will the 
 # service try to set up, retrieve and revoke swaps for the dApp.

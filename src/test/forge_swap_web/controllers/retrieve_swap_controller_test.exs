@@ -45,7 +45,7 @@ defmodule ForgeSwapWeb.RetrieveSwapControllerTest do
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.retrieve_swap_url(@endpoint, :auth_principal, id)
+    assert auth_body["url"] === Routes.retrieve_swap_path(@endpoint, :auth_principal, id)
 
     assert auth_body["requestedClaims"] == [
              %{

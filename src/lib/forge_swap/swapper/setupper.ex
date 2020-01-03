@@ -104,11 +104,11 @@ defmodule ForgeSwap.Swapper.Setupper do
       %{"code" => "OK"} ->
         both_set_up(swap, hashlock, offer_hash)
 
-      %{"code" => _} ->
+      %{"code" => code} ->
         Logger.warn(
           "Swap Id: #{swap.id}, Server SetupSwapTx failed, will retry. Hash: #{
             inspect(offer_hash)
-          }"
+          }. Error code #{code}"
         )
 
         {swap, hashlock, ""}
