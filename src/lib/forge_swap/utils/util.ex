@@ -21,11 +21,11 @@ defmodule ForgeSwap.Utils.Util do
 
   # Generates the QR code by scanning which a user can start the swap process.
   def gen_qr_code("not_started", swap_id),
-    do: Endpoint |> Helpers.payment_url(:start, swap_id) |> Hyjal.Util.get_qr_code()
+    do: Endpoint |> Helpers.payment_path(:start, swap_id) |> Hyjal.Util.get_qr_code()
 
   # Generates the QR code by scanning which a user can continue to retrieve the swap set up by application.
   def gen_qr_code("both_set_up", swap_id),
-    do: Endpoint |> Helpers.retrieve_swap_url(:start, swap_id) |> Hyjal.Util.get_qr_code()
+    do: Endpoint |> Helpers.retrieve_swap_path(:start, swap_id) |> Hyjal.Util.get_qr_code()
 
   def gen_qr_code(_, _), do: ""
 

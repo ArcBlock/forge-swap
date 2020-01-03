@@ -149,7 +149,7 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.payment_url(@endpoint, :auth_principal, id)
+    assert auth_body["url"] === Routes.payment_path(@endpoint, :auth_principal, id)
 
     assert auth_body["requestedClaims"] == [
              %{
@@ -168,7 +168,7 @@ defmodule ForgeSwapWeb.PaymentControllerTest do
 
     auth_body = Util.get_auth_body(auth_info)
     Util.assert_common_auth_info(pk, auth_body)
-    assert auth_body["url"] === Routes.payment_url(@endpoint, :payment_return_swap, id)
+    assert auth_body["url"] === Routes.payment_path(@endpoint, :payment_return_swap, id)
 
     assert auth_body["requestedClaims"] == [
              %{

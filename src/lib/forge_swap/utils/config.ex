@@ -52,32 +52,13 @@ defmodule ForgeSwap.Utils.Config do
     end)
   end
 
-  def apply_endpoint_config() do
-    config = ArcConfig.read_config(:forge_swap)
-    schema = config["service"]["schema"]
-    host = config["service"]["host"]
-    port = config["service"]["port"]
-    endpoint = Application.get_env(:forge_swap, ForgeSwapWeb.Endpoint)
-    endpoint = Keyword.put(endpoint, :url, host: host, port: port)
-
-    endpoint =
-      case schema do
-        "https" ->
-          Keyword.update(endpoint, :https, [port: port], fn v -> Keyword.put(v, :port, port) end)
-
-        "http" ->
-          Keyword.update(endpoint, :http, [port: port], fn v -> Keyword.put(v, :port, port) end)
-      end
-
-    Application.put_env(:forge_swap, ForgeSwapWeb.Endpoint, endpoint)
-  end
-
   def apply_endpoint_config(config, endpoint_module) do
     schema = config["schema"]
     host = config["host"]
     port = config["port"]
+    path = config["path"]
     endpoint = Application.get_env(:forge_swap, endpoint_module)
-    endpoint = Keyword.put(endpoint, :url, host: host, port: port)
+    endpoint = Keyword.put(endpoint, :url, host: host, port: port, path: path)
 
     endpoint =
       case schema do

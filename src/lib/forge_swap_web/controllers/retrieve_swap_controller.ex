@@ -7,7 +7,7 @@ defmodule ForgeSwapWeb.RetrieveSwapController do
     Step 3, user returns the swap address by calling :payment_return_swap, server sets up a swap and returns the address.
   """
   use ForgeSwapWeb, :controller
-  use Hyjal, router: ForgeSwapWeb.Router
+  use Hyjal, router: ForgeSwapWeb.Router, endpoint: ForgeSwapWeb.Endpoint
 
   alias ForgeSwap.Utils.Did, as: DidUtil
   alias ForgeSwapWeb.Plugs.{CompareAuthPrincipal, ReadSwap}

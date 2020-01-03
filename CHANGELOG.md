@@ -1,3 +1,6 @@
+## 1.0.4-p0 (January 02, 2020)
+  - Fix Phoenix path issue.
+
 ## 1.0.2 (December 06, 2019)
   - release 1.0.2
 

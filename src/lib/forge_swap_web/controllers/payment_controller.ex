@@ -1,6 +1,6 @@
 defmodule ForgeSwapWeb.PaymentController do
   use ForgeSwapWeb, :controller
-  use Hyjal, router: ForgeSwapWeb.Router
+  use Hyjal, router: ForgeSwapWeb.Router, endpoint: ForgeSwapWeb.Endpoint
 
   require Logger
 
@@ -87,7 +87,7 @@ defmodule ForgeSwapWeb.PaymentController do
         swap = user_set_up(swap, demand_state)
         # Asynchronously set up a swap for user 
         Setupper.set_up_swap(swap, demand_state["hashlock"])
-        callback = Routes.retrieve_swap_url(conn, :auth_principal, swap.id)
+        callback = Routes.retrieve_swap_path(ForgeSwapWeb.Endpoint, :auth_principal, swap.id)
         reply(conn, :ok, %{callback: callback})
     end
   end
