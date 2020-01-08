@@ -72,7 +72,7 @@ defmodule ForgeSwap.MixProject do
       # ArcBlock
       {:hyjal, git: "git@github.com:ArcBlock/Hyjal.git"},
       # {:hyjal, path: "../../hyjal"},
-      {:forge_sdk, "~> 1.0.2"}
+      {:forge_sdk, "~> 1.0.6"}
     ]
   end
 

@@ -1,3 +1,6 @@
+## 1.0.6 (January 07, 2020)
+  - use latest forge-sdk
+
 ## 1.0.4-p0 (January 02, 2020)
   - Fix Phoenix path issue.
 
